@@ -3,14 +3,6 @@ import { Plus, X, ChevronDown, ChevronUp, Flame, Droplets, Check, Search } from 
 
 const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Snacks']
 
-const GOALS = {
-  calories: 2800,
-  protein: 180,
-  carbs: 300,
-  fat: 80,
-  water: 3.5,
-}
-
 // Indian food database — per 100g unless noted
 const FOOD_DB = [
   // Grains & Rice
@@ -129,7 +121,8 @@ function MacroRing({ value, goal, color, label }) {
   )
 }
 
-export default function Nutrition() {
+export default function Nutrition({ profile }) {
+  const GOALS = profile?.goals || { calories: 2800, protein: 180, carbs: 300, fat: 80, water: 3.5 }
   const [data, setData] = useState(loadTodayData)
   const [activeTab, setActiveTab] = useState('Breakfast')
   const [showForm, setShowForm] = useState(false)
