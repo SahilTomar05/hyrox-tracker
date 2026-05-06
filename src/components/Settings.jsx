@@ -117,6 +117,13 @@ export default function Settings({ profile, onUpdate, onReset }) {
         </div>
 
         <div>
+          <label className="text-[#666] text-xs mb-1 block">Daily step goal</label>
+          <input type="number" value={form.stepGoal || 10000}
+            onChange={e => update('stepGoal', Number(e.target.value))}
+            className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
+        </div>
+
+        <div>
           <label className="text-[#666] text-xs mb-1 block">Race date</label>
           <input type="date" value={form.raceDate} onChange={e => update('raceDate', e.target.value)}
             className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />

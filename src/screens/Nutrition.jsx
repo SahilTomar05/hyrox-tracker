@@ -3,6 +3,21 @@ import { Plus, X, ChevronDown, ChevronUp, Flame, Droplets, Check, Search } from 
 
 const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Snacks']
 
+const HISTORY_DAYS = 7
+
+function getPastDays() {
+  return Array.from({ length: HISTORY_DAYS }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - (i + 1))
+    return d
+  })
+}
+
+function loadDayData(dateStr) {
+  const saved = localStorage.getItem('nutrition_' + dateStr)
+  return saved ? JSON.parse(saved) : { meals: [], water: 0 }
+}
+
 // Indian food database — per 100g unless noted
 const FOOD_DB = [
   // ─── BREADS & GRAINS ───
@@ -284,6 +299,8 @@ export default function Nutrition({ profile }) {
   const [data, setData] = useState(loadTodayData)
   const [activeTab, setActiveTab] = useState('Breakfast')
   const [showForm, setShowForm] = useState(false)
+  const [showHistory, setShowHistory] = useState(false)
+  const [expandedDay, setExpandedDay] = useState(null)
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [selectedFood, setSelectedFood] = useState(null)
@@ -614,12 +631,91 @@ export default function Nutrition({ profile }) {
         </div>
       )}
 
-      {/* Add button */}
+ {/* Add button */}
       {!showForm && (
         <button onClick={() => setShowForm(true)}
           className="w-full border border-dashed border-[#3a3a3a] text-[#666] py-3 rounded-2xl flex items-center justify-center gap-2 text-sm">
           <Plus size={16} /> Add {activeTab}
         </button>
+      )}
+
+      {/* History toggle */}
+      <button
+        onClick={() => setShowHistory(h => !h)}
+        className="w-full flex items-center justify-between px-4 py-3 bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a]">
+        <span className="text-white text-sm font-medium">Past 7 days</span>
+        {showHistory
+          ? <ChevronUp size={16} className="text-[#666]" />
+          : <ChevronDown size={16} className="text-[#666]" />}
+      </button>
+
+      {/* History list */}
+      {showHistory && (
+        <div className="space-y-2">
+          {getPastDays().map((date, i) => {
+            const dateStr = date.toDateString()
+            const dayData = loadDayData(dateStr)
+            const totalCal = dayData.meals.reduce((s, m) => s + Number(m.calories || 0), 0)
+            const totalProt = dayData.meals.reduce((s, m) => s + Number(m.protein || 0), 0)
+            const isExpanded = expandedDay === dateStr
+            const label = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
+
+            return (
+              <div key={i} className="bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a] overflow-hidden">
+                <button
+                  onClick={() => setExpandedDay(isExpanded ? null : dateStr)}
+                  className="w-full flex items-center justify-between px-4 py-3">
+                  <div className="text-left">
+                    <p className="text-white text-sm font-medium">{label}</p>
+                    <p className="text-[#666] text-xs">{dayData.meals.length} meals logged</p>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <p className="text-[#FF6B35] text-sm font-medium">{totalCal} kcal</p>
+                      <p className="text-[#A78BFA] text-xs">{totalProt}g protein</p>
+                    </div>
+                    {isExpanded
+                      ? <ChevronUp size={14} className="text-[#444]" />
+                      : <ChevronDown size={14} className="text-[#444]" />}
+                  </div>
+                </button>
+
+                {isExpanded && (
+                  <div className="border-t border-[#2a2a2a] px-4 py-3 space-y-2">
+                    {dayData.meals.length === 0 ? (
+                      <p className="text-[#444] text-sm">Nothing logged this day</p>
+                    ) : (
+                      <>
+                        {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(type => {
+                          const typeMeals = dayData.meals.filter(m => m.type === type)
+                          if (typeMeals.length === 0) return null
+                          return (
+                            <div key={type}>
+                              <p className="text-[#666] text-xs uppercase tracking-wider mb-1">{type}</p>
+                              {typeMeals.map(meal => (
+                                <div key={meal.id} className="flex justify-between items-center py-1.5 border-b border-[#2a2a2a]">
+                                  <p className="text-white text-sm">{meal.name}</p>
+                                  <div className="text-right">
+                                    <p className="text-[#FF6B35] text-xs">{meal.calories} kcal</p>
+                                    {meal.protein > 0 && <p className="text-[#A78BFA] text-xs">{meal.protein}g P</p>}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )
+                        })}
+                        <div className="pt-2 flex justify-between">
+                          <span className="text-[#666] text-xs">Water</span>
+                          <span className="text-[#3B9EFF] text-xs">{dayData.water}L</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )
+          })}
+        </div>
       )}
     </div>
   )

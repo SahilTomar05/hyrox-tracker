@@ -1,4 +1,5 @@
-import { Flame, Droplets, Weight, ChevronRight, Zap } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Flame, Droplets, Weight, ChevronRight, Zap, Footprints } from 'lucide-react'
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -13,24 +14,65 @@ function getDaysToRace(raceDate) {
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
 
+function todayKey() {
+  return new Date().toDateString()
+}
+
 export default function Dashboard({ profile }) {
-  const todayLog = JSON.parse(localStorage.getItem('todayLog') || '{}')
+  const [todayLog, setTodayLog] = useState(() => {
+    return JSON.parse(localStorage.getItem('todayLog') || '{}')
+  })
+  const [steps, setSteps] = useState(() => {
+    const saved = localStorage.getItem('steps_' + todayKey())
+    return saved ? Number(saved) : 0
+  })
+  const [stepsInput, setStepsInput] = useState('')
+  const [showStepsInput, setShowStepsInput] = useState(false)
+
   const sessions = JSON.parse(localStorage.getItem('sessions') || '[]')
-  const todaySession = sessions.find(s => new Date(s.date).toDateString() === new Date().toDateString())
+  const todaySession = sessions.find(s =>
+    new Date(s.date).toDateString() === new Date().toDateString()
+  )
 
   const goals = profile?.goals || {}
+  const stepGoal = profile?.stepGoal || 10000
   const daysLeft = profile?.hasRace === 'yes' ? getDaysToRace(profile?.raceDate) : null
   const weeksLeft = daysLeft ? Math.ceil(daysLeft / 7) : null
 
   const startDate = profile?.createdAt ? new Date(profile.createdAt) : new Date()
-  const totalDays = daysLeft ? Math.ceil((new Date(profile.raceDate) - startDate) / (1000 * 60 * 60 * 24)) : 100
-  const progressPct = daysLeft ? Math.max(0, Math.round(((totalDays - daysLeft) / totalDays) * 100)) : 0
+  const totalDays = daysLeft
+    ? Math.ceil((new Date(profile.raceDate) - startDate) / (1000 * 60 * 60 * 24))
+    : 100
+  const progressPct = daysLeft
+    ? Math.max(0, Math.round(((totalDays - daysLeft) / totalDays) * 100))
+    : 0
 
   const calorieGoal = goals.calories || todayLog.calorieGoal || 2800
   const waterGoal = goals.water || todayLog.waterGoal || 3.5
   const calories = todayLog.calories || 0
   const water = todayLog.water || 0
   const weight = todayLog.weight || profile?.weight || null
+  const stepPct = Math.min(Math.round((steps / stepGoal) * 100), 100)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTodayLog(JSON.parse(localStorage.getItem('todayLog') || '{}'))
+    }, 2000)
+    return () => clearInterval(interval)
+  }, [])
+
+  function saveSteps() {
+    const val = Number(stepsInput)
+    if (!val) return
+    setSteps(val)
+    localStorage.setItem('steps_' + todayKey(), String(val))
+    // save to history
+    const history = JSON.parse(localStorage.getItem('stepsHistory') || '{}')
+    history[todayKey()] = val
+    localStorage.setItem('stepsHistory', JSON.stringify(history))
+    setStepsInput('')
+    setShowStepsInput(false)
+  }
 
   return (
     <div className="p-4 space-y-4">
@@ -39,7 +81,7 @@ export default function Dashboard({ profile }) {
         <h1 className="text-2xl font-bold text-white">{profile?.name || 'Athlete'} 👋</h1>
       </div>
 
-      {/* Countdown or general progress */}
+      {/* Countdown */}
       {daysLeft !== null ? (
         <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-[#2a2a2a]">
           <div className="flex items-end gap-3 mb-3">
@@ -47,7 +89,9 @@ export default function Dashboard({ profile }) {
             <div className="mb-2">
               <p className="text-white font-medium">days to race</p>
               <p className="text-[#666] text-sm">
-                {weeksLeft} weeks · {new Date(profile.raceDate).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                {weeksLeft} weeks · {new Date(profile.raceDate).toLocaleDateString('en-GB', {
+                  day: 'numeric', month: 'long', year: 'numeric'
+                })}
               </p>
             </div>
           </div>
@@ -60,7 +104,9 @@ export default function Dashboard({ profile }) {
       ) : (
         <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-[#2a2a2a]">
           <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider mb-1">Training streak</p>
-          <p className="text-4xl font-bold text-white">{sessions.length} <span className="text-lg text-[#666]">sessions logged</span></p>
+          <p className="text-4xl font-bold text-white">
+            {sessions.length} <span className="text-lg text-[#666]">sessions logged</span>
+          </p>
           <p className="text-[#666] text-sm mt-1">Keep the momentum going 💪</p>
         </div>
       )}
@@ -98,6 +144,42 @@ export default function Dashboard({ profile }) {
           </p>
         </div>
       )}
+
+      {/* Steps card */}
+      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Footprints size={16} className="text-[#00E5A0]" />
+            <span className="text-white font-medium">{steps.toLocaleString()}</span>
+            <span className="text-[#666] text-sm">/ {stepGoal.toLocaleString()} steps</span>
+          </div>
+          <button onClick={() => setShowStepsInput(s => !s)}
+            className="text-[#00E5A0] text-xs border border-[#00E5A0] px-3 py-1 rounded-lg">
+            {showStepsInput ? 'Cancel' : 'Log'}
+          </button>
+        </div>
+        <div className="w-full bg-[#2a2a2a] rounded-full h-2 mb-1">
+          <div className="bg-[#00E5A0] h-2 rounded-full transition-all"
+            style={{ width: `${stepPct}%` }} />
+        </div>
+        <p className="text-[#666] text-xs">{stepPct}% of daily goal</p>
+
+        {showStepsInput && (
+          <div className="flex gap-2 mt-3">
+            <input
+              type="number"
+              placeholder="Enter steps (e.g. 8500)"
+              value={stepsInput}
+              onChange={e => setStepsInput(e.target.value)}
+              className="flex-1 bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444]"
+            />
+            <button onClick={saveSteps}
+              className="bg-[#00E5A0] text-black text-sm font-medium px-4 py-2 rounded-xl">
+              Save
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Today's session */}
       <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
@@ -156,11 +238,13 @@ export default function Dashboard({ profile }) {
         </div>
       </div>
 
-      {/* Hyrox tip */}
+      {/* Daily focus */}
       <div className="bg-[#0d2d1f] rounded-2xl p-4 border border-[#1a4d35]">
         <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider mb-1">Daily Focus</p>
         <p className="text-white text-sm">
-          {daysLeft > 60
+          {!daysLeft
+            ? 'Stay consistent — every session counts. 💪'
+            : daysLeft > 60
             ? 'Build your base — focus on consistency over intensity right now.'
             : daysLeft > 30
             ? 'Race-specific training phase — push your Hyrox station times.'
