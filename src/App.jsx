@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { supabase } from './lib/supabase'
+import Auth from './screens/Auth'
 import Dashboard from './screens/Dashboard'
 import Training from './screens/Training'
 import Nutrition from './screens/Nutrition'
@@ -16,39 +18,98 @@ const tabs = [
 ]
 
 export default function App() {
-  const [profile, setProfile] = useState(() => {
-    const saved = localStorage.getItem('userProfile')
-    return saved ? JSON.parse(saved) : null
-  })
+  const [session, setSession] = useState(null)
+  const [profile, setProfile] = useState(null)
+  const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard')
 
-  function handleOnboardingComplete(newProfile) {
-    setProfile(newProfile)
-    setActiveTab('dashboard')
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session)
+      if (session) fetchProfile(session.user.id)
+      else setLoading(false)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session)
+      if (session) fetchProfile(session.user.id)
+      else { setProfile(null); setLoading(false) }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  async function fetchProfile(userId) {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+    setProfile(data)
+    setLoading(false)
   }
 
-  function handleProfileUpdate(updated) {
-    setProfile(updated)
+  async function handleOnboardingComplete(profileData) {
+  const { data: { user } } = await supabase.auth.getUser()
+  const { data, error } = await supabase
+    .from('profiles')
+    .upsert({ id: user.id, ...profileData })
+    .select()
+    .single()
+  if (error) {
+    console.error('Profile save error:', error)
+    return
+  }
+  setProfile(data)
   }
 
-  function handleReset() {
+  async function handleProfileUpdate(updated) {
+    const { data } = await supabase
+      .from('profiles')
+      .upsert({ id: session.user.id, ...updated })
+      .select()
+      .single()
+    setProfile(data)
+  }
+
+  async function handleReset() {
+    await supabase.auth.signOut()
     setProfile(null)
-    setActiveTab('dashboard')
+    setSession(null)
   }
 
-  if (!profile) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-[#00E5A0] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-black font-bold text-2xl">1F</span>
+          </div>
+          <p className="text-[#666] text-sm">Loading OneFitness...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!session) return <Auth />
+
+  if (!profile?.name) {
     return <Onboarding onComplete={handleOnboardingComplete} />
   }
 
   return (
     <div className="max-w-md mx-auto min-h-screen flex flex-col relative">
       <div className="flex-1 pb-20">
-        {activeTab === 'dashboard' && <Dashboard profile={profile} />}
-        {activeTab === 'training' && <Training />}
-        {activeTab === 'nutrition' && <Nutrition profile={profile} />}
-        {activeTab === 'progress' && <Progress />}
+        {activeTab === 'dashboard' && <Dashboard profile={profile} session={session} />}
+        {activeTab === 'training' && <Training session={session} profile={profile} />}
+        {activeTab === 'nutrition' && <Nutrition profile={profile} session={session} />}
+        {activeTab === 'progress' && <Progress session={session} profile={profile} />}
         {activeTab === 'settings' && (
-          <Settings profile={profile} onUpdate={handleProfileUpdate} onReset={handleReset} />
+          <Settings
+            profile={profile}
+            onUpdate={handleProfileUpdate}
+            onReset={handleReset}
+          />
         )}
       </div>
 

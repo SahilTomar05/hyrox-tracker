@@ -1,24 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { Plus, X, ChevronDown, ChevronUp, Flame, Droplets, Check, Search } from 'lucide-react'
+import { Plus, X, ChevronDown, ChevronUp, Flame, Droplets, Check, Search, Star, Trash2 } from 'lucide-react'
+import { supabase } from '../lib/supabase'
 
 const MEAL_TYPES = ['Breakfast', 'Lunch', 'Dinner', 'Snacks']
 
-const HISTORY_DAYS = 7
-
-function getPastDays() {
-  return Array.from({ length: HISTORY_DAYS }, (_, i) => {
-    const d = new Date()
-    d.setDate(d.getDate() - (i + 1))
-    return d
-  })
-}
-
-function loadDayData(dateStr) {
-  const saved = localStorage.getItem('nutrition_' + dateStr)
-  return saved ? JSON.parse(saved) : { meals: [], water: 0 }
-}
-
-// Indian food database — per 100g unless noted
 const FOOD_DB = [
   // ─── BREADS & GRAINS ───
   { name: 'Cooked White Rice', cal: 130, p: 2.7, c: 28, f: 0.3, unit: '1 bowl (200g)' },
@@ -43,7 +28,6 @@ const FOOD_DB = [
   { name: 'Bhatura', cal: 310, p: 7, c: 45, f: 12, unit: '1 bhatura (100g)' },
   { name: 'Bread (White)', cal: 80, p: 2.7, c: 15, f: 1, unit: '1 slice (30g)' },
   { name: 'Bread (Brown)', cal: 73, p: 3, c: 13, f: 1, unit: '1 slice (30g)' },
-
   // ─── RICE DISHES ───
   { name: 'Chicken Biryani', cal: 290, p: 15, c: 38, f: 8, unit: '1 plate (300g)' },
   { name: 'Mutton Biryani', cal: 340, p: 18, c: 38, f: 12, unit: '1 plate (300g)' },
@@ -56,7 +40,6 @@ const FOOD_DB = [
   { name: 'Kadhi Chawal', cal: 320, p: 8, c: 52, f: 8, unit: '1 plate (350g)' },
   { name: 'Khichdi', cal: 200, p: 7, c: 36, f: 3, unit: '1 bowl (250g)' },
   { name: 'Pulao (Veg)', cal: 220, p: 5, c: 38, f: 5, unit: '1 bowl (200g)' },
-
   // ─── NORTH INDIAN DALS & CURRIES ───
   { name: 'Dal Tadka', cal: 115, p: 6.5, c: 16, f: 3, unit: '1 bowl (200g)' },
   { name: 'Dal Makhani', cal: 180, p: 8, c: 20, f: 7, unit: '1 bowl (200g)' },
@@ -81,32 +64,21 @@ const FOOD_DB = [
   { name: 'Mix Veg Curry', cal: 120, p: 3, c: 15, f: 5, unit: '1 bowl (150g)' },
   { name: 'Navratan Korma', cal: 260, p: 7, c: 22, f: 16, unit: '1 bowl (200g)' },
   { name: 'Dum Aloo', cal: 200, p: 4, c: 26, f: 9, unit: '1 bowl (200g)' },
-  { name: 'Lauki Sabzi', cal: 60, p: 1.5, c: 8, f: 2, unit: '1 bowl (150g)' },
-  { name: 'Tinda Sabzi', cal: 70, p: 2, c: 9, f: 2.5, unit: '1 bowl (150g)' },
-
-  // ─── NORTH INDIAN NON-VEG ───
+  // ─── NON VEG ───
   { name: 'Butter Chicken', cal: 250, p: 20, c: 8, f: 16, unit: '1 bowl (200g)' },
   { name: 'Chicken Curry', cal: 200, p: 18, c: 5, f: 12, unit: '1 bowl (200g)' },
   { name: 'Chicken Tikka Masala', cal: 270, p: 22, c: 9, f: 16, unit: '1 bowl (200g)' },
-  { name: 'Chicken Korma', cal: 290, p: 20, c: 10, f: 19, unit: '1 bowl (200g)' },
-  { name: 'Chicken Do Pyaza', cal: 230, p: 20, c: 8, f: 13, unit: '1 bowl (200g)' },
   { name: 'Mutton Curry', cal: 260, p: 22, c: 4, f: 17, unit: '1 bowl (200g)' },
   { name: 'Mutton Rogan Josh', cal: 280, p: 24, c: 5, f: 18, unit: '1 bowl (200g)' },
   { name: 'Keema', cal: 230, p: 20, c: 5, f: 14, unit: '1 bowl (150g)' },
-  { name: 'Keema Matar', cal: 250, p: 20, c: 10, f: 14, unit: '1 bowl (200g)' },
   { name: 'Fish Curry', cal: 180, p: 20, c: 5, f: 8, unit: '1 bowl (200g)' },
   { name: 'Prawn Curry', cal: 190, p: 22, c: 6, f: 8, unit: '1 bowl (200g)' },
   { name: 'Egg Curry', cal: 200, p: 13, c: 6, f: 14, unit: '1 bowl (200g)' },
-
-  // ─── TANDOOR & GRILLS ───
   { name: 'Chicken Tikka', cal: 190, p: 28, c: 4, f: 7, unit: '6 pieces (150g)' },
   { name: 'Paneer Tikka', cal: 260, p: 16, c: 6, f: 18, unit: '6 pieces (150g)' },
-  { name: 'Tandoori Chicken (2 pcs)', cal: 280, p: 35, c: 5, f: 12, unit: '2 pieces (200g)' },
+  { name: 'Tandoori Chicken', cal: 280, p: 35, c: 5, f: 12, unit: '2 pieces (200g)' },
   { name: 'Seekh Kebab', cal: 220, p: 22, c: 5, f: 12, unit: '3 pieces (120g)' },
-  { name: 'Reshmi Kebab', cal: 240, p: 20, c: 4, f: 16, unit: '3 pieces (120g)' },
-  { name: 'Haryali Kebab', cal: 210, p: 22, c: 4, f: 12, unit: '3 pieces (120g)' },
   { name: 'Grilled Chicken Breast', cal: 165, p: 31, c: 0, f: 3.6, unit: '100g' },
-
   // ─── SOUTH INDIAN ───
   { name: 'Idli', cal: 39, p: 1.8, c: 8, f: 0.2, unit: '1 idli (30g)' },
   { name: 'Dosa (Plain)', cal: 168, p: 3.9, c: 28, f: 4.5, unit: '1 dosa (70g)' },
@@ -114,162 +86,82 @@ const FOOD_DB = [
   { name: 'Rava Dosa', cal: 195, p: 4, c: 30, f: 7, unit: '1 dosa (80g)' },
   { name: 'Uttapam', cal: 200, p: 5, c: 32, f: 6, unit: '1 piece (100g)' },
   { name: 'Upma', cal: 170, p: 4, c: 28, f: 5, unit: '1 bowl (150g)' },
-  { name: 'Pongal', cal: 220, p: 6, c: 36, f: 6, unit: '1 bowl (200g)' },
   { name: 'Sambar', cal: 90, p: 4, c: 14, f: 2, unit: '1 bowl (200g)' },
-  { name: 'Coconut Chutney', cal: 80, p: 1.5, c: 4, f: 7, unit: '2 tbsp (40g)' },
   { name: 'Rasam', cal: 45, p: 2, c: 7, f: 1, unit: '1 bowl (200ml)' },
   { name: 'Curd Rice', cal: 180, p: 5, c: 32, f: 4, unit: '1 bowl (200g)' },
-  { name: 'Lemon Rice', cal: 200, p: 3.5, c: 36, f: 5, unit: '1 bowl (200g)' },
-  { name: 'Tamarind Rice', cal: 210, p: 3, c: 38, f: 5, unit: '1 bowl (200g)' },
   { name: 'Vada (Medu)', cal: 97, p: 3.5, c: 12, f: 4, unit: '1 vada (45g)' },
-  { name: 'Appam', cal: 120, p: 2.5, c: 22, f: 2.5, unit: '1 appam (60g)' },
-  { name: 'Puttu', cal: 180, p: 4, c: 36, f: 2, unit: '1 serving (100g)' },
-  { name: 'Kerala Fish Curry', cal: 200, p: 22, c: 6, f: 10, unit: '1 bowl (200g)' },
   { name: 'Chicken Chettinad', cal: 280, p: 25, c: 7, f: 16, unit: '1 bowl (200g)' },
-  { name: 'Prawn Masala', cal: 210, p: 24, c: 6, f: 9, unit: '1 bowl (200g)' },
   { name: 'Hyderabadi Biryani', cal: 310, p: 16, c: 40, f: 10, unit: '1 plate (300g)' },
-  { name: 'Bisi Bele Bath', cal: 220, p: 7, c: 36, f: 6, unit: '1 bowl (200g)' },
-
-  // ─── BREAKFAST ITEMS ───
+  // ─── BREAKFAST ───
   { name: 'Poha', cal: 180, p: 3, c: 35, f: 4, unit: '1 bowl (150g)' },
-  { name: 'Aloo Poha', cal: 210, p: 3.5, c: 40, f: 4.5, unit: '1 bowl (180g)' },
   { name: 'Sabudana Khichdi', cal: 280, p: 3, c: 50, f: 8, unit: '1 bowl (200g)' },
-  { name: 'Pesarattu', cal: 160, p: 8, c: 26, f: 3, unit: '1 piece (80g)' },
-  { name: 'Akki Roti', cal: 150, p: 3, c: 28, f: 3, unit: '1 roti (60g)' },
-  { name: 'Thepla', cal: 140, p: 4, c: 22, f: 4, unit: '1 thepla (50g)' },
   { name: 'Dhokla', cal: 160, p: 5, c: 28, f: 3, unit: '4 pieces (100g)' },
-  { name: 'Khandvi', cal: 140, p: 5, c: 18, f: 5, unit: '6 pieces (80g)' },
   { name: 'Oats (Cooked)', cal: 71, p: 2.5, c: 12, f: 1.5, unit: '1 bowl (100g)' },
-  { name: 'Oats Upma', cal: 180, p: 5, c: 28, f: 5, unit: '1 bowl (150g)' },
   { name: 'Egg Omelette (2 eggs)', cal: 190, p: 13, c: 2, f: 14, unit: '2 eggs' },
   { name: 'Egg Bhurji', cal: 180, p: 12, c: 3, f: 13, unit: '2 eggs' },
   { name: 'Boiled Egg', cal: 78, p: 6, c: 0.6, f: 5, unit: '1 egg' },
-  { name: 'Scrambled Eggs (2)', cal: 148, p: 10, c: 1.6, f: 11, unit: '2 eggs' },
   { name: 'Bread Omelette', cal: 280, p: 14, c: 22, f: 14, unit: '1 serving' },
-
-  // ─── STREET FOOD & SNACKS ───
+  // ─── STREET FOOD ───
   { name: 'Samosa', cal: 150, p: 3, c: 18, f: 7, unit: '1 samosa (60g)' },
-  { name: 'Kachori', cal: 180, p: 4, c: 22, f: 9, unit: '1 kachori (60g)' },
-  { name: 'Pakora (Veg)', cal: 120, p: 3, c: 14, f: 6, unit: '4 pieces (80g)' },
-  { name: 'Paneer Pakora', cal: 180, p: 8, c: 14, f: 10, unit: '4 pieces (80g)' },
   { name: 'Pav Bhaji', cal: 380, p: 9, c: 55, f: 14, unit: '1 plate (300g)' },
   { name: 'Vada Pav', cal: 290, p: 6, c: 42, f: 10, unit: '1 piece' },
-  { name: 'Misal Pav', cal: 350, p: 12, c: 50, f: 10, unit: '1 plate' },
-  { name: 'Dabeli', cal: 280, p: 6, c: 44, f: 9, unit: '1 piece' },
   { name: 'Bhel Puri', cal: 180, p: 4, c: 30, f: 5, unit: '1 plate (150g)' },
-  { name: 'Sev Puri', cal: 200, p: 4, c: 28, f: 8, unit: '1 plate (6 pieces)' },
   { name: 'Pani Puri (6 pcs)', cal: 180, p: 3, c: 30, f: 5, unit: '6 pieces' },
-  { name: 'Dahi Puri', cal: 220, p: 5, c: 34, f: 7, unit: '6 pieces' },
   { name: 'Aloo Tikki', cal: 190, p: 4, c: 28, f: 7, unit: '2 pieces (120g)' },
-  { name: 'Ragda Pattice', cal: 280, p: 8, c: 40, f: 9, unit: '1 plate' },
-  { name: 'Papdi Chaat', cal: 250, p: 6, c: 36, f: 9, unit: '1 plate' },
-  { name: 'Dahi Bhalla', cal: 220, p: 7, c: 32, f: 7, unit: '2 pieces' },
   { name: 'Jalebi', cal: 150, p: 1, c: 34, f: 3, unit: '2 pieces (60g)' },
   { name: 'Gulab Jamun', cal: 175, p: 3, c: 30, f: 5, unit: '2 pieces (80g)' },
-  { name: 'Halwa (Suji)', cal: 200, p: 3, c: 32, f: 7, unit: '1 bowl (100g)' },
-  { name: 'Kheer', cal: 180, p: 5, c: 30, f: 5, unit: '1 bowl (150g)' },
-  { name: 'Gajar Halwa', cal: 250, p: 4, c: 38, f: 9, unit: '1 bowl (150g)' },
-
-  // ─── PANEER DISHES ───
-  { name: 'Paneer (Raw)', cal: 265, p: 18, c: 4, f: 20, unit: '100g' },
-  { name: 'Paneer Bhurji', cal: 240, p: 14, c: 6, f: 18, unit: '1 bowl (150g)' },
-  { name: 'Paneer Lababdar', cal: 290, p: 13, c: 11, f: 22, unit: '1 bowl (200g)' },
-  { name: 'Kadai Paneer', cal: 270, p: 12, c: 10, f: 20, unit: '1 bowl (200g)' },
-  { name: 'Paneer Bowl (Grilled)', cal: 300, p: 22, c: 8, f: 20, unit: '1 bowl (200g)' },
-  { name: 'Paneer Wrap / Roll', cal: 340, p: 14, c: 40, f: 14, unit: '1 roll' },
-
-  // ─── CHINESE (INDO-CHINESE) ───
+  // ─── INDO CHINESE ───
   { name: 'Veg Hakka Noodles', cal: 290, p: 7, c: 48, f: 8, unit: '1 plate (300g)' },
   { name: 'Chicken Hakka Noodles', cal: 350, p: 18, c: 48, f: 10, unit: '1 plate (300g)' },
-  { name: 'Veg Chowmein', cal: 280, p: 6, c: 46, f: 8, unit: '1 plate (300g)' },
-  { name: 'Chicken Chowmein', cal: 340, p: 17, c: 46, f: 10, unit: '1 plate (300g)' },
-  { name: 'Veg Manchurian (Gravy)', cal: 220, p: 5, c: 30, f: 9, unit: '1 plate (200g)' },
+  { name: 'Veg Manchurian', cal: 220, p: 5, c: 30, f: 9, unit: '1 plate (200g)' },
   { name: 'Chicken Manchurian', cal: 280, p: 18, c: 22, f: 12, unit: '1 plate (200g)' },
   { name: 'Gobi Manchurian', cal: 240, p: 5, c: 32, f: 10, unit: '1 plate (200g)' },
   { name: 'Paneer Chilli', cal: 310, p: 14, c: 24, f: 18, unit: '1 plate (200g)' },
   { name: 'Chicken 65', cal: 300, p: 22, c: 14, f: 17, unit: '1 plate (150g)' },
-  { name: 'Chicken Lollipop (6 pcs)', cal: 320, p: 24, c: 12, f: 18, unit: '6 pieces' },
   { name: 'Spring Roll (Veg)', cal: 160, p: 3, c: 22, f: 7, unit: '2 rolls' },
-  { name: 'Spring Roll (Chicken)', cal: 190, p: 8, c: 20, f: 9, unit: '2 rolls' },
-  { name: 'Wonton Soup', cal: 120, p: 7, c: 16, f: 3, unit: '1 bowl (250ml)' },
-  { name: 'Hot & Sour Soup', cal: 90, p: 4, c: 14, f: 2, unit: '1 bowl (250ml)' },
-  { name: 'Sweet Corn Soup', cal: 100, p: 3, c: 18, f: 2, unit: '1 bowl (250ml)' },
   { name: 'Schezwan Noodles', cal: 320, p: 8, c: 50, f: 10, unit: '1 plate (300g)' },
-  { name: 'Fried Rice (Chinese)', cal: 260, p: 6, c: 44, f: 7, unit: '1 plate (300g)' },
-
-  // ─── FAST FOOD & CAFE ───
+  // ─── FAST FOOD ───
   { name: 'Veg Burger', cal: 300, p: 8, c: 42, f: 11, unit: '1 burger' },
   { name: 'Chicken Burger', cal: 380, p: 20, c: 38, f: 16, unit: '1 burger' },
-  { name: 'McAloo Tikki', cal: 340, p: 7, c: 46, f: 14, unit: '1 burger' },
   { name: 'Veg Pizza (2 slices)', cal: 380, p: 12, c: 54, f: 14, unit: '2 slices' },
   { name: 'Chicken Pizza (2 slices)', cal: 440, p: 20, c: 54, f: 16, unit: '2 slices' },
   { name: 'French Fries (medium)', cal: 340, p: 4, c: 44, f: 16, unit: '1 serving (120g)' },
-  { name: 'Sandwich (Veg)', cal: 220, p: 7, c: 34, f: 6, unit: '1 sandwich' },
   { name: 'Sandwich (Chicken)', cal: 290, p: 18, c: 32, f: 10, unit: '1 sandwich' },
-  { name: 'Club Sandwich', cal: 380, p: 20, c: 36, f: 16, unit: '1 sandwich' },
-  { name: 'Grilled Sandwich', cal: 260, p: 10, c: 34, f: 10, unit: '1 sandwich' },
-  { name: 'Frankie (Veg)', cal: 280, p: 7, c: 44, f: 8, unit: '1 roll' },
   { name: 'Frankie (Chicken)', cal: 330, p: 16, c: 42, f: 10, unit: '1 roll' },
-
   // ─── DAIRY & PROTEIN ───
   { name: 'Whole Milk', cal: 61, p: 3.2, c: 4.8, f: 3.3, unit: '100ml' },
-  { name: 'Toned Milk', cal: 46, p: 3.5, c: 4.8, f: 1.5, unit: '100ml' },
   { name: 'Curd / Dahi', cal: 60, p: 3.5, c: 4.7, f: 3.3, unit: '100g' },
-  { name: 'Low Fat Curd', cal: 40, p: 4, c: 4.7, f: 0.5, unit: '100g' },
   { name: 'Lassi (Sweet)', cal: 150, p: 4, c: 24, f: 4, unit: '1 glass (200ml)' },
-  { name: 'Lassi (Salted)', cal: 80, p: 4, c: 8, f: 3, unit: '1 glass (200ml)' },
   { name: 'Chaas / Buttermilk', cal: 40, p: 2, c: 4.8, f: 1, unit: '1 glass (200ml)' },
   { name: 'Ghee', cal: 112, p: 0, c: 0, f: 12.7, unit: '1 tbsp (14g)' },
   { name: 'Paneer (Raw)', cal: 265, p: 18, c: 4, f: 20, unit: '100g' },
   { name: 'Whey Protein Shake', cal: 130, p: 25, c: 5, f: 2, unit: '1 scoop (35g)' },
   { name: 'Greek Yogurt', cal: 100, p: 10, c: 6, f: 3, unit: '100g' },
-
   // ─── FRUITS ───
   { name: 'Banana', cal: 89, p: 1.1, c: 23, f: 0.3, unit: '1 medium (100g)' },
   { name: 'Apple', cal: 78, p: 0.4, c: 21, f: 0.3, unit: '1 medium (150g)' },
   { name: 'Mango', cal: 60, p: 0.8, c: 15, f: 0.4, unit: '100g' },
-  { name: 'Papaya', cal: 43, p: 0.5, c: 11, f: 0.3, unit: '100g' },
-  { name: 'Watermelon', cal: 30, p: 0.6, c: 8, f: 0.2, unit: '100g' },
+  { name: 'Banana', cal: 89, p: 1.1, c: 23, f: 0.3, unit: '1 medium' },
   { name: 'Pomegranate', cal: 83, p: 1.7, c: 19, f: 1.2, unit: '100g' },
-  { name: 'Grapes', cal: 67, p: 0.6, c: 17, f: 0.4, unit: '100g' },
-  { name: 'Orange', cal: 62, p: 1.2, c: 15, f: 0.2, unit: '1 medium (100g)' },
-  { name: 'Guava', cal: 68, p: 2.6, c: 14, f: 1, unit: '1 medium (100g)' },
-  { name: 'Chiku / Sapota', cal: 83, p: 0.4, c: 20, f: 1.1, unit: '100g' },
-
-  // ─── HEALTHY & PROTEIN FOODS ───
+  { name: 'Coconut Water', cal: 46, p: 1.7, c: 9, f: 0.5, unit: '1 glass (240ml)' },
+  // ─── HEALTHY FOODS ───
   { name: 'Boiled Chickpeas', cal: 164, p: 8.9, c: 27, f: 2.6, unit: '100g' },
   { name: 'Boiled Lentils', cal: 116, p: 9, c: 20, f: 0.4, unit: '100g' },
   { name: 'Sprouts (Mixed)', cal: 60, p: 4, c: 10, f: 0.5, unit: '100g' },
-  { name: 'Sprouts Salad', cal: 90, p: 5, c: 14, f: 1, unit: '1 bowl (150g)' },
   { name: 'Peanut Butter', cal: 188, p: 8, c: 6, f: 16, unit: '2 tbsp (32g)' },
   { name: 'Almonds', cal: 164, p: 6, c: 6, f: 14, unit: '28g (handful)' },
-  { name: 'Walnuts', cal: 185, p: 4, c: 4, f: 18, unit: '28g (handful)' },
-  { name: 'Cashews', cal: 157, p: 5, c: 9, f: 12, unit: '28g (handful)' },
   { name: 'Sweet Potato (Boiled)', cal: 86, p: 1.6, c: 20, f: 0.1, unit: '100g' },
-  { name: 'Brown Bread Toast', cal: 73, p: 3, c: 13, f: 1, unit: '1 slice' },
-
+  { name: 'Protein Shake (Water)', cal: 120, p: 24, c: 3, f: 1.5, unit: '1 scoop' },
+  { name: 'Protein Shake (Milk)', cal: 200, p: 28, c: 14, f: 4, unit: '1 scoop + milk' },
   // ─── DRINKS ───
   { name: 'Chai (milk & sugar)', cal: 60, p: 1.5, c: 9, f: 2, unit: '1 cup (150ml)' },
   { name: 'Black Coffee', cal: 2, p: 0.3, c: 0, f: 0, unit: '1 cup' },
-  { name: 'Coffee with Milk', cal: 45, p: 2, c: 5, f: 2, unit: '1 cup (150ml)' },
   { name: 'Fresh Lime Water', cal: 20, p: 0, c: 5, f: 0, unit: '1 glass' },
-  { name: 'Coconut Water', cal: 46, p: 1.7, c: 9, f: 0.5, unit: '1 glass (240ml)' },
-  { name: 'Orange Juice', cal: 112, p: 1.7, c: 26, f: 0.5, unit: '1 glass (240ml)' },
   { name: 'Mango Lassi', cal: 200, p: 4, c: 36, f: 4, unit: '1 glass (250ml)' },
-  { name: 'Protein Shake (Water)', cal: 120, p: 24, c: 3, f: 1.5, unit: '1 scoop' },
-  { name: 'Protein Shake (Milk)', cal: 200, p: 28, c: 14, f: 4, unit: '1 scoop + 200ml milk' },
-  { name: 'Masala Chaas', cal: 45, p: 2, c: 5, f: 1.5, unit: '1 glass (200ml)' },
-  { name: 'Aam Panna', cal: 80, p: 0.5, c: 20, f: 0.2, unit: '1 glass (200ml)' },
-  { name: 'Thandai', cal: 180, p: 5, c: 28, f: 6, unit: '1 glass (200ml)' },
 ]
 
-function today() {
-  return new Date().toDateString()
-}
-
-function loadTodayData() {
-  const saved = localStorage.getItem('nutrition_' + today())
-  return saved ? JSON.parse(saved) : { meals: [], water: 0 }
+function todayDate() {
+  return new Date().toISOString().split('T')[0]
 }
 
 function MacroRing({ value, goal, color, label }) {
@@ -294,49 +186,118 @@ function MacroRing({ value, goal, color, label }) {
   )
 }
 
-export default function Nutrition({ profile }) {
+export default function Nutrition({ profile, session }) {
   const GOALS = profile?.goals || { calories: 2800, protein: 180, carbs: 300, fat: 80, water: 3.5 }
-  const [data, setData] = useState(loadTodayData)
+  const [meals, setMeals] = useState([])
+  const [water, setWater] = useState(0)
+  const [customFoods, setCustomFoods] = useState([])
   const [activeTab, setActiveTab] = useState('Breakfast')
   const [showForm, setShowForm] = useState(false)
   const [showHistory, setShowHistory] = useState(false)
+  const [showCustomLibrary, setShowCustomLibrary] = useState(false)
   const [expandedDay, setExpandedDay] = useState(null)
+  const [historyData, setHistoryData] = useState([])
   const [query, setQuery] = useState('')
   const [suggestions, setSuggestions] = useState([])
   const [selectedFood, setSelectedFood] = useState(null)
   const [quantity, setQuantity] = useState(1)
   const [manualMode, setManualMode] = useState(false)
-  const [manualForm, setManualForm] = useState({ name: '', calories: '', protein: '', carbs: '', fat: '' })
-  const searchRef = useRef(null)
+  const [manualForm, setManualForm] = useState({ name: '', calories: '', protein: '', carbs: '', fat: '', unit: '' })
+  const [saveToLibrary, setSaveToLibrary] = useState(true)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    localStorage.setItem('nutrition_' + today(), JSON.stringify(data))
-    const totalCals = data.meals.reduce((s, m) => s + Number(m.calories || 0), 0)
-    const totalProtein = data.meals.reduce((s, m) => s + Number(m.protein || 0), 0)
-    const existing = localStorage.getItem('todayLog')
-    const log = existing ? JSON.parse(existing) : {}
-    localStorage.setItem('todayLog', JSON.stringify({
-      ...log,
-      calories: totalCals,
-      protein: totalProtein,
-      water: data.water,
-      calorieGoal: GOALS.calories,
-      proteinGoal: GOALS.protein,
-      waterGoal: GOALS.water,
-    }))
-  }, [data])
+    fetchTodayData()
+    fetchCustomFoods()
+  }, [])
 
   useEffect(() => {
     if (query.length < 2) { setSuggestions([]); return }
     const q = query.toLowerCase()
-    setSuggestions(FOOD_DB.filter(f => f.name.toLowerCase().includes(q)).slice(0, 6))
-  }, [query])
+    const custom = customFoods
+      .filter(f => f.name.toLowerCase().includes(q))
+      .map(f => ({ ...f, isCustom: true }))
+    const standard = FOOD_DB.filter(f => f.name.toLowerCase().includes(q))
+    setSuggestions([...custom, ...standard].slice(0, 8))
+  }, [query, customFoods])
 
-  const tabMeals = data.meals.filter(m => m.type === activeTab)
-  const totalCals = data.meals.reduce((s, m) => s + Number(m.calories || 0), 0)
-  const totalProtein = data.meals.reduce((s, m) => s + Number(m.protein || 0), 0)
-  const totalCarbs = data.meals.reduce((s, m) => s + Number(m.carbs || 0), 0)
-  const totalFat = data.meals.reduce((s, m) => s + Number(m.fat || 0), 0)
+  async function fetchTodayData() {
+    setLoading(true)
+    const { data } = await supabase
+      .from('nutrition_logs')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .eq('date', todayDate())
+      .single()
+    if (data) {
+      setMeals(data.meals || [])
+      setWater(data.water || 0)
+    }
+    setLoading(false)
+  }
+
+  async function fetchCustomFoods() {
+    const { data } = await supabase
+      .from('custom_foods')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('created_at', { ascending: false })
+    if (data) setCustomFoods(data)
+  }
+
+  async function saveNutritionLog(newMeals, newWater) {
+    await supabase
+      .from('nutrition_logs')
+      .upsert({
+        user_id: session.user.id,
+        date: todayDate(),
+        meals: newMeals,
+        water: newWater,
+      }, { onConflict: 'user_id,date' })
+  }
+
+  async function saveCustomFood(food) {
+    const { data } = await supabase
+      .from('custom_foods')
+      .insert({
+        user_id: session.user.id,
+        name: food.name,
+        cal: Number(food.calories),
+        p: Number(food.protein) || 0,
+        c: Number(food.carbs) || 0,
+        f: Number(food.fat) || 0,
+        unit: food.unit || '1 serving',
+      })
+      .select()
+      .single()
+    if (data) setCustomFoods(prev => [data, ...prev])
+  }
+
+  async function deleteCustomFood(id) {
+    await supabase.from('custom_foods').delete().eq('id', id)
+    setCustomFoods(prev => prev.filter(f => f.id !== id))
+  }
+
+  async function fetchHistory() {
+    const dates = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date()
+      d.setDate(d.getDate() - (i + 1))
+      return d.toISOString().split('T')[0]
+    })
+    const { data } = await supabase
+      .from('nutrition_logs')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .in('date', dates)
+      .order('date', { ascending: false })
+    setHistoryData(data || [])
+  }
+
+  const tabMeals = meals.filter(m => m.type === activeTab)
+  const totalCals = meals.reduce((s, m) => s + Number(m.calories || 0), 0)
+  const totalProtein = meals.reduce((s, m) => s + Number(m.protein || 0), 0)
+  const totalCarbs = meals.reduce((s, m) => s + Number(m.carbs || 0), 0)
+  const totalFat = meals.reduce((s, m) => s + Number(m.fat || 0), 0)
   const calPct = Math.min(Math.round((totalCals / GOALS.calories) * 100), 100)
 
   function selectFood(food) {
@@ -347,10 +308,10 @@ export default function Nutrition({ profile }) {
   }
 
   function getScaled(val) {
-    return Math.round(val * quantity)
+    return Math.round(Number(val) * quantity)
   }
 
-  function addFoodMeal() {
+  async function addFoodMeal() {
     if (!selectedFood) return
     const meal = {
       id: Date.now(),
@@ -361,23 +322,43 @@ export default function Nutrition({ profile }) {
       carbs: getScaled(selectedFood.c),
       fat: getScaled(selectedFood.f),
     }
-    setData(d => ({ ...d, meals: [...d.meals, meal] }))
+    const newMeals = [...meals, meal]
+    setMeals(newMeals)
+    await saveNutritionLog(newMeals, water)
     resetForm()
   }
 
-  function addManualMeal() {
+  async function addManualMeal() {
     if (!manualForm.name || !manualForm.calories) return
-    setData(d => ({ ...d, meals: [...d.meals, { id: Date.now(), type: activeTab, ...manualForm }] }))
-    setManualForm({ name: '', calories: '', protein: '', carbs: '', fat: '' })
+    if (saveToLibrary) {
+      await saveCustomFood(manualForm)
+    }
+    const meal = {
+      id: Date.now(),
+      type: activeTab,
+      name: manualForm.name,
+      calories: Number(manualForm.calories),
+      protein: Number(manualForm.protein) || 0,
+      carbs: Number(manualForm.carbs) || 0,
+      fat: Number(manualForm.fat) || 0,
+    }
+    const newMeals = [...meals, meal]
+    setMeals(newMeals)
+    await saveNutritionLog(newMeals, water)
+    setManualForm({ name: '', calories: '', protein: '', carbs: '', fat: '', unit: '' })
     resetForm()
   }
 
-  function deleteMeal(id) {
-    setData(d => ({ ...d, meals: d.meals.filter(m => m.id !== id) }))
+  async function deleteMeal(id) {
+    const newMeals = meals.filter(m => m.id !== id)
+    setMeals(newMeals)
+    await saveNutritionLog(newMeals, water)
   }
 
-  function addWater(amount) {
-    setData(d => ({ ...d, water: Math.max(0, Math.round((d.water + amount) * 10) / 10) }))
+  async function updateWater(amount) {
+    const newWater = Math.max(0, Math.round((water + amount) * 10) / 10)
+    setWater(newWater)
+    await saveNutritionLog(meals, newWater)
   }
 
   function resetForm() {
@@ -387,17 +368,45 @@ export default function Nutrition({ profile }) {
     setQuantity(1)
     setManualMode(false)
     setSuggestions([])
-    setManualForm({ name: '', calories: '', protein: '', carbs: '', fat: '' })
+    setSaveToLibrary(true)
   }
 
   return (
     <div className="p-4 space-y-4">
-      <div className="pt-4">
-        <h1 className="text-2xl font-bold text-white">Nutrition</h1>
-        <p className="text-[#666] text-sm">
-          {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
-        </p>
+      <div className="pt-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Nutrition</h1>
+          <p className="text-[#666] text-sm">
+            {new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
+          </p>
+        </div>
+        <button onClick={() => setShowCustomLibrary(s => !s)}
+          className="flex items-center gap-1 text-[#666] text-xs border border-[#2a2a2a] px-3 py-1.5 rounded-xl">
+          <Star size={12} /> My Foods
+        </button>
       </div>
+
+      {/* Custom food library */}
+      {showCustomLibrary && (
+        <div className="bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a] p-4 space-y-3">
+          <p className="text-white font-medium text-sm">⭐ My Food Library</p>
+          {customFoods.length === 0 ? (
+            <p className="text-[#444] text-sm">No custom foods saved yet. Add a meal manually and save it to library!</p>
+          ) : (
+            customFoods.map(food => (
+              <div key={food.id} className="flex items-center justify-between bg-[#2a2a2a] rounded-xl px-3 py-2">
+                <div>
+                  <p className="text-white text-sm">{food.name}</p>
+                  <p className="text-[#666] text-xs">{food.cal} kcal · {food.p}g P · {food.unit}</p>
+                </div>
+                <button onClick={() => deleteCustomFood(food.id)}>
+                  <Trash2 size={14} className="text-red-400" />
+                </button>
+              </div>
+            ))
+          )}
+        </div>
+      )}
 
       {/* Calorie summary */}
       <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
@@ -413,7 +422,7 @@ export default function Nutrition({ profile }) {
           <div className="bg-[#FF6B35] h-2 rounded-full transition-all" style={{ width: `${calPct}%` }} />
         </div>
         <p className="text-[#666] text-xs mt-2">
-          {GOALS.calories - totalCals > 0 ? `${GOALS.calories - totalCals} kcal remaining` : 'Goal reached!'}
+          {GOALS.calories - totalCals > 0 ? `${GOALS.calories - totalCals} kcal remaining` : 'Goal reached! 🎉'}
         </p>
       </div>
 
@@ -431,19 +440,19 @@ export default function Nutrition({ profile }) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Droplets size={16} className="text-[#3B9EFF]" />
-            <span className="text-white font-medium">{data.water}L</span>
+            <span className="text-white font-medium">{water}L</span>
             <span className="text-[#666] text-sm">/ {GOALS.water}L</span>
           </div>
           <div className="flex items-center gap-2">
-            <button onClick={() => addWater(-0.25)}
+            <button onClick={() => updateWater(-0.25)}
               className="w-8 h-8 rounded-full bg-[#2a2a2a] text-white flex items-center justify-center text-lg">−</button>
-            <button onClick={() => addWater(0.25)}
+            <button onClick={() => updateWater(0.25)}
               className="w-8 h-8 rounded-full bg-[#3B9EFF] text-white flex items-center justify-center text-lg">+</button>
           </div>
         </div>
         <div className="w-full bg-[#2a2a2a] rounded-full h-1.5 mt-3">
           <div className="bg-[#3B9EFF] h-1.5 rounded-full transition-all"
-            style={{ width: `${Math.min((data.water / GOALS.water) * 100, 100)}%` }} />
+            style={{ width: `${Math.min((water / GOALS.water) * 100, 100)}%` }} />
         </div>
         <p className="text-[#666] text-xs mt-1">Each tap = 250ml</p>
       </div>
@@ -451,7 +460,7 @@ export default function Nutrition({ profile }) {
       {/* Meal tabs */}
       <div className="grid grid-cols-4 gap-1">
         {MEAL_TYPES.map(t => {
-          const count = data.meals.filter(m => m.type === t).length
+          const count = meals.filter(m => m.type === t).length
           return (
             <button key={t} onClick={() => { setActiveTab(t); resetForm() }}
               className={`py-2 rounded-xl text-xs font-medium transition-all relative
@@ -501,7 +510,7 @@ export default function Nutrition({ profile }) {
             <button onClick={resetForm}><X size={18} className="text-[#666]" /></button>
           </div>
 
-          {/* Toggle manual/search */}
+          {/* Toggle search/manual */}
           <div className="flex gap-2">
             <button onClick={() => setManualMode(false)}
               className={`flex-1 py-1.5 rounded-xl text-xs font-medium transition-all
@@ -511,33 +520,33 @@ export default function Nutrition({ profile }) {
             <button onClick={() => setManualMode(true)}
               className={`flex-1 py-1.5 rounded-xl text-xs font-medium transition-all
                 ${manualMode ? 'bg-[#00E5A0] text-black' : 'bg-[#2a2a2a] text-[#666]'}`}>
-              Enter manually
+              Add new food
             </button>
           </div>
 
           {!manualMode ? (
             <div className="space-y-3">
-              {/* Search input */}
               <div className="relative">
                 <Search size={14} className="absolute left-3 top-3 text-[#444]" />
                 <input
-                  ref={searchRef}
-                  placeholder="Search Indian foods (e.g. Dal, Roti, Chicken...)"
+                  placeholder="Search foods or your saved items..."
                   value={query}
                   onChange={e => { setQuery(e.target.value); setSelectedFood(null) }}
                   className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl pl-8 pr-3 py-2.5 outline-none placeholder-[#444]"
                 />
               </div>
 
-              {/* Suggestions dropdown */}
               {suggestions.length > 0 && (
                 <div className="bg-[#2a2a2a] rounded-xl overflow-hidden border border-[#3a3a3a]">
                   {suggestions.map((food, i) => (
                     <button key={i} onClick={() => selectFood(food)}
                       className="w-full flex items-center justify-between px-3 py-2.5 hover:bg-[#3a3a3a] transition-colors border-b border-[#3a3a3a] last:border-0">
-                      <div className="text-left">
-                        <p className="text-white text-sm">{food.name}</p>
-                        <p className="text-[#666] text-xs">{food.unit}</p>
+                      <div className="text-left flex items-center gap-2">
+                        {food.isCustom && <Star size={10} className="text-[#00E5A0]" />}
+                        <div>
+                          <p className="text-white text-sm">{food.name}</p>
+                          <p className="text-[#666] text-xs">{food.unit} {food.isCustom ? '· ⭐ My food' : ''}</p>
+                        </div>
                       </div>
                       <div className="text-right">
                         <p className="text-[#FF6B35] text-xs font-medium">{food.cal} kcal</p>
@@ -548,7 +557,6 @@ export default function Nutrition({ profile }) {
                 </div>
               )}
 
-              {/* Selected food preview */}
               {selectedFood && (
                 <div className="bg-[#0d2d1f] rounded-xl p-3 border border-[#1a4d35] space-y-3">
                   <div className="flex justify-between items-start">
@@ -560,8 +568,6 @@ export default function Nutrition({ profile }) {
                       <X size={14} className="text-[#666]" />
                     </button>
                   </div>
-
-                  {/* Quantity */}
                   <div>
                     <p className="text-[#666] text-xs mb-2">Servings — {quantity}×</p>
                     <div className="flex items-center gap-3">
@@ -574,8 +580,6 @@ export default function Nutrition({ profile }) {
                         className="w-8 h-8 rounded-full bg-[#00E5A0] text-black flex items-center justify-center">+</button>
                     </div>
                   </div>
-
-                  {/* Scaled macros */}
                   <div className="grid grid-cols-4 gap-2 text-center">
                     <div className="bg-[#1a1a1a] rounded-lg py-2">
                       <p className="text-[#FF6B35] text-sm font-medium">{getScaled(selectedFood.cal)}</p>
@@ -594,7 +598,6 @@ export default function Nutrition({ profile }) {
                       <p className="text-[#666] text-xs">fat</p>
                     </div>
                   </div>
-
                   <button onClick={addFoodMeal}
                     className="w-full bg-[#00E5A0] text-black font-medium py-2.5 rounded-xl flex items-center justify-center gap-2">
                     <Check size={16} /> Add to {activeTab}
@@ -603,10 +606,12 @@ export default function Nutrition({ profile }) {
               )}
             </div>
           ) : (
-            /* Manual entry */
             <div className="space-y-2">
-              <input placeholder="Meal name"
+              <input placeholder="Food name (e.g. Homemade Dal Tadka)"
                 value={manualForm.name} onChange={e => setManualForm(f => ({ ...f, name: e.target.value }))}
+                className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none placeholder-[#444]" />
+              <input placeholder="Serving size (e.g. 1 bowl 200g)"
+                value={manualForm.unit} onChange={e => setManualForm(f => ({ ...f, unit: e.target.value }))}
                 className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none placeholder-[#444]" />
               <input placeholder="Calories (required)" type="number"
                 value={manualForm.calories} onChange={e => setManualForm(f => ({ ...f, calories: e.target.value }))}
@@ -622,6 +627,23 @@ export default function Nutrition({ profile }) {
                   value={manualForm.fat} onChange={e => setManualForm(f => ({ ...f, fat: e.target.value }))}
                   className="bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444]" />
               </div>
+
+              {/* Save to library toggle */}
+              <button onClick={() => setSaveToLibrary(s => !s)}
+                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl border transition-all
+                  ${saveToLibrary ? 'bg-[#0d2d1f] border-[#00E5A0]' : 'bg-[#2a2a2a] border-[#3a3a3a]'}`}>
+                <div className="flex items-center gap-2">
+                  <Star size={14} className={saveToLibrary ? 'text-[#00E5A0]' : 'text-[#444]'} />
+                  <span className={`text-sm ${saveToLibrary ? 'text-[#00E5A0]' : 'text-[#666]'}`}>
+                    Save to my food library
+                  </span>
+                </div>
+                <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center
+                  ${saveToLibrary ? 'border-[#00E5A0] bg-[#00E5A0]' : 'border-[#444]'}`}>
+                  {saveToLibrary && <span className="text-black text-xs">✓</span>}
+                </div>
+              </button>
+
               <button onClick={addManualMeal}
                 className="w-full bg-[#00E5A0] text-black font-medium py-3 rounded-xl flex items-center justify-center gap-2">
                 <Check size={16} /> Save Meal
@@ -631,7 +653,7 @@ export default function Nutrition({ profile }) {
         </div>
       )}
 
- {/* Add button */}
+      {/* Add button */}
       {!showForm && (
         <button onClick={() => setShowForm(true)}
           className="w-full border border-dashed border-[#3a3a3a] text-[#666] py-3 rounded-2xl flex items-center justify-center gap-2 text-sm">
@@ -640,81 +662,68 @@ export default function Nutrition({ profile }) {
       )}
 
       {/* History toggle */}
-      <button
-        onClick={() => setShowHistory(h => !h)}
+      <button onClick={() => { setShowHistory(h => !h); if (!showHistory) fetchHistory() }}
         className="w-full flex items-center justify-between px-4 py-3 bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a]">
         <span className="text-white text-sm font-medium">Past 7 days</span>
-        {showHistory
-          ? <ChevronUp size={16} className="text-[#666]" />
-          : <ChevronDown size={16} className="text-[#666]" />}
+        {showHistory ? <ChevronUp size={16} className="text-[#666]" /> : <ChevronDown size={16} className="text-[#666]" />}
       </button>
 
       {/* History list */}
       {showHistory && (
         <div className="space-y-2">
-          {getPastDays().map((date, i) => {
-            const dateStr = date.toDateString()
-            const dayData = loadDayData(dateStr)
-            const totalCal = dayData.meals.reduce((s, m) => s + Number(m.calories || 0), 0)
-            const totalProt = dayData.meals.reduce((s, m) => s + Number(m.protein || 0), 0)
-            const isExpanded = expandedDay === dateStr
-            const label = date.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
-
-            return (
-              <div key={i} className="bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a] overflow-hidden">
-                <button
-                  onClick={() => setExpandedDay(isExpanded ? null : dateStr)}
-                  className="w-full flex items-center justify-between px-4 py-3">
-                  <div className="text-left">
-                    <p className="text-white text-sm font-medium">{label}</p>
-                    <p className="text-[#666] text-xs">{dayData.meals.length} meals logged</p>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <div className="text-right">
-                      <p className="text-[#FF6B35] text-sm font-medium">{totalCal} kcal</p>
-                      <p className="text-[#A78BFA] text-xs">{totalProt}g protein</p>
+          {historyData.length === 0 ? (
+            <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-[#2a2a2a] text-center">
+              <p className="text-[#666] text-sm">No history yet</p>
+            </div>
+          ) : (
+            historyData.map((day, i) => {
+              const totalCal = (day.meals || []).reduce((s, m) => s + Number(m.calories || 0), 0)
+              const totalProt = (day.meals || []).reduce((s, m) => s + Number(m.protein || 0), 0)
+              const isExpanded = expandedDay === day.date
+              return (
+                <div key={i} className="bg-[#1a1a1a] rounded-2xl border border-[#2a2a2a] overflow-hidden">
+                  <button onClick={() => setExpandedDay(isExpanded ? null : day.date)}
+                    className="w-full flex items-center justify-between px-4 py-3">
+                    <div className="text-left">
+                      <p className="text-white text-sm font-medium">
+                        {new Date(day.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })}
+                      </p>
+                      <p className="text-[#666] text-xs">{(day.meals || []).length} meals · {day.water || 0}L water</p>
                     </div>
-                    {isExpanded
-                      ? <ChevronUp size={14} className="text-[#444]" />
-                      : <ChevronDown size={14} className="text-[#444]" />}
-                  </div>
-                </button>
-
-                {isExpanded && (
-                  <div className="border-t border-[#2a2a2a] px-4 py-3 space-y-2">
-                    {dayData.meals.length === 0 ? (
-                      <p className="text-[#444] text-sm">Nothing logged this day</p>
-                    ) : (
-                      <>
-                        {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(type => {
-                          const typeMeals = dayData.meals.filter(m => m.type === type)
-                          if (typeMeals.length === 0) return null
-                          return (
-                            <div key={type}>
-                              <p className="text-[#666] text-xs uppercase tracking-wider mb-1">{type}</p>
-                              {typeMeals.map(meal => (
-                                <div key={meal.id} className="flex justify-between items-center py-1.5 border-b border-[#2a2a2a]">
-                                  <p className="text-white text-sm">{meal.name}</p>
-                                  <div className="text-right">
-                                    <p className="text-[#FF6B35] text-xs">{meal.calories} kcal</p>
-                                    {meal.protein > 0 && <p className="text-[#A78BFA] text-xs">{meal.protein}g P</p>}
-                                  </div>
+                    <div className="flex items-center gap-3">
+                      <div className="text-right">
+                        <p className="text-[#FF6B35] text-sm font-medium">{totalCal} kcal</p>
+                        <p className="text-[#A78BFA] text-xs">{totalProt}g protein</p>
+                      </div>
+                      {isExpanded ? <ChevronUp size={14} className="text-[#444]" /> : <ChevronDown size={14} className="text-[#444]" />}
+                    </div>
+                  </button>
+                  {isExpanded && (
+                    <div className="border-t border-[#2a2a2a] px-4 py-3 space-y-2">
+                      {['Breakfast', 'Lunch', 'Dinner', 'Snacks'].map(type => {
+                        const typeMeals = (day.meals || []).filter(m => m.type === type)
+                        if (typeMeals.length === 0) return null
+                        return (
+                          <div key={type}>
+                            <p className="text-[#666] text-xs uppercase tracking-wider mb-1">{type}</p>
+                            {typeMeals.map(meal => (
+                              <div key={meal.id} className="flex justify-between items-center py-1.5 border-b border-[#2a2a2a]">
+                                <p className="text-white text-sm">{meal.name}</p>
+                                <div className="text-right">
+                                  <p className="text-[#FF6B35] text-xs">{meal.calories} kcal</p>
+                                  {meal.protein > 0 && <p className="text-[#A78BFA] text-xs">{meal.protein}g P</p>}
                                 </div>
-                              ))}
-                            </div>
-                          )
-                        })}
-                        <div className="pt-2 flex justify-between">
-                          <span className="text-[#666] text-xs">Water</span>
-                          <span className="text-[#3B9EFF] text-xs">{dayData.water}L</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-                )}
-              </div>
-            )
-          })}
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )
+            })
+          )}
         </div>
       )}
     </div>
