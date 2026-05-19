@@ -2,20 +2,21 @@
   "name": "OneFitness",
   "short_name": "OneFitness",
   "description": "One app for every Indian athlete",
-  "start_url": "/",
+  "start_url": "/hyrox-tracker/",
+  "scope": "/hyrox-tracker/",
   "display": "standalone",
   "background_color": "#0f0f0f",
   "theme_color": "#00E5A0",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/hyrox-tracker/icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/hyrox-tracker/icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
