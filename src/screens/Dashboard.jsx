@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Flame, Droplets, Weight, ChevronRight, Zap, Footprints } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { getSarcasticFeedback } from '../lib/feedback'
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -526,6 +527,33 @@ export default function Dashboard({ profile, session }) {
           </div>
         </div>
       </div>
+      
+      {/* Sarcastic feedback */}
+      {(() => {
+        const stepsHistory = JSON.parse(localStorage.getItem('stepsHistory') || '{}')
+        const improvements = []
+        const fb = getSarcasticFeedback({
+        sessions,
+        nutritionLogs: [],
+        steps,
+        avgCalories: calories,
+        avgProtein: todayLog.protein || 0,
+        goals,
+        consistencyScore: 50,
+        improvements,
+      })
+        const bgColor = fb.level === 'savage' ? '#2d0d0d' : fb.level === 'good' ? '#0d2d1f' : '#1a1a1a'
+        const borderColor = fb.level === 'savage' ? '#FF444430' : fb.level === 'good' ? '#00E5A030' : '#2a2a2a'
+        const textColor = fb.level === 'savage' ? '#FF6666' : fb.level === 'good' ? '#00E5A0' : '#999'
+        return (
+          <div className="rounded-2xl p-4 border" style={{ background: bgColor, borderColor }}>
+            <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: textColor }}>
+              🤖 OneFitness says
+            </p>
+            <p className="text-white text-sm">{fb.msg}</p>
+          </div>
+        )
+      })()}
 
       {/* Daily focus — sport specific */}
       <div className="rounded-2xl p-4 border"

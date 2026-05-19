@@ -1,5 +1,82 @@
 import { useState } from 'react'
 import { Save, LogOut } from 'lucide-react'
+import { requestNotificationPermission, scheduleNotifications, saveNotificationSettings, loadNotificationSettings } from '../lib/notifications'
+
+function NotificationSettings({ stepGoal }) {
+  const [settings, setSettings] = useState(loadNotificationSettings)
+  const [permissionGranted, setPermissionGranted] = useState(Notification.permission === 'granted')
+  const [saved, setSaved] = useState(false)
+
+  async function handleEnable() {
+    const granted = await requestNotificationPermission()
+    setPermissionGranted(granted)
+    if (!granted) alert('Please allow notifications in your browser settings!')
+  }
+
+  function toggle(key) {
+    setSettings(s => ({ ...s, [key]: !s[key] }))
+  }
+
+  function handleSave() {
+    const finalSettings = { ...settings, stepGoal }
+    saveNotificationSettings(finalSettings)
+    scheduleNotifications(finalSettings)
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
+
+  return (
+    <div className="space-y-4">
+      {!permissionGranted && (
+        <div className="bg-[#2d1a0d] rounded-2xl p-4 border border-[#FF6B35]/30">
+          <p className="text-[#FF6B35] text-sm font-medium mb-2">🔔 Notifications disabled</p>
+          <p className="text-[#666] text-xs mb-3">Enable notifications to get meal, workout, water and step reminders.</p>
+          <button onClick={handleEnable}
+            className="w-full bg-[#FF6B35] text-black font-medium py-2.5 rounded-xl text-sm">
+            Enable Notifications
+          </button>
+        </div>
+      )}
+
+      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-4">
+        <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Reminders</p>
+
+        {[
+          { key: 'mealReminders', label: '🍽️ Meal reminders', desc: '9am, 1pm, 7pm — log breakfast, lunch, dinner' },
+          { key: 'waterReminders', label: '💧 Water reminders', desc: 'Every 2 hours from 8am to 8pm' },
+          { key: 'stepsReminder', label: '👟 Steps reminder', desc: '7pm nudge if you haven\'t hit your goal' },
+          { key: 'workoutReminder', label: '💪 Workout reminder', desc: 'Custom time daily' },
+        ].map(({ key, label, desc }) => (
+          <div key={key} className="flex items-center justify-between">
+            <div className="flex-1">
+              <p className="text-white text-sm">{label}</p>
+              <p className="text-[#666] text-xs">{desc}</p>
+            </div>
+            <button onClick={() => toggle(key)}
+              className={`w-12 h-6 rounded-full transition-all relative ${settings[key] ? 'bg-[#00E5A0]' : 'bg-[#2a2a2a]'}`}>
+              <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${settings[key] ? 'left-6' : 'left-0.5'}`} />
+            </button>
+          </div>
+        ))}
+
+        {settings.workoutReminder && (
+          <div>
+            <label className="text-[#666] text-xs mb-1 block">Workout reminder time</label>
+            <input type="time" value={settings.workoutTime}
+              onChange={e => setSettings(s => ({ ...s, workoutTime: e.target.value }))}
+              className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
+          </div>
+        )}
+      </div>
+
+      <button onClick={handleSave}
+        className={`w-full py-3 rounded-2xl font-medium transition-all
+          ${saved ? 'bg-[#0d2d1f] text-[#00E5A0] border border-[#00E5A0]' : 'bg-[#00E5A0] text-black'}`}>
+        {saved ? 'Notifications saved! ✓' : 'Save notification settings'}
+      </button>
+    </div>
+  )
+}
 
 const ACTIVITY_LEVELS = [
   { id: 'sedentary', label: 'Sedentary', multiplier: 1.2 },
@@ -104,7 +181,7 @@ export default function Settings({ profile, onUpdate, onReset }) {
     primaryGoal: form.primary_goal,
   })
 
-  const sections = ['profile', 'sport', 'goals', 'nutrition']
+  const sections = ['profile', 'sport', 'goals', 'nutrition', 'notifications']
 
   return (
     <div className="p-4 space-y-4">
@@ -323,6 +400,11 @@ export default function Settings({ profile, onUpdate, onReset }) {
             ))}
           </div>
         </div>
+      )}
+
+      {/* Notifications section */}
+        {activeSection === 'notifications' && (
+          <NotificationSettings stepGoal={form.step_goal || 10000} />
       )}
 
       {/* Save button */}

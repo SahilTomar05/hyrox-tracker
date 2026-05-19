@@ -165,7 +165,8 @@ function todayDate() {
 }
 
 function MacroRing({ value, goal, color, label }) {
-  const pct = Math.min(value / goal, 1)
+  const rounded = Math.round(value)
+  const pct = Math.min(rounded / goal, 1)
   const r = 28
   const circ = 2 * Math.PI * r
   const dash = pct * circ
@@ -177,7 +178,7 @@ function MacroRing({ value, goal, color, label }) {
           strokeDasharray={`${dash} ${circ}`} strokeLinecap="round"
           transform="rotate(-90 36 36)" />
         <text x="36" y="36" textAnchor="middle" dominantBaseline="middle"
-          fill="white" fontSize="12" fontWeight="500">{value}</text>
+          fill="white" fontSize="12" fontWeight="500">{rounded}</text>
         <text x="36" y="49" textAnchor="middle" dominantBaseline="middle"
           fill="#666" fontSize="9">/{goal}g</text>
       </svg>
@@ -413,7 +414,7 @@ export default function Nutrition({ profile, session }) {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <Flame size={16} className="text-[#FF6B35]" />
-            <span className="text-white font-medium">{totalCals}</span>
+            {Math.round(GOALS.calories - totalCals) > 0 ? `${Math.round(GOALS.calories - totalCals)} kcal remaining` : 'Goal reached! 🎉'}
             <span className="text-[#666] text-sm">/ {GOALS.calories} kcal</span>
           </div>
           <span className="text-[#666] text-sm">{calPct}%</span>
@@ -490,9 +491,9 @@ export default function Nutrition({ profile, session }) {
               <p className="text-white text-sm font-medium">{meal.name}</p>
               <div className="flex gap-3 mt-0.5">
                 <span className="text-[#FF6B35] text-xs">{meal.calories} kcal</span>
-                {meal.protein > 0 && <span className="text-[#A78BFA] text-xs">{meal.protein}g P</span>}
-                {meal.carbs > 0 && <span className="text-[#3B9EFF] text-xs">{meal.carbs}g C</span>}
-                {meal.fat > 0 && <span className="text-[#FF6B35] text-xs">{meal.fat}g F</span>}
+                {meal.protein > 0 && <span className="text-[#A78BFA] text-xs">{Math.round(meal.protein)}g P</span>}
+                {meal.carbs > 0 && <span className="text-[#3B9EFF] text-xs">{Math.round(meal.carbs)}g C</span>}
+                {meal.fat > 0 && <span className="text-[#FF6B35] text-xs">{Math.round(meal.fat)}g F</span>}
               </div>
             </div>
             <button onClick={() => deleteMeal(meal.id)}>
