@@ -1,86 +1,36 @@
 import { useState, useEffect } from 'react'
-import { Plus, ChevronDown, ChevronUp, Check, X, Dumbbell, Heart, Target } from 'lucide-react'
+import { Plus, ChevronDown, ChevronUp, Check, X } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 const CATEGORIES = [
-  { id: 'Strength', icon: '🏋️', color: '#A78BFA', bg: '#1a1535', label: 'Strength' },
-  { id: 'Cardio', icon: '🏃', color: '#3B9EFF', bg: '#0d1f35', label: 'Cardio' },
-  { id: 'Core', icon: '🎯', color: '#00E5A0', bg: '#0d2d1f', label: 'Core' },
+  { id: 'Strength', icon: '🏋️', color: '#A78BFA', bg: '#1a1535' },
+  { id: 'Cardio', icon: '🏃', color: '#3B9EFF', bg: '#0d1f35' },
+  { id: 'Core', icon: '🎯', color: '#00E5A0', bg: '#0d2d1f' },
 ]
 
 const EXERCISES = {
   Strength: {
-    Chest: [
-      'Flat Bench Press', 'Incline Bench Press', 'Decline Bench Press',
-      'Dumbbell Chest Press', 'Incline Dumbbell Press', 'Chest Flyes',
-      'Cable Crossover', 'Pec Deck Machine', 'Push Ups', 'Dips',
-    ],
-    Back: [
-      'Deadlift', 'Barbell Row', 'Dumbbell Row', 'Lat Pulldown',
-      'Seated Cable Row', 'T-Bar Row', 'Face Pulls', 'Pull Ups',
-      'Chin Ups', 'Rack Pull', 'Good Morning',
-    ],
-    Shoulders: [
-      'Overhead Press (Barbell)', 'Dumbbell Shoulder Press', 'Arnold Press',
-      'Lateral Raises', 'Front Raises', 'Rear Delt Flyes', 'Upright Row',
-      'Shrugs', 'Cable Lateral Raises',
-    ],
-    Legs: [
-      'Barbell Squat', 'Front Squat', 'Leg Press', 'Romanian Deadlift',
-      'Leg Curl', 'Leg Extension', 'Bulgarian Split Squat', 'Lunges',
-      'Hack Squat', 'Calf Raises', 'Sumo Squat', 'Step Ups',
-    ],
-    Biceps: [
-      'Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl',
-      'Cable Curl', 'Incline Dumbbell Curl', 'Concentration Curl',
-      'Reverse Curl', 'Spider Curl',
-    ],
-    Triceps: [
-      'Tricep Pushdown', 'Skull Crushers', 'Overhead Tricep Extension',
-      'Close Grip Bench Press', 'Dips', 'Kickbacks', 'Cable Overhead Extension',
-    ],
-    'Full Body': [
-      'Power Clean', 'Clean and Press', 'Thruster', 'Farmers Walk',
-      'Sled Push', 'Kettlebell Swing', 'Turkish Get Up', 'Battle Ropes',
-    ],
+    Chest: ['Flat Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Chest Press', 'Incline Dumbbell Press', 'Chest Flyes', 'Cable Crossover', 'Pec Deck Machine', 'Push Ups', 'Dips'],
+    Back: ['Deadlift', 'Barbell Row', 'Dumbbell Row', 'Lat Pulldown', 'Seated Cable Row', 'T-Bar Row', 'Face Pulls', 'Pull Ups', 'Chin Ups', 'Rack Pull'],
+    Shoulders: ['Overhead Press (Barbell)', 'Dumbbell Shoulder Press', 'Arnold Press', 'Lateral Raises', 'Front Raises', 'Rear Delt Flyes', 'Upright Row', 'Shrugs'],
+    Legs: ['Barbell Squat', 'Front Squat', 'Leg Press', 'Romanian Deadlift', 'Leg Curl', 'Leg Extension', 'Bulgarian Split Squat', 'Lunges', 'Hack Squat', 'Calf Raises'],
+    Biceps: ['Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl', 'Cable Curl', 'Incline Dumbbell Curl', 'Concentration Curl'],
+    Triceps: ['Tricep Pushdown', 'Skull Crushers', 'Overhead Tricep Extension', 'Close Grip Bench Press', 'Dips', 'Kickbacks'],
+    'Full Body': ['Power Clean', 'Clean and Press', 'Thruster', 'Farmers Walk', 'Kettlebell Swing', 'Battle Ropes'],
   },
   Cardio: {
-    Running: [
-      'Easy Run', 'Tempo Run', 'Interval Run', 'Long Run',
-      'Hill Run', 'Fartlek', 'Sprint Session', 'Recovery Jog',
-    ],
-    Cycling: [
-      'Steady State Ride', 'Interval Cycling', 'Hill Climb', 'Recovery Ride',
-      'Spin Class', 'Indoor Cycling',
-    ],
-    Rowing: [
-      'Steady State Row', 'Interval Row', '500m Row', '1000m Row',
-      '2000m Row', 'SkiErg',
-    ],
-    Other: [
-      'Jump Rope', 'Stairmaster', 'Elliptical', 'Swimming Laps',
-      'Box Jumps', 'Assault Bike', 'Treadmill Incline Walk',
-    ],
+    Running: ['Easy Run', 'Tempo Run', 'Interval Run', 'Long Run', 'Hill Run', 'Sprint Session', 'Recovery Jog', 'Fartlek'],
+    Cycling: ['Steady State Ride', 'Interval Cycling', 'Hill Climb', 'Recovery Ride', 'Spin Class'],
+    Rowing: ['Steady State Row', 'Interval Row', '500m Row', '1000m Row', '2000m Row', 'SkiErg'],
+    Other: ['Jump Rope', 'Stairmaster', 'Elliptical', 'Swimming Laps', 'Box Jumps', 'Assault Bike', 'Treadmill Walk'],
   },
   Core: {
-    Abs: [
-      'Crunches', 'Bicycle Crunches', 'Reverse Crunches', 'Sit Ups',
-      'V Ups', 'Toe Touches', 'Russian Twist', 'Dead Bug',
-    ],
-    Planks: [
-      'Plank', 'Side Plank', 'Hollow Hold', 'RKC Plank',
-      'Plank with Reach', 'Bear Crawl', 'Stir the Pot',
-    ],
-    'Lower Abs': [
-      'Leg Raises', 'Hanging Leg Raises', 'Flutter Kicks', 'Scissor Kicks',
-      'Dragon Flag', 'Ab Wheel Rollout', 'Mountain Climbers',
-    ],
-    Stability: [
-      'Bird Dog', 'Pallof Press', 'Suitcase Carry', 'Single Leg RDL',
-      'Glute Bridge', 'Hip Thrust', 'Cable Woodchop',
-    ],
+    Abs: ['Crunches', 'Bicycle Crunches', 'Reverse Crunches', 'Sit Ups', 'V Ups', 'Russian Twist', 'Dead Bug'],
+    Planks: ['Plank', 'Side Plank', 'Hollow Hold', 'RKC Plank', 'Bear Crawl', 'Stir the Pot'],
+    'Lower Abs': ['Leg Raises', 'Hanging Leg Raises', 'Flutter Kicks', 'Scissor Kicks', 'Dragon Flag', 'Ab Wheel Rollout', 'Mountain Climbers'],
+    Stability: ['Bird Dog', 'Pallof Press', 'Suitcase Carry', 'Single Leg RDL', 'Glute Bridge', 'Hip Thrust'],
   },
 }
 
@@ -88,6 +38,201 @@ const MUSCLE_GROUPS = {
   Strength: ['Chest', 'Back', 'Shoulders', 'Legs', 'Biceps', 'Triceps', 'Full Body'],
   Cardio: ['Running', 'Cycling', 'Rowing', 'Other'],
   Core: ['Abs', 'Planks', 'Lower Abs', 'Stability'],
+}
+
+// Context-aware tracking fields per exercise type
+function getExerciseFields(category, muscleGroup, exerciseName) {
+  if (category === 'Cardio') {
+    // Rowing in cardio = duration + distance
+    if (muscleGroup === 'Rowing') return 'cardio_row'
+    if (muscleGroup === 'Running') return 'cardio_run'
+    if (muscleGroup === 'Cycling') return 'cardio_cycle'
+    return 'cardio_general'
+  }
+  if (category === 'Core') {
+    // Planks = time-based, others = reps-based
+    if (['Plank', 'Side Plank', 'Hollow Hold', 'RKC Plank', 'Bear Crawl', 'Stir the Pot'].includes(exerciseName)) {
+      return 'core_timed'
+    }
+    return 'core_reps'
+  }
+  // Strength = sets x reps x weight
+  return 'strength'
+}
+
+function ExerciseInputs({ ex, onUpdate, onRemove }) {
+  const fieldType = ex.fieldType
+
+  return (
+    <div className="bg-[#2a2a2a] rounded-2xl p-3 space-y-2">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-white text-sm font-medium">{ex.name}</p>
+          <p className="text-[#666] text-xs">{ex.muscleGroup} · {ex.category}</p>
+        </div>
+        <button onClick={onRemove}
+          className="w-7 h-7 rounded-full bg-red-900/30 flex items-center justify-center">
+          <X size={12} className="text-red-400" />
+        </button>
+      </div>
+
+      {/* Strength: sets x reps x weight */}
+      {fieldType === 'strength' && (
+        <div className="space-y-2">
+          <div className="grid grid-cols-3 gap-1 text-xs text-[#666] px-1">
+            <span>Set</span><span>Reps</span><span>Weight (kg)</span>
+          </div>
+          {(ex.sets || []).map((set, si) => (
+            <div key={si} className="grid grid-cols-3 gap-1 items-center">
+              <span className="text-[#666] text-xs text-center bg-[#1a1a1a] rounded-lg py-2">{si + 1}</span>
+              <input type="number" placeholder="12" value={set.reps}
+                onChange={e => {
+                  const newSets = [...ex.sets]
+                  newSets[si] = { ...newSets[si], reps: e.target.value }
+                  onUpdate('sets', newSets)
+                }}
+                className="bg-[#1a1a1a] text-white text-sm rounded-lg px-2 py-2 outline-none placeholder-[#444] text-center" />
+              <input type="number" placeholder="50" value={set.weight}
+                onChange={e => {
+                  const newSets = [...ex.sets]
+                  newSets[si] = { ...newSets[si], weight: e.target.value }
+                  onUpdate('sets', newSets)
+                }}
+                className="bg-[#1a1a1a] text-white text-sm rounded-lg px-2 py-2 outline-none placeholder-[#444] text-center" />
+            </div>
+          ))}
+          <button onClick={() => onUpdate('sets', [...(ex.sets || []), { reps: '', weight: '' }])}
+            className="w-full text-xs text-[#A78BFA] border border-dashed border-[#A78BFA]/30 py-1.5 rounded-xl">
+            + Add set
+          </button>
+        </div>
+      )}
+
+      {/* Cardio Running: distance + duration + pace */}
+      {fieldType === 'cardio_run' && (
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[#666] text-xs">Distance (km)</label>
+            <input type="number" placeholder="5.0" value={ex.distance || ''}
+              onChange={e => onUpdate('distance', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+          <div>
+            <label className="text-[#666] text-xs">Duration (min)</label>
+            <input type="number" placeholder="30" value={ex.duration || ''}
+              onChange={e => onUpdate('duration', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+          <div className="col-span-2">
+            <label className="text-[#666] text-xs">Pace (min/km) — optional</label>
+            <input placeholder="e.g. 5:30" value={ex.pace || ''}
+              onChange={e => onUpdate('pace', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+        </div>
+      )}
+
+      {/* Cardio Rowing: time-based (like Hyrox station) + distance */}
+      {fieldType === 'cardio_row' && (
+        <div className="space-y-2">
+          <p className="text-[#3B9EFF] text-xs">Row time is tracked like a PB — best time saved</p>
+          <div className="grid grid-cols-2 gap-2">
+            <div>
+              <label className="text-[#666] text-xs">Time (e.g. 4:32)</label>
+              <input placeholder="4:32" value={ex.rowTime || ''}
+                onChange={e => onUpdate('rowTime', e.target.value)}
+                className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+            </div>
+            <div>
+              <label className="text-[#666] text-xs">Distance (m)</label>
+              <input type="number" placeholder="1000" value={ex.distance || ''}
+                onChange={e => onUpdate('distance', e.target.value)}
+                className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Cardio Cycling: distance + duration + avg speed */}
+      {fieldType === 'cardio_cycle' && (
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[#666] text-xs">Distance (km)</label>
+            <input type="number" placeholder="30" value={ex.distance || ''}
+              onChange={e => onUpdate('distance', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+          <div>
+            <label className="text-[#666] text-xs">Duration (min)</label>
+            <input type="number" placeholder="60" value={ex.duration || ''}
+              onChange={e => onUpdate('duration', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+        </div>
+      )}
+
+      {/* General cardio */}
+      {fieldType === 'cardio_general' && (
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[#666] text-xs">Duration (min)</label>
+            <input type="number" placeholder="30" value={ex.duration || ''}
+              onChange={e => onUpdate('duration', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+          <div>
+            <label className="text-[#666] text-xs">Calories burned</label>
+            <input type="number" placeholder="250" value={ex.caloriesBurned || ''}
+              onChange={e => onUpdate('caloriesBurned', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+        </div>
+      )}
+
+      {/* Core timed (planks) */}
+      {fieldType === 'core_timed' && (
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[#666] text-xs">Sets</label>
+            <input type="number" placeholder="3" value={ex.setsCount || ''}
+              onChange={e => onUpdate('setsCount', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+          <div>
+            <label className="text-[#666] text-xs">Hold time (sec)</label>
+            <input type="number" placeholder="60" value={ex.duration || ''}
+              onChange={e => onUpdate('duration', e.target.value)}
+              className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
+          </div>
+        </div>
+      )}
+
+      {/* Core reps */}
+      {fieldType === 'core_reps' && (
+        <div className="space-y-2">
+          <div className="grid grid-cols-2 gap-1 text-xs text-[#666] px-1">
+            <span>Sets</span><span>Reps</span>
+          </div>
+          {(ex.sets || []).map((set, si) => (
+            <div key={si} className="grid grid-cols-2 gap-1 items-center">
+              <span className="text-[#666] text-xs text-center bg-[#1a1a1a] rounded-lg py-2">{si + 1}</span>
+              <input type="number" placeholder="20" value={set.reps}
+                onChange={e => {
+                  const newSets = [...ex.sets]
+                  newSets[si] = { ...newSets[si], reps: e.target.value }
+                  onUpdate('sets', newSets)
+                }}
+                className="bg-[#1a1a1a] text-white text-sm rounded-lg px-2 py-2 outline-none placeholder-[#444] text-center" />
+            </div>
+          ))}
+          <button onClick={() => onUpdate('sets', [...(ex.sets || []), { reps: '' }])}
+            className="w-full text-xs text-[#00E5A0] border border-dashed border-[#00E5A0]/30 py-1.5 rounded-xl">
+            + Add set
+          </button>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function getWeekDates() {
@@ -138,19 +283,23 @@ export default function Training({ session, profile }) {
   const todaySessions = sessions.filter(s => isSameDay(s.date, selectedDay))
 
   function addExercise(name) {
-    if (exercises.find(e => e.name === name)) return
-    const isCardio = activeCategory === 'Cardio'
-    const isCore = activeCategory === 'Core'
+    if (exercises.find(e => e.name === name && e.category === activeCategory)) return
+    const fieldType = getExerciseFields(activeCategory, activeMuscleGroup, name)
+    const isStrength = fieldType === 'strength'
+    const isCoreReps = fieldType === 'core_reps'
     setExercises(prev => [...prev, {
       id: Date.now(),
       name,
       category: activeCategory,
       muscleGroup: activeMuscleGroup,
-      sets: isCardio || isCore ? '' : [{ reps: '', weight: '' }],
-      duration: isCardio ? '' : '',
-      distance: isCardio ? '' : '',
-      isCardio,
-      isCore,
+      fieldType,
+      sets: isStrength ? [{ reps: '', weight: '' }] : isCoreReps ? [{ reps: '' }] : [],
+      duration: '',
+      distance: '',
+      pace: '',
+      rowTime: '',
+      setsCount: '',
+      caloriesBurned: '',
     }])
   }
 
@@ -158,30 +307,8 @@ export default function Training({ session, profile }) {
     setExercises(prev => prev.filter(e => e.id !== id))
   }
 
-  function addSet(exerciseId) {
-    setExercises(prev => prev.map(e =>
-      e.id === exerciseId
-        ? { ...e, sets: [...e.sets, { reps: '', weight: '' }] }
-        : e
-    ))
-  }
-
-  function updateSet(exerciseId, setIndex, field, value) {
-    setExercises(prev => prev.map(e =>
-      e.id === exerciseId
-        ? {
-            ...e, sets: e.sets.map((s, i) =>
-              i === setIndex ? { ...s, [field]: value } : s
-            )
-          }
-        : e
-    ))
-  }
-
-  function updateExerciseField(exerciseId, field, value) {
-    setExercises(prev => prev.map(e =>
-      e.id === exerciseId ? { ...e, [field]: value } : e
-    ))
+  function updateExercise(id, field, value) {
+    setExercises(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e))
   }
 
   async function saveSession() {
@@ -198,18 +325,20 @@ export default function Training({ session, profile }) {
         name: ex.name,
         category: ex.category,
         muscleGroup: ex.muscleGroup,
+        fieldType: ex.fieldType,
         sets: ex.sets,
         duration: ex.duration,
         distance: ex.distance,
+        pace: ex.pace,
+        rowTime: ex.rowTime,
+        setsCount: ex.setsCount,
+        caloriesBurned: ex.caloriesBurned,
       })),
       hyrox_stations: [],
       muscle_groups: [...new Set(exercises.map(e => e.muscleGroup))],
     }
     const { data, error } = await supabase
-      .from('sessions')
-      .insert(sessionData)
-      .select()
-      .single()
+      .from('sessions').insert(sessionData).select().single()
     if (!error && data) setSessions(prev => [data, ...prev])
     setSaving(false)
     setShowForm(false)
@@ -217,6 +346,7 @@ export default function Training({ session, profile }) {
   }
 
   async function deleteSession(id) {
+    if (!confirm('Delete this session?')) return
     await supabase.from('sessions').delete().eq('id', id)
     setSessions(prev => prev.filter(s => s.id !== id))
   }
@@ -249,14 +379,10 @@ export default function Training({ session, profile }) {
           return (
             <button key={i} onClick={() => setSelectedDay(date)}
               className={`flex flex-col items-center py-2 rounded-xl text-xs transition-all
-                ${isSelected ? 'bg-[#00E5A0] text-black'
-                  : isToday ? 'bg-[#1a1a1a] border border-[#00E5A0] text-white'
-                  : 'bg-[#1a1a1a] text-[#666]'}`}>
+                ${isSelected ? 'bg-[#00E5A0] text-black' : isToday ? 'bg-[#1a1a1a] border border-[#00E5A0] text-white' : 'bg-[#1a1a1a] text-[#666]'}`}>
               <span>{DAYS[i]}</span>
               <span className="font-bold">{date.getDate()}</span>
-              {hasSesh && (
-                <div className={`w-1 h-1 rounded-full mt-1 ${isSelected ? 'bg-black' : 'bg-[#00E5A0]'}`} />
-              )}
+              {hasSesh && <div className={`w-1 h-1 rounded-full mt-1 ${isSelected ? 'bg-black' : 'bg-[#00E5A0]'}`} />}
             </button>
           )
         })}
@@ -265,10 +391,7 @@ export default function Training({ session, profile }) {
       {/* Day label + add button */}
       <div className="flex items-center justify-between">
         <p className="text-white font-medium">
-          {isSameDay(selectedDay, today) ? 'Today'
-            : new Date(selectedDay).toLocaleDateString('en-GB', {
-                weekday: 'long', day: 'numeric', month: 'short'
-              })}
+          {isSameDay(selectedDay, today) ? 'Today' : new Date(selectedDay).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
         </p>
         <button onClick={() => { setShowForm(true); setExpandedSession(null) }}
           className="flex items-center gap-1 bg-[#00E5A0] text-black text-sm font-medium px-3 py-1.5 rounded-xl">
@@ -276,18 +399,11 @@ export default function Training({ session, profile }) {
         </button>
       </div>
 
-      {/* Loading */}
-      {loading && (
-        <div className="text-center py-8">
-          <p className="text-[#666] text-sm">Loading sessions...</p>
-        </div>
-      )}
+      {loading && <div className="text-center py-8"><p className="text-[#666] text-sm">Loading sessions...</p></div>}
 
-      {/* No sessions */}
       {!loading && todaySessions.length === 0 && !showForm && (
         <div className="bg-[#1a1a1a] rounded-2xl p-6 border border-[#2a2a2a] text-center">
           <p className="text-[#666] text-sm">No sessions logged for this day</p>
-          <p className="text-[#444] text-xs mt-1">Tap + Add session to get started</p>
         </div>
       )}
 
@@ -311,12 +427,10 @@ export default function Training({ session, profile }) {
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={e => { e.stopPropagation(); deleteSession(s.id) }}
-                  className="text-[#444] hover:text-red-400 p-1">
-                  <X size={14} />
+                  className="w-7 h-7 rounded-full bg-red-900/20 flex items-center justify-center">
+                  <X size={12} className="text-red-400" />
                 </button>
-                {expandedSession === s.id
-                  ? <ChevronUp size={16} className="text-[#444]" />
-                  : <ChevronDown size={16} className="text-[#444]" />}
+                {expandedSession === s.id ? <ChevronUp size={16} className="text-[#444]" /> : <ChevronDown size={16} className="text-[#444]" />}
               </div>
             </div>
 
@@ -329,27 +443,39 @@ export default function Training({ session, profile }) {
                       <p className="text-white text-sm font-medium">{ex.name}</p>
                       <span className="text-[#666] text-xs">{ex.muscleGroup}</span>
                     </div>
-                    {ex.isCardio ? (
-                      <p className="text-[#3B9EFF] text-xs">
-                        {ex.duration ? `${ex.duration} min` : ''}
-                        {ex.distance ? ` · ${ex.distance} km` : ''}
-                      </p>
-                    ) : ex.isCore ? (
-                      <p className="text-[#00E5A0] text-xs">
-                        {ex.duration ? `${ex.duration} sec hold` : ''}
-                        {ex.sets && Array.isArray(ex.sets) ? `${ex.sets.length} sets` : ''}
-                      </p>
-                    ) : (
-                      <div className="space-y-1">
-                        {(ex.sets || []).map((set, si) => (
-                          <div key={si} className="flex gap-3 text-xs">
-                            <span className="text-[#444]">Set {si + 1}</span>
-                            <span className="text-white">{set.reps} reps</span>
-                            {set.weight && <span className="text-[#A78BFA]">@ {set.weight}kg</span>}
-                          </div>
-                        ))}
+                    {ex.fieldType === 'strength' && (ex.sets || []).map((set, si) => (
+                      <div key={si} className="flex gap-3 text-xs mb-1">
+                        <span className="text-[#444]">Set {si + 1}</span>
+                        <span className="text-white">{set.reps} reps</span>
+                        {set.weight && <span className="text-[#A78BFA]">@ {set.weight}kg</span>}
                       </div>
+                    ))}
+                    {ex.fieldType === 'cardio_run' && (
+                      <p className="text-[#3B9EFF] text-xs">
+                        {ex.distance ? `${ex.distance}km` : ''} {ex.duration ? `· ${ex.duration}min` : ''} {ex.pace ? `· ${ex.pace}/km` : ''}
+                      </p>
                     )}
+                    {ex.fieldType === 'cardio_row' && (
+                      <p className="text-[#3B9EFF] text-xs">
+                        {ex.rowTime ? `Time: ${ex.rowTime}` : ''} {ex.distance ? `· ${ex.distance}m` : ''}
+                      </p>
+                    )}
+                    {ex.fieldType === 'cardio_cycle' && (
+                      <p className="text-[#3B9EFF] text-xs">
+                        {ex.distance ? `${ex.distance}km` : ''} {ex.duration ? `· ${ex.duration}min` : ''}
+                      </p>
+                    )}
+                    {ex.fieldType === 'core_timed' && (
+                      <p className="text-[#00E5A0] text-xs">
+                        {ex.setsCount ? `${ex.setsCount} sets` : ''} {ex.duration ? `× ${ex.duration}sec` : ''}
+                      </p>
+                    )}
+                    {ex.fieldType === 'core_reps' && (ex.sets || []).map((set, si) => (
+                      <div key={si} className="flex gap-3 text-xs mb-1">
+                        <span className="text-[#444]">Set {si + 1}</span>
+                        <span className="text-white">{set.reps} reps</span>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
@@ -383,19 +509,17 @@ export default function Training({ session, profile }) {
                   borderColor: activeCategory === cat.id ? cat.color : '#3a3a3a',
                 }}>
                 <span className="text-xl">{cat.icon}</span>
-                <span className="text-xs font-medium"
-                  style={{ color: activeCategory === cat.id ? cat.color : '#666' }}>
-                  {cat.label}
+                <span className="text-xs font-medium" style={{ color: activeCategory === cat.id ? cat.color : '#666' }}>
+                  {cat.id}
                 </span>
               </button>
             ))}
           </div>
 
-          {/* Muscle group / subcategory tabs */}
+          {/* Muscle group tabs */}
           <div className="flex gap-2 overflow-x-auto pb-1">
             {muscleGroups.map(group => (
-              <button key={group}
-                onClick={() => setActiveMuscleGroup(group)}
+              <button key={group} onClick={() => setActiveMuscleGroup(group)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all
                   ${activeMuscleGroup === group ? 'bg-[#00E5A0] text-black' : 'bg-[#2a2a2a] text-[#666]'}`}>
                 {group}
@@ -403,18 +527,20 @@ export default function Training({ session, profile }) {
             ))}
           </div>
 
-          {/* Exercise list */}
+          {/* Exercise chips */}
           <div>
-            <p className="text-[#666] text-xs mb-2">Tap to add exercises</p>
+            <p className="text-[#666] text-xs mb-2">
+              Tap to add · <span style={{ color: CATEGORIES.find(c => c.id === activeCategory)?.color }}>
+                {activeMuscleGroup} — {activeCategory}
+              </span>
+            </p>
             <div className="flex flex-wrap gap-2">
               {exerciseList.map(name => {
-                const isAdded = exercises.find(e => e.name === name)
+                const isAdded = exercises.find(e => e.name === name && e.category === activeCategory)
                 return (
                   <button key={name} onClick={() => addExercise(name)}
                     className={`text-xs px-3 py-1.5 rounded-xl transition-all border
-                      ${isAdded
-                        ? 'bg-[#00E5A0] text-black border-[#00E5A0] font-medium'
-                        : 'bg-[#2a2a2a] text-[#666] border-[#3a3a3a]'}`}>
+                      ${isAdded ? 'bg-[#00E5A0] text-black border-[#00E5A0] font-medium' : 'bg-[#2a2a2a] text-[#666] border-[#3a3a3a]'}`}>
                     {isAdded ? '✓ ' : '+ '}{name}
                   </button>
                 )
@@ -422,84 +548,19 @@ export default function Training({ session, profile }) {
             </div>
           </div>
 
-          {/* Added exercises with sets */}
+          {/* Exercise input blocks */}
           {exercises.length > 0 && (
             <div className="space-y-3">
-              <p className="text-[#666] text-xs uppercase tracking-wider">Your exercises</p>
+              <p className="text-[#666] text-xs uppercase tracking-wider">
+                Your exercises ({exercises.length})
+              </p>
               {exercises.map(ex => (
-                <div key={ex.id} className="bg-[#2a2a2a] rounded-2xl p-3 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-white text-sm font-medium">{ex.name}</p>
-                      <p className="text-[#666] text-xs">{ex.muscleGroup}</p>
-                    </div>
-                    <button onClick={() => removeExercise(ex.id)}>
-                      <X size={14} className="text-[#444]" />
-                    </button>
-                  </div>
-
-                  {/* Cardio fields */}
-                  {ex.isCardio && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[#666] text-xs">Duration (min)</label>
-                        <input type="number" placeholder="30" value={ex.duration}
-                          onChange={e => updateExerciseField(ex.id, 'duration', e.target.value)}
-                          className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
-                      </div>
-                      <div>
-                        <label className="text-[#666] text-xs">Distance (km)</label>
-                        <input type="number" placeholder="5" value={ex.distance}
-                          onChange={e => updateExerciseField(ex.id, 'distance', e.target.value)}
-                          className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Core fields */}
-                  {ex.isCore && (
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <label className="text-[#666] text-xs">Sets</label>
-                        <input type="number" placeholder="3" value={ex.setsCount}
-                          onChange={e => updateExerciseField(ex.id, 'setsCount', e.target.value)}
-                          className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
-                      </div>
-                      <div>
-                        <label className="text-[#666] text-xs">Reps / Duration (sec)</label>
-                        <input type="number" placeholder="30" value={ex.duration}
-                          onChange={e => updateExerciseField(ex.id, 'duration', e.target.value)}
-                          className="w-full bg-[#1a1a1a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] mt-1" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Strength sets */}
-                  {!ex.isCardio && !ex.isCore && (
-                    <div className="space-y-2">
-                      <div className="grid grid-cols-3 gap-1 text-xs text-[#666] px-1">
-                        <span>Set</span><span>Reps</span><span>Weight (kg)</span>
-                      </div>
-                      {(ex.sets || []).map((set, si) => (
-                        <div key={si} className="grid grid-cols-3 gap-1 items-center">
-                          <span className="text-[#666] text-xs text-center bg-[#1a1a1a] rounded-lg py-2">
-                            {si + 1}
-                          </span>
-                          <input type="number" placeholder="12" value={set.reps}
-                            onChange={e => updateSet(ex.id, si, 'reps', e.target.value)}
-                            className="bg-[#1a1a1a] text-white text-sm rounded-lg px-2 py-2 outline-none placeholder-[#444] text-center" />
-                          <input type="number" placeholder="50" value={set.weight}
-                            onChange={e => updateSet(ex.id, si, 'weight', e.target.value)}
-                            className="bg-[#1a1a1a] text-white text-sm rounded-lg px-2 py-2 outline-none placeholder-[#444] text-center" />
-                        </div>
-                      ))}
-                      <button onClick={() => addSet(ex.id)}
-                        className="w-full text-xs text-[#00E5A0] border border-dashed border-[#00E5A0]/30 py-1.5 rounded-xl">
-                        + Add set
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <ExerciseInputs
+                  key={ex.id}
+                  ex={ex}
+                  onUpdate={(field, value) => updateExercise(ex.id, field, value)}
+                  onRemove={() => removeExercise(ex.id)}
+                />
               ))}
             </div>
           )}
@@ -521,8 +582,7 @@ export default function Training({ session, profile }) {
           </div>
 
           <textarea placeholder="Session notes (optional)" value={notes}
-            onChange={e => setNotes(e.target.value)}
-            rows={2}
+            onChange={e => setNotes(e.target.value)} rows={2}
             className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444] resize-none" />
 
           <button onClick={saveSession} disabled={saving || exercises.length === 0}

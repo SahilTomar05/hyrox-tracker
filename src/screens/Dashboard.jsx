@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Flame, Droplets, Weight, ChevronRight, Zap, Footprints } from 'lucide-react'
+import { Flame, Droplets, Weight, ChevronRight, Zap, Footprints, Moon, Star } from 'lucide-react'
 import { supabase } from '../lib/supabase'
-import { getSarcasticFeedback } from '../lib/feedback'
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -16,228 +15,220 @@ function getDaysToRace(raceDate) {
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
 
-function todayKey() {
-  return new Date().toDateString()
-}
+function todayKey() { return new Date().toDateString() }
+function todayDate() { return new Date().toISOString().split('T')[0] }
 
 const SPORT_CONFIG = {
-  marathon: {
-    icon: '🏃',
-    name: 'Marathon',
-    color: '#3B9EFF',
-    focusByWeeks: (w) => {
-      if (w > 12) return 'Base building phase — focus on easy runs and weekly mileage.'
-      if (w > 8) return 'Build phase — add tempo runs and long run progression.'
-      if (w > 4) return 'Peak phase — your longest runs are coming up. Trust the process.'
-      if (w > 2) return 'Taper time — reduce volume, keep intensity. You are ready.'
-      return 'Race week — rest, hydrate, carb load. Go get that PB! 🏁'
-    },
-    metric1: { label: 'Weekly km', key: 'weeklyKm', color: '#3B9EFF', icon: '🏃' },
-    metric2: { label: 'Long run', key: 'longRun', color: '#00E5A0', icon: '📏' },
-  },
-  hyrox: {
-    icon: '⚡',
-    name: 'Hyrox',
-    color: '#00E5A0',
-    focusByWeeks: (w) => {
-      if (w > 8) return 'Build your base — focus on consistency over intensity.'
-      if (w > 4) return 'Race-specific training — push your station times.'
-      if (w > 1) return 'Final push — taper volume, keep intensity sharp.'
-      return 'Race week — rest, eat well, trust your prep. 🏁'
-    },
-  },
-  ocr: {
-    icon: '🏔️',
-    name: 'OCR / Adventure',
-    color: '#FF6B35',
-    focusByWeeks: (w) => {
-      if (w > 8) return 'Build base strength and running endurance.'
-      if (w > 4) return 'Obstacle-specific training — grip, carry, climb.'
-      if (w > 1) return 'Sharpen race skills — practice obstacles and terrain.'
-      return 'Race week — visualise the course, trust your training. 🏁'
-    },
-  },
-  cycling: {
-    icon: '🚴',
-    name: 'Cycling',
-    color: '#A78BFA',
-    focusByWeeks: (w) => {
-      if (w > 10) return 'Base miles — long easy rides to build aerobic base.'
-      if (w > 6) return 'Build phase — add intervals and climbing.'
-      if (w > 2) return 'Peak phase — race-pace efforts and final long ride.'
-      return 'Taper week — short spins only. Save legs for race day. 🚴'
-    },
-  },
-  bodybuilding: {
-    icon: '🏋️',
-    name: 'Bodybuilding',
-    color: '#A78BFA',
-    focusByWeeks: (w) => {
-      if (!w) return 'Stay consistent with your split and hit your protein target daily.'
-      if (w > 12) return 'Bulk phase — hit your surplus, progressive overload every session.'
-      if (w > 8) return 'Transition phase — start dialling in nutrition.'
-      if (w > 4) return 'Peak week prep — reduce sodium, increase water.'
-      return 'Peak week — follow your protocol. You\'ve done the work. 💪'
-    },
-  },
-  crossfit: {
-    icon: '🏇',
-    name: 'CrossFit',
-    color: '#FF6B35',
-    focusByWeeks: (w) => {
-      if (w > 6) return 'Build engine — focus on benchmark WODs and strength.'
-      if (w > 3) return 'Sharpen skills — practice movement standards.'
-      if (w > 1) return 'Taper and practise — short workouts, stay sharp.'
-      return 'Competition week — warm up well, pace your efforts. 🏁'
-    },
-  },
-  triathlon: {
-    icon: '🏊',
-    name: 'Triathlon',
-    color: '#3B9EFF',
-    focusByWeeks: (w) => {
-      if (w > 10) return 'Base phase — build all three disciplines consistently.'
-      if (w > 6) return 'Build phase — brick sessions and open water swims.'
-      if (w > 2) return 'Race prep — practice transitions and race pace.'
-      return 'Race week — rest, check gear, visualise the course. 🏁'
-    },
-  },
-  combat: {
-    icon: '🥊',
-    name: 'Combat Sports',
-    color: '#FF6B35',
-    focusByWeeks: (w) => {
-      if (!w) return 'Focus on sport-specific conditioning and recovery.'
-      if (w > 6) return 'General conditioning phase — build cardio and strength base.'
-      if (w > 3) return 'Fight camp — sport-specific drills and sparring.'
-      return 'Fight week — light training, mental prep. Trust your camp. 🥊'
-    },
-  },
-  team: {
-    icon: '⚽',
-    name: 'Team Sports',
-    color: '#3B9EFF',
-    focusByWeeks: (w) => 'Focus on sport-specific fitness — agility, speed, endurance.',
-  },
-  calisthenics: {
-    icon: '🤸',
-    name: 'Calisthenics',
-    color: '#00E5A0',
-    focusByWeeks: (w) => 'Skill work first, conditioning second. Consistency beats intensity.',
-  },
-  general: {
-    icon: '🎯',
-    name: 'General Fitness',
-    color: '#00E5A0',
-    focusByWeeks: (w) => 'Stay consistent — every session and every meal counts. 💪',
-  },
-  custom: {
-    icon: '🏄',
-    name: 'Custom',
-    color: '#A78BFA',
-    focusByWeeks: (w) => 'Define your goals, track your progress, trust the process.',
-  },
+  marathon: { icon: '🏃', name: 'Marathon', color: '#3B9EFF', focusByWeeks: (w) => w > 12 ? 'Base building — easy runs and weekly mileage.' : w > 8 ? 'Build phase — add tempo runs.' : w > 4 ? 'Peak phase — trust the process.' : w > 2 ? 'Taper — reduce volume, keep intensity.' : 'Race week — rest, hydrate, carb load! 🏁' },
+  hyrox: { icon: '⚡', name: 'Hyrox', color: '#00E5A0', focusByWeeks: (w) => w > 8 ? 'Build your base — consistency over intensity.' : w > 4 ? 'Race-specific training — push station times.' : w > 1 ? 'Final push — taper volume, keep intensity.' : 'Race week — rest, eat well, trust your prep. 🏁' },
+  ocr: { icon: '🏔️', name: 'OCR', color: '#FF6B35', focusByWeeks: (w) => w > 8 ? 'Build base strength and running endurance.' : w > 4 ? 'Obstacle-specific training — grip, carry, climb.' : 'Race week — visualise the course. 🏁' },
+  cycling: { icon: '🚴', name: 'Cycling', color: '#A78BFA', focusByWeeks: (w) => w > 10 ? 'Base miles — long easy rides.' : w > 6 ? 'Build phase — add intervals.' : 'Taper week — short spins only. 🚴' },
+  bodybuilding: { icon: '🏋️', name: 'Bodybuilding', color: '#A78BFA', focusByWeeks: (w) => 'Hit your surplus, progressive overload every session.' },
+  crossfit: { icon: '🏇', name: 'CrossFit', color: '#FF6B35', focusByWeeks: (w) => w > 6 ? 'Build engine — benchmark WODs and strength.' : 'Sharpen skills — practice movement standards.' },
+  triathlon: { icon: '🏊', name: 'Triathlon', color: '#3B9EFF', focusByWeeks: (w) => w > 10 ? 'Base phase — build all three disciplines.' : 'Race prep — practice transitions.' },
+  combat: { icon: '🥊', name: 'Combat', color: '#FF6B35', focusByWeeks: (w) => 'Focus on sport-specific conditioning and recovery.' },
+  team: { icon: '⚽', name: 'Team Sports', color: '#3B9EFF', focusByWeeks: (w) => 'Focus on sport-specific fitness — agility, speed, endurance.' },
+  calisthenics: { icon: '🤸', name: 'Calisthenics', color: '#00E5A0', focusByWeeks: (w) => 'Skill work first, conditioning second.' },
+  general: { icon: '🎯', name: 'General Fitness', color: '#00E5A0', focusByWeeks: (w) => 'Stay consistent — every session and every meal counts. 💪' },
+  custom: { icon: '🏄', name: 'Custom', color: '#A78BFA', focusByWeeks: (w) => 'Define your goals, track your progress, trust the process.' },
 }
 
-// Sport specific dashboard sections
-function MarathonSection({ sessions }) {
-  const runningSessions = sessions.filter(s =>
-    s.type === 'Cardio' || s.type === 'Running'
-  )
-  const thisWeek = runningSessions.filter(s => {
-    const d = new Date(s.date)
-    const now = new Date()
-    const monday = new Date(now)
-    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7))
-    monday.setHours(0, 0, 0, 0)
-    return d >= monday
-  })
-  const weeklyKm = thisWeek.reduce((sum, s) => {
-    const ex = (s.exercises || []).reduce((a, e) => a + Number(e.distance || 0), 0)
-    return sum + ex
-  }, 0)
+function SleepCard({ userId }) {
+  const [sleepLog, setSleepLog] = useState(null)
+  const [showForm, setShowForm] = useState(false)
+  const [hours, setHours] = useState('')
+  const [quality, setQuality] = useState(3)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => { fetchSleep() }, [])
+
+  async function fetchSleep() {
+    const { data } = await supabase
+      .from('sleep_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('date', todayDate())
+      .single()
+    if (data) setSleepLog(data)
+  }
+
+  async function saveSleep() {
+    if (!hours) return
+    setSaving(true)
+    const { data } = await supabase
+      .from('sleep_logs')
+      .upsert({ user_id: userId, date: todayDate(), hours: Number(hours), quality }, { onConflict: 'user_id,date' })
+      .select().single()
+    if (data) setSleepLog(data)
+    setSaving(false)
+    setShowForm(false)
+  }
+
+  const qualityLabels = { 1: 'Terrible 😵', 2: 'Poor 😴', 3: 'OK 😐', 4: 'Good 😊', 5: 'Great 🔥' }
+  const qualityColors = { 1: '#FF4444', 2: '#FF6B35', 3: '#A78BFA', 4: '#3B9EFF', 5: '#00E5A0' }
 
   return (
     <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-      <p className="text-[#666] text-xs uppercase tracking-wider mb-3">This week</p>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#0d1f35] rounded-xl p-3 text-center">
-          <p className="text-[#3B9EFF] text-2xl font-bold">{weeklyKm.toFixed(1)}</p>
-          <p className="text-[#666] text-xs mt-1">km logged</p>
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Moon size={16} className="text-[#A78BFA]" />
+          <span className="text-white font-medium text-sm">Last night's sleep</span>
         </div>
-        <div className="bg-[#0d1f35] rounded-xl p-3 text-center">
-          <p className="text-[#3B9EFF] text-2xl font-bold">{thisWeek.length}</p>
-          <p className="text-[#666] text-xs mt-1">runs this week</p>
-        </div>
+        <button onClick={() => setShowForm(s => !s)}
+          className="text-xs border border-[#A78BFA] text-[#A78BFA] px-3 py-1 rounded-lg">
+          {showForm ? 'Cancel' : sleepLog ? 'Update' : 'Log'}
+        </button>
       </div>
-    </div>
-  )
-}
 
-function BodybuildingSection({ profile, todayLog, goals }) {
-  const calorieGoal = goals?.calories || 2800
-  const calories = todayLog?.calories || 0
-  const diff = calories - calorieGoal
-  const isGoalLose = profile?.primary_goal?.toLowerCase().includes('cut')
-  const phase = isGoalLose ? 'Cut Phase' : 'Bulk Phase'
-  const phaseColor = isGoalLose ? '#FF6B35' : '#00E5A0'
-
-  return (
-    <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-[#666] text-xs uppercase tracking-wider">Today's nutrition</p>
-        <span className="text-xs font-medium px-2 py-1 rounded-lg"
-          style={{ color: phaseColor, background: phaseColor + '20' }}>
-          {phase}
-        </span>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-          <p className="font-bold text-xl" style={{ color: diff >= 0 ? '#00E5A0' : '#FF6B35' }}>
-            {diff >= 0 ? '+' : ''}{diff}
-          </p>
-          <p className="text-[#666] text-xs mt-1">kcal {diff >= 0 ? 'surplus' : 'deficit'}</p>
-        </div>
-        <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-          <p className="text-[#A78BFA] font-bold text-xl">{todayLog?.protein || 0}g</p>
-          <p className="text-[#666] text-xs mt-1">protein today</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-function HyroxSection({ sessions }) {
-  const STATIONS = ['SkiErg', 'Sled Push', 'Sled Pull', 'Burpee Broad Jump', 'Row', 'Farmers Carry', 'Sandbag Lunges', 'Wall Balls']
-  const hyroxSessions = sessions.filter(s => s.type === 'Hyrox')
-  const pbs = STATIONS.map(station => {
-    const times = hyroxSessions.flatMap(s => (s.hyrox_stations || []).filter(st => st.name === station && st.time))
-    return { station, pb: times.length > 0 ? times[times.length - 1].time : null }
-  }).filter(s => s.pb).slice(0, 3)
-
-  return (
-    <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-      <p className="text-[#666] text-xs uppercase tracking-wider mb-3">Station PBs</p>
-      {pbs.length === 0 ? (
-        <p className="text-[#444] text-sm">Log a Hyrox session to see your PBs</p>
-      ) : (
-        pbs.map(({ station, pb }) => (
-          <div key={station} className="flex justify-between items-center py-2 border-b border-[#2a2a2a]">
-            <span className="text-white text-sm">{station}</span>
-            <span className="text-[#00E5A0] text-sm font-medium">{pb}</span>
+      {sleepLog && !showForm ? (
+        <div className="flex items-center gap-4">
+          <div>
+            <p className="text-2xl font-bold text-[#A78BFA]">{sleepLog.hours}h</p>
+            <p className="text-[#666] text-xs">hours slept</p>
           </div>
-        ))
+          <div>
+            <p className="text-sm font-medium" style={{ color: qualityColors[sleepLog.quality] }}>
+              {qualityLabels[sleepLog.quality]}
+            </p>
+            <p className="text-[#666] text-xs">sleep quality</p>
+          </div>
+          <div className="flex-1">
+            <div className="w-full bg-[#2a2a2a] rounded-full h-1.5">
+              <div className="h-1.5 rounded-full transition-all"
+                style={{ width: `${(sleepLog.hours / 9) * 100}%`, background: qualityColors[sleepLog.quality] }} />
+            </div>
+            <p className="text-[#666] text-xs mt-1">
+              {sleepLog.hours >= 7 ? 'Well rested ✓' : sleepLog.hours >= 6 ? 'Could be better' : 'Need more sleep!'}
+            </p>
+          </div>
+        </div>
+      ) : !showForm ? (
+        <p className="text-[#444] text-sm">No sleep logged yet today</p>
+      ) : null}
+
+      {showForm && (
+        <div className="space-y-3 mt-2">
+          <div>
+            <label className="text-[#666] text-xs mb-1 block">Hours slept</label>
+            <input type="number" placeholder="7.5" value={hours}
+              onChange={e => setHours(e.target.value)} step="0.5" min="1" max="12"
+              className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none placeholder-[#444]" />
+          </div>
+          <div>
+            <label className="text-[#666] text-xs mb-2 block">Sleep quality</label>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4, 5].map(q => (
+                <button key={q} onClick={() => setQuality(q)}
+                  className="flex-1 py-2 rounded-xl text-xs font-medium transition-all"
+                  style={{
+                    background: quality === q ? qualityColors[q] + '30' : '#2a2a2a',
+                    border: `1px solid ${quality === q ? qualityColors[q] : '#3a3a3a'}`,
+                    color: quality === q ? qualityColors[q] : '#666'
+                  }}>
+                  {q}★
+                </button>
+              ))}
+            </div>
+            <p className="text-xs mt-1" style={{ color: qualityColors[quality] }}>
+              {qualityLabels[quality]}
+            </p>
+          </div>
+          <button onClick={saveSleep} disabled={saving || !hours}
+            className="w-full bg-[#A78BFA] text-black font-medium py-2.5 rounded-xl text-sm disabled:opacity-50">
+            {saving ? 'Saving...' : 'Save sleep'}
+          </button>
+        </div>
       )}
     </div>
   )
 }
 
-function GeneralSection({ sessions }) {
+function SportSection({ sport, sessions, todayLog, goals, profile }) {
+  if (sport === 'marathon' || sport === 'cycling' || sport === 'triathlon') {
+    const thisWeekSessions = sessions.filter(s => {
+      const d = new Date(s.date)
+      const monday = new Date()
+      monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7))
+      monday.setHours(0, 0, 0, 0)
+      return d >= monday
+    })
+    const weeklyKm = thisWeekSessions.reduce((sum, s) =>
+      sum + (s.exercises || []).reduce((a, e) => a + Number(e.distance || 0), 0), 0
+    )
+    const config = SPORT_CONFIG[sport]
+    return (
+      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
+        <p className="text-[#666] text-xs uppercase tracking-wider mb-3">This week</p>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="rounded-xl p-3 text-center" style={{ background: config.color + '15' }}>
+            <p className="text-2xl font-bold" style={{ color: config.color }}>{weeklyKm.toFixed(1)}</p>
+            <p className="text-[#666] text-xs mt-1">km logged</p>
+          </div>
+          <div className="rounded-xl p-3 text-center" style={{ background: config.color + '15' }}>
+            <p className="text-2xl font-bold" style={{ color: config.color }}>{thisWeekSessions.length}</p>
+            <p className="text-[#666] text-xs mt-1">sessions done</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (sport === 'hyrox' || sport === 'ocr') {
+    const STATIONS = ['SkiErg', 'Sled Push', 'Sled Pull', 'Burpee Broad Jump', 'Row', 'Farmers Carry', 'Sandbag Lunges', 'Wall Balls']
+    const hyroxSessions = sessions.filter(s => s.type === 'Hyrox')
+    const pbs = STATIONS.map(station => {
+      const times = hyroxSessions.flatMap(s => (s.hyrox_stations || []).filter(st => st.name === station && st.time))
+      return { station, pb: times.length > 0 ? times[times.length - 1].time : null }
+    }).filter(s => s.pb).slice(0, 3)
+    return (
+      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
+        <p className="text-[#666] text-xs uppercase tracking-wider mb-3">Station PBs</p>
+        {pbs.length === 0 ? (
+          <p className="text-[#444] text-sm">Log a Hyrox session to see your PBs</p>
+        ) : pbs.map(({ station, pb }) => (
+          <div key={station} className="flex justify-between items-center py-2 border-b border-[#2a2a2a]">
+            <span className="text-white text-sm">{station}</span>
+            <span className="text-[#00E5A0] text-sm font-medium">{pb}</span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  if (sport === 'bodybuilding') {
+    const calorieGoal = goals?.calories || 2800
+    const calories = todayLog?.calories || 0
+    const diff = calories - calorieGoal
+    const isGoalLose = profile?.primary_goal?.toLowerCase().includes('cut')
+    return (
+      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
+        <div className="flex items-center justify-between mb-3">
+          <p className="text-[#666] text-xs uppercase tracking-wider">Today's nutrition</p>
+          <span className="text-xs font-medium px-2 py-1 rounded-lg"
+            style={{ color: isGoalLose ? '#FF6B35' : '#00E5A0', background: isGoalLose ? '#FF6B3520' : '#00E5A020' }}>
+            {isGoalLose ? 'Cut Phase' : 'Bulk Phase'}
+          </span>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
+            <p className="font-bold text-xl" style={{ color: diff >= 0 ? '#00E5A0' : '#FF6B35' }}>
+              {diff >= 0 ? '+' : ''}{diff}
+            </p>
+            <p className="text-[#666] text-xs mt-1">kcal {diff >= 0 ? 'surplus' : 'deficit'}</p>
+          </div>
+          <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
+            <p className="text-[#A78BFA] font-bold text-xl">{todayLog?.protein || 0}g</p>
+            <p className="text-[#666] text-xs mt-1">protein today</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   const thisWeek = sessions.filter(s => {
     const d = new Date(s.date)
-    const now = new Date()
-    const monday = new Date(now)
-    monday.setDate(now.getDate() - ((now.getDay() + 6) % 7))
+    const monday = new Date()
+    monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7))
     monday.setHours(0, 0, 0, 0)
     return d >= monday
   })
@@ -281,7 +272,6 @@ export default function Dashboard({ profile, session }) {
   const weight = todayLog.weight || profile?.weight || null
   const stepGoal = profile?.step_goal || 10000
   const stepPct = Math.min(Math.round((steps / stepGoal) * 100), 100)
-
   const focusMessage = config.focusByWeeks(weeksLeft)
 
   useEffect(() => {
@@ -289,20 +279,21 @@ export default function Dashboard({ profile, session }) {
     fetchSessions()
     const savedSteps = localStorage.getItem('steps_' + todayKey())
     if (savedSteps) setSteps(Number(savedSteps))
+    const interval = setInterval(() => fetchTodayData(), 30000)
+    return () => clearInterval(interval)
   }, [])
 
   async function fetchTodayData() {
-    const today = new Date().toISOString().split('T')[0]
     const { data } = await supabase
       .from('nutrition_logs')
       .select('*')
       .eq('user_id', session.user.id)
-      .eq('date', today)
+      .eq('date', todayDate())
       .single()
     if (data) {
-      const totalCals = (data.meals || []).reduce((s, m) => s + Number(m.calories || 0), 0)
-      const totalProtein = (data.meals || []).reduce((s, m) => s + Number(m.protein || 0), 0)
-      setTodayLog({ calories: totalCals, protein: totalProtein, water: data.water || 0 })
+      const totalCals = Math.round((data.meals || []).reduce((s, m) => s + Number(m.calories || 0), 0))
+      const totalProtein = Math.round((data.meals || []).reduce((s, m) => s + Number(m.protein || 0), 0))
+      setTodayLog(prev => ({ ...prev, calories: totalCals, protein: totalProtein, water: data.water || 0 }))
     }
     const { data: weightData } = await supabase
       .from('weight_logs')
@@ -362,7 +353,7 @@ export default function Dashboard({ profile, session }) {
 
       {/* Countdown or streak */}
       {daysLeft !== null ? (
-        <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-[#2a2a2a]"
+        <div className="bg-[#1a1a1a] rounded-2xl p-5 border"
           style={{ borderColor: config.color + '40' }}>
           <div className="flex items-end gap-3 mb-3">
             <span className="text-6xl font-bold" style={{ color: config.color }}>{daysLeft}</span>
@@ -383,8 +374,9 @@ export default function Dashboard({ profile, session }) {
         </div>
       ) : (
         <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-[#2a2a2a]">
-          <p className="text-xs font-medium uppercase tracking-wider mb-1"
-            style={{ color: config.color }}>Training streak</p>
+          <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: config.color }}>
+            Training streak
+          </p>
           <p className="text-4xl font-bold text-white">
             {sessions.length} <span className="text-lg text-[#666]">sessions logged</span>
           </p>
@@ -393,7 +385,7 @@ export default function Dashboard({ profile, session }) {
       )}
 
       {/* Weight progress */}
-      {profile?.goal_weight && weight && profile.weight !== profile.goal_weight && (
+      {profile?.goal_weight && weight && Number(profile.weight) !== Number(profile.goal_weight) && (
         <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
           <p className="text-[#666] text-xs uppercase tracking-wider mb-3">Weight progress</p>
           <div className="flex items-center justify-between mb-2">
@@ -414,9 +406,7 @@ export default function Dashboard({ profile, session }) {
             <div className="h-2 rounded-full transition-all"
               style={{
                 background: config.color,
-                width: `${Math.min(Math.max(
-                  ((profile.weight - weight) / (profile.weight - profile.goal_weight)) * 100, 0
-                ), 100)}%`
+                width: `${Math.min(Math.max(((profile.weight - weight) / (profile.weight - profile.goal_weight)) * 100, 0), 100)}%`
               }} />
           </div>
           <p className="text-[#666] text-xs mt-1">
@@ -428,15 +418,16 @@ export default function Dashboard({ profile, session }) {
       )}
 
       {/* Sport specific section */}
-      {sport === 'marathon' && <MarathonSection sessions={sessions} />}
-      {sport === 'hyrox' && <HyroxSection sessions={sessions} />}
-      {sport === 'ocr' && <HyroxSection sessions={sessions} />}
-      {sport === 'bodybuilding' && (
-        <BodybuildingSection profile={profile} todayLog={todayLog} goals={goals} />
-      )}
-      {['crossfit', 'triathlon', 'cycling', 'combat', 'team', 'calisthenics', 'general', 'custom'].includes(sport) && (
-        <GeneralSection sessions={sessions} />
-      )}
+      <SportSection
+        sport={sport}
+        sessions={sessions}
+        todayLog={todayLog}
+        goals={goals}
+        profile={profile}
+      />
+
+      {/* Sleep tracking */}
+      <SleepCard userId={session.user.id} />
 
       {/* Steps */}
       <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
@@ -527,39 +518,11 @@ export default function Dashboard({ profile, session }) {
           </div>
         </div>
       </div>
-      
-      {/* Sarcastic feedback */}
-      {(() => {
-        const stepsHistory = JSON.parse(localStorage.getItem('stepsHistory') || '{}')
-        const improvements = []
-        const fb = getSarcasticFeedback({
-        sessions,
-        nutritionLogs: [],
-        steps,
-        avgCalories: calories,
-        avgProtein: todayLog.protein || 0,
-        goals,
-        consistencyScore: 50,
-        improvements,
-      })
-        const bgColor = fb.level === 'savage' ? '#2d0d0d' : fb.level === 'good' ? '#0d2d1f' : '#1a1a1a'
-        const borderColor = fb.level === 'savage' ? '#FF444430' : fb.level === 'good' ? '#00E5A030' : '#2a2a2a'
-        const textColor = fb.level === 'savage' ? '#FF6666' : fb.level === 'good' ? '#00E5A0' : '#999'
-        return (
-          <div className="rounded-2xl p-4 border" style={{ background: bgColor, borderColor }}>
-            <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: textColor }}>
-              🤖 OneFitness says
-            </p>
-            <p className="text-white text-sm">{fb.msg}</p>
-          </div>
-        )
-      })()}
 
-      {/* Daily focus — sport specific */}
+      {/* Daily focus */}
       <div className="rounded-2xl p-4 border"
         style={{ background: config.color + '10', borderColor: config.color + '30' }}>
-        <p className="text-xs font-medium uppercase tracking-wider mb-1"
-          style={{ color: config.color }}>
+        <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: config.color }}>
           {config.icon} Daily Focus
         </p>
         <p className="text-white text-sm">{focusMessage}</p>
