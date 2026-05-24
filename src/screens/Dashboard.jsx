@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Flame, Droplets, Weight, ChevronRight, Zap, Footprints, Moon, Star } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 function getGreeting() {
@@ -15,22 +14,59 @@ function getDaysToRace(raceDate) {
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
 
-function todayKey() { return new Date().toDateString() }
 function todayDate() { return new Date().toISOString().split('T')[0] }
+function todayKey() { return new Date().toDateString() }
 
 const SPORT_CONFIG = {
-  marathon: { icon: '🏃', name: 'Marathon', color: '#3B9EFF', focusByWeeks: (w) => w > 12 ? 'Base building — easy runs and weekly mileage.' : w > 8 ? 'Build phase — add tempo runs.' : w > 4 ? 'Peak phase — trust the process.' : w > 2 ? 'Taper — reduce volume, keep intensity.' : 'Race week — rest, hydrate, carb load! 🏁' },
-  hyrox: { icon: '⚡', name: 'Hyrox', color: '#00E5A0', focusByWeeks: (w) => w > 8 ? 'Build your base — consistency over intensity.' : w > 4 ? 'Race-specific training — push station times.' : w > 1 ? 'Final push — taper volume, keep intensity.' : 'Race week — rest, eat well, trust your prep. 🏁' },
-  ocr: { icon: '🏔️', name: 'OCR', color: '#FF6B35', focusByWeeks: (w) => w > 8 ? 'Build base strength and running endurance.' : w > 4 ? 'Obstacle-specific training — grip, carry, climb.' : 'Race week — visualise the course. 🏁' },
-  cycling: { icon: '🚴', name: 'Cycling', color: '#A78BFA', focusByWeeks: (w) => w > 10 ? 'Base miles — long easy rides.' : w > 6 ? 'Build phase — add intervals.' : 'Taper week — short spins only. 🚴' },
-  bodybuilding: { icon: '🏋️', name: 'Bodybuilding', color: '#A78BFA', focusByWeeks: (w) => 'Hit your surplus, progressive overload every session.' },
-  crossfit: { icon: '🏇', name: 'CrossFit', color: '#FF6B35', focusByWeeks: (w) => w > 6 ? 'Build engine — benchmark WODs and strength.' : 'Sharpen skills — practice movement standards.' },
-  triathlon: { icon: '🏊', name: 'Triathlon', color: '#3B9EFF', focusByWeeks: (w) => w > 10 ? 'Base phase — build all three disciplines.' : 'Race prep — practice transitions.' },
-  combat: { icon: '🥊', name: 'Combat', color: '#FF6B35', focusByWeeks: (w) => 'Focus on sport-specific conditioning and recovery.' },
-  team: { icon: '⚽', name: 'Team Sports', color: '#3B9EFF', focusByWeeks: (w) => 'Focus on sport-specific fitness — agility, speed, endurance.' },
-  calisthenics: { icon: '🤸', name: 'Calisthenics', color: '#00E5A0', focusByWeeks: (w) => 'Skill work first, conditioning second.' },
-  general: { icon: '🎯', name: 'General Fitness', color: '#00E5A0', focusByWeeks: (w) => 'Stay consistent — every session and every meal counts. 💪' },
-  custom: { icon: '🏄', name: 'Custom', color: '#A78BFA', focusByWeeks: (w) => 'Define your goals, track your progress, trust the process.' },
+  marathon: { icon: '🏃', name: 'Marathon', color: '#3B82F6' },
+  hyrox: { icon: '⚡', name: 'Hyrox', color: '#FF5A1F' },
+  ocr: { icon: '🏔️', name: 'OCR', color: '#FF8C42' },
+  cycling: { icon: '🚴', name: 'Cycling', color: '#A855F7' },
+  bodybuilding: { icon: '🏋️', name: 'Bodybuilding', color: '#A855F7' },
+  crossfit: { icon: '🏇', name: 'CrossFit', color: '#FF5A1F' },
+  triathlon: { icon: '🏊', name: 'Triathlon', color: '#3B82F6' },
+  combat: { icon: '🥊', name: 'Combat', color: '#FF5A1F' },
+  team: { icon: '⚽', name: 'Team Sports', color: '#3B82F6' },
+  calisthenics: { icon: '🤸', name: 'Calisthenics', color: '#22C55E' },
+  general: { icon: '🎯', name: 'General Fitness', color: '#FF5A1F' },
+  custom: { icon: '🏄', name: 'Custom', color: '#A855F7' },
+}
+
+function getSarcasticMsg(calories, calorieGoal, steps, water, waterGoal) {
+  if (calories < calorieGoal * 0.1)
+    return `${calories} kcal logged. Your muscles are running on hopes and air. Feed them.`
+  if (calories > calorieGoal * 1.3)
+    return `${Math.round(calories - calorieGoal)} kcal over your goal. Impressive. Your stomach won today.`
+  if (steps < 2000 && steps > 0)
+    return `${steps.toLocaleString()} steps. Did you walk to the fridge and back and count that? Get up.`
+  if (steps < 5000 && steps > 0)
+    return `${steps.toLocaleString()} steps. A grandma with a walker is lapping you. Move.`
+  if (water < waterGoal * 0.3)
+    return `${water}L water today. You're basically a raisin at this point. Drink something.`
+  const defaults = [
+    "Log your meals so I can roast you properly.",
+    "Still waiting for you to do something worth commenting on.",
+    "Mediocrity logged successfully. Keep it up, I guess.",
+  ]
+  return defaults[new Date().getDate() % defaults.length]
+}
+
+function Ring({ pct, size = 110, stroke = 11, color = '#FF5A1F', children }) {
+  const r = (size - stroke) / 2
+  const circ = 2 * Math.PI * r
+  const dash = Math.max((pct / 100) * circ, 0)
+  return (
+    <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
+      <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1a1a1a" strokeWidth={stroke} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color}
+          strokeWidth={stroke} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
+      </svg>
+      <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        {children}
+      </div>
+    </div>
+  )
 }
 
 function SleepCard({ userId }) {
@@ -44,97 +80,88 @@ function SleepCard({ userId }) {
 
   async function fetchSleep() {
     const { data } = await supabase
-      .from('sleep_logs')
-      .select('*')
-      .eq('user_id', userId)
-      .eq('date', todayDate())
-      .single()
+      .from('sleep_logs').select('*')
+      .eq('user_id', userId).eq('date', todayDate()).single()
     if (data) setSleepLog(data)
   }
 
   async function saveSleep() {
     if (!hours) return
     setSaving(true)
-    const { data } = await supabase
-      .from('sleep_logs')
-      .upsert({ user_id: userId, date: todayDate(), hours: Number(hours), quality }, { onConflict: 'user_id,date' })
-      .select().single()
+    const { data } = await supabase.from('sleep_logs')
+      .upsert(
+        { user_id: userId, date: todayDate(), hours: Number(hours), quality },
+        { onConflict: 'user_id,date' }
+      ).select().single()
     if (data) setSleepLog(data)
     setSaving(false)
     setShowForm(false)
+    setHours('')
   }
 
-  const qualityLabels = { 1: 'Terrible 😵', 2: 'Poor 😴', 3: 'OK 😐', 4: 'Good 😊', 5: 'Great 🔥' }
-  const qualityColors = { 1: '#FF4444', 2: '#FF6B35', 3: '#A78BFA', 4: '#3B9EFF', 5: '#00E5A0' }
+  const qColors = { 1: '#EF4444', 2: '#FF6B35', 3: '#A855F7', 4: '#3B82F6', 5: '#22C55E' }
+  const qLabels = { 1: 'Terrible 😵', 2: 'Poor 😴', 3: 'OK 😐', 4: 'Good 😊', 5: 'Great 🔥' }
 
   return (
-    <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
-          <Moon size={16} className="text-[#A78BFA]" />
-          <span className="text-white font-medium text-sm">Last night's sleep</span>
+    <div style={{ margin: '0 16px 12px', background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 16 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: sleepLog && !showForm ? 12 : 0 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg,#120820,#1e0f35)', border: '1px solid #A855F730', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🌙</div>
+          <div>
+            <p style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>Sleep</p>
+            {sleepLog && !showForm && <p style={{ color: '#555', fontSize: 11 }}>Last night</p>}
+          </div>
         </div>
         <button onClick={() => setShowForm(s => !s)}
-          className="text-xs border border-[#A78BFA] text-[#A78BFA] px-3 py-1 rounded-lg">
-          {showForm ? 'Cancel' : sleepLog ? 'Update' : 'Log'}
+          style={{ fontSize: 12, color: '#A855F7', border: '1px solid #A855F740', borderRadius: 8, padding: '5px 12px', background: '#12082020', cursor: 'pointer' }}>
+          {showForm ? 'Cancel' : sleepLog ? 'Update' : 'Log sleep'}
         </button>
       </div>
 
-      {sleepLog && !showForm ? (
-        <div className="flex items-center gap-4">
+      {sleepLog && !showForm && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div>
-            <p className="text-2xl font-bold text-[#A78BFA]">{sleepLog.hours}h</p>
-            <p className="text-[#666] text-xs">hours slept</p>
+            <p style={{ fontSize: 26, fontWeight: 700, color: '#A855F7', lineHeight: 1 }}>{sleepLog.hours}h</p>
+            <p style={{ fontSize: 11, color: '#555', marginTop: 2 }}>hours slept</p>
           </div>
-          <div>
-            <p className="text-sm font-medium" style={{ color: qualityColors[sleepLog.quality] }}>
-              {qualityLabels[sleepLog.quality]}
-            </p>
-            <p className="text-[#666] text-xs">sleep quality</p>
-          </div>
-          <div className="flex-1">
-            <div className="w-full bg-[#2a2a2a] rounded-full h-1.5">
-              <div className="h-1.5 rounded-full transition-all"
-                style={{ width: `${(sleepLog.hours / 9) * 100}%`, background: qualityColors[sleepLog.quality] }} />
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, color: qColors[sleepLog.quality] }}>{qLabels[sleepLog.quality]}</p>
+            <div style={{ height: 4, background: '#1a1a1a', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
+              <div style={{ height: '100%', width: `${(sleepLog.hours / 9) * 100}%`, background: qColors[sleepLog.quality], borderRadius: 2 }} />
             </div>
-            <p className="text-[#666] text-xs mt-1">
-              {sleepLog.hours >= 7 ? 'Well rested ✓' : sleepLog.hours >= 6 ? 'Could be better' : 'Need more sleep!'}
+            <p style={{ fontSize: 11, color: '#555', marginTop: 4 }}>
+              {sleepLog.hours >= 7 ? '✓ Well rested' : sleepLog.hours >= 6 ? 'Could be better' : '⚠ Need more sleep'}
             </p>
           </div>
         </div>
-      ) : !showForm ? (
-        <p className="text-[#444] text-sm">No sleep logged yet today</p>
-      ) : null}
+      )}
+
+      {!sleepLog && !showForm && (
+        <p style={{ color: '#444', fontSize: 13, marginTop: 8 }}>No sleep logged yet</p>
+      )}
 
       {showForm && (
-        <div className="space-y-3 mt-2">
+        <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div>
-            <label className="text-[#666] text-xs mb-1 block">Hours slept</label>
+            <p style={{ color: '#666', fontSize: 12, marginBottom: 6 }}>Hours slept</p>
             <input type="number" placeholder="7.5" value={hours}
-              onChange={e => setHours(e.target.value)} step="0.5" min="1" max="12"
-              className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none placeholder-[#444]" />
+              onChange={e => setHours(e.target.value)}
+              step="0.5" min="1" max="12"
+              style={{ width: '100%', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 12, padding: '10px 14px', color: '#fff', fontSize: 14, outline: 'none' }} />
           </div>
           <div>
-            <label className="text-[#666] text-xs mb-2 block">Sleep quality</label>
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map(q => (
+            <p style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Sleep quality</p>
+            <div style={{ display: 'flex', gap: 8 }}>
+              {[1,2,3,4,5].map(q => (
                 <button key={q} onClick={() => setQuality(q)}
-                  className="flex-1 py-2 rounded-xl text-xs font-medium transition-all"
-                  style={{
-                    background: quality === q ? qualityColors[q] + '30' : '#2a2a2a',
-                    border: `1px solid ${quality === q ? qualityColors[q] : '#3a3a3a'}`,
-                    color: quality === q ? qualityColors[q] : '#666'
-                  }}>
+                  style={{ flex: 1, padding: '8px 4px', borderRadius: 10, fontSize: 12, fontWeight: quality === q ? 600 : 400, cursor: 'pointer', background: quality === q ? qColors[q] + '20' : '#1a1a1a', border: `1px solid ${quality === q ? qColors[q] : '#2a2a2a'}`, color: quality === q ? qColors[q] : '#555' }}>
                   {q}★
                 </button>
               ))}
             </div>
-            <p className="text-xs mt-1" style={{ color: qualityColors[quality] }}>
-              {qualityLabels[quality]}
-            </p>
           </div>
           <button onClick={saveSleep} disabled={saving || !hours}
-            className="w-full bg-[#A78BFA] text-black font-medium py-2.5 rounded-xl text-sm disabled:opacity-50">
+            style={{ width: '100%', background: '#A855F7', border: 'none', borderRadius: 12, padding: 12, color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', opacity: saving || !hours ? 0.5 : 1 }}>
             {saving ? 'Saving...' : 'Save sleep'}
           </button>
         </div>
@@ -143,180 +170,86 @@ function SleepCard({ userId }) {
   )
 }
 
-function SportSection({ sport, sessions, todayLog, goals, profile }) {
-  if (sport === 'marathon' || sport === 'cycling' || sport === 'triathlon') {
-    const thisWeekSessions = sessions.filter(s => {
-      const d = new Date(s.date)
-      const monday = new Date()
-      monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7))
-      monday.setHours(0, 0, 0, 0)
-      return d >= monday
-    })
-    const weeklyKm = thisWeekSessions.reduce((sum, s) =>
-      sum + (s.exercises || []).reduce((a, e) => a + Number(e.distance || 0), 0), 0
-    )
-    const config = SPORT_CONFIG[sport]
-    return (
-      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-        <p className="text-[#666] text-xs uppercase tracking-wider mb-3">This week</p>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-xl p-3 text-center" style={{ background: config.color + '15' }}>
-            <p className="text-2xl font-bold" style={{ color: config.color }}>{weeklyKm.toFixed(1)}</p>
-            <p className="text-[#666] text-xs mt-1">km logged</p>
-          </div>
-          <div className="rounded-xl p-3 text-center" style={{ background: config.color + '15' }}>
-            <p className="text-2xl font-bold" style={{ color: config.color }}>{thisWeekSessions.length}</p>
-            <p className="text-[#666] text-xs mt-1">sessions done</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (sport === 'hyrox' || sport === 'ocr') {
-    const STATIONS = ['SkiErg', 'Sled Push', 'Sled Pull', 'Burpee Broad Jump', 'Row', 'Farmers Carry', 'Sandbag Lunges', 'Wall Balls']
-    const hyroxSessions = sessions.filter(s => s.type === 'Hyrox')
-    const pbs = STATIONS.map(station => {
-      const times = hyroxSessions.flatMap(s => (s.hyrox_stations || []).filter(st => st.name === station && st.time))
-      return { station, pb: times.length > 0 ? times[times.length - 1].time : null }
-    }).filter(s => s.pb).slice(0, 3)
-    return (
-      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-        <p className="text-[#666] text-xs uppercase tracking-wider mb-3">Station PBs</p>
-        {pbs.length === 0 ? (
-          <p className="text-[#444] text-sm">Log a Hyrox session to see your PBs</p>
-        ) : pbs.map(({ station, pb }) => (
-          <div key={station} className="flex justify-between items-center py-2 border-b border-[#2a2a2a]">
-            <span className="text-white text-sm">{station}</span>
-            <span className="text-[#00E5A0] text-sm font-medium">{pb}</span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  if (sport === 'bodybuilding') {
-    const calorieGoal = goals?.calories || 2800
-    const calories = todayLog?.calories || 0
-    const diff = calories - calorieGoal
-    const isGoalLose = profile?.primary_goal?.toLowerCase().includes('cut')
-    return (
-      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-[#666] text-xs uppercase tracking-wider">Today's nutrition</p>
-          <span className="text-xs font-medium px-2 py-1 rounded-lg"
-            style={{ color: isGoalLose ? '#FF6B35' : '#00E5A0', background: isGoalLose ? '#FF6B3520' : '#00E5A020' }}>
-            {isGoalLose ? 'Cut Phase' : 'Bulk Phase'}
-          </span>
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-            <p className="font-bold text-xl" style={{ color: diff >= 0 ? '#00E5A0' : '#FF6B35' }}>
-              {diff >= 0 ? '+' : ''}{diff}
-            </p>
-            <p className="text-[#666] text-xs mt-1">kcal {diff >= 0 ? 'surplus' : 'deficit'}</p>
-          </div>
-          <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-            <p className="text-[#A78BFA] font-bold text-xl">{todayLog?.protein || 0}g</p>
-            <p className="text-[#666] text-xs mt-1">protein today</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  const thisWeek = sessions.filter(s => {
-    const d = new Date(s.date)
-    const monday = new Date()
-    monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7))
-    monday.setHours(0, 0, 0, 0)
-    return d >= monday
-  })
-  return (
-    <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-      <p className="text-[#666] text-xs uppercase tracking-wider mb-3">This week</p>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="bg-[#0d2d1f] rounded-xl p-3 text-center">
-          <p className="text-[#00E5A0] text-2xl font-bold">{thisWeek.length}</p>
-          <p className="text-[#666] text-xs mt-1">sessions done</p>
-        </div>
-        <div className="bg-[#0d2d1f] rounded-xl p-3 text-center">
-          <p className="text-[#00E5A0] text-2xl font-bold">{sessions.length}</p>
-          <p className="text-[#666] text-xs mt-1">total sessions</p>
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function Dashboard({ profile, session }) {
-  const [todayLog, setTodayLog] = useState({})
+  const [nutrition, setNutrition] = useState({ calories: 0, protein: 0, water: 0 })
   const [steps, setSteps] = useState(0)
   const [stepsInput, setStepsInput] = useState('')
   const [showStepsInput, setShowStepsInput] = useState(false)
   const [sessions, setSessions] = useState([])
+  const [todaySession, setTodaySession] = useState(null)
 
   const sport = profile?.sport || 'general'
   const config = SPORT_CONFIG[sport] || SPORT_CONFIG.general
   const goals = profile?.goals || {}
-  const daysLeft = profile?.has_race && profile?.race_date ? getDaysToRace(profile.race_date) : null
+  const calorieGoal = goals.calories || 2800
+  const waterGoal = goals.water || 3.0
+  const stepGoal = profile?.step_goal || 10000
+
+  const daysLeft = profile?.has_race && profile?.race_date
+    ? getDaysToRace(profile.race_date) : null
   const weeksLeft = daysLeft ? Math.ceil(daysLeft / 7) : null
   const startDate = profile?.created_at ? new Date(profile.created_at) : new Date()
-  const totalDays = daysLeft ? Math.ceil((new Date(profile.race_date) - startDate) / (1000 * 60 * 60 * 24)) : 100
-  const progressPct = daysLeft ? Math.max(0, Math.round(((totalDays - daysLeft) / totalDays) * 100)) : 0
+  const totalDays = daysLeft
+    ? Math.ceil((new Date(profile.race_date) - startDate) / (1000 * 60 * 60 * 24))
+    : 100
+  const progressPct = daysLeft
+    ? Math.max(0, Math.round(((totalDays - daysLeft) / totalDays) * 100))
+    : 0
 
-  const calorieGoal = goals.calories || 2800
-  const waterGoal = goals.water || 3.5
-  const calories = todayLog.calories || 0
-  const water = todayLog.water || 0
-  const weight = todayLog.weight || profile?.weight || null
-  const stepGoal = profile?.step_goal || 10000
+  const calPct = Math.min((nutrition.calories / calorieGoal) * 100, 100)
+  const waterPct = Math.min((nutrition.water / waterGoal) * 100, 100)
+  const sessionToday = sessions.filter(s =>
+    new Date(s.date).toDateString() === new Date().toDateString()
+  ).length
+  const workoutPct = Math.min(sessionToday * 50, 100)
+  const overallPct = Math.round((calPct + waterPct + workoutPct) / 3)
   const stepPct = Math.min(Math.round((steps / stepGoal) * 100), 100)
-  const focusMessage = config.focusByWeeks(weeksLeft)
+  const sarcasticMsg = getSarcasticMsg(
+    nutrition.calories, calorieGoal, steps, nutrition.water, waterGoal
+  )
 
   useEffect(() => {
-    fetchTodayData()
+    fetchNutrition()
     fetchSessions()
-    const savedSteps = localStorage.getItem('steps_' + todayKey())
-    if (savedSteps) setSteps(Number(savedSteps))
-    const interval = setInterval(() => fetchTodayData(), 30000)
+    const saved = localStorage.getItem('steps_' + todayKey())
+    if (saved) setSteps(Number(saved))
+    const interval = setInterval(fetchNutrition, 30000)
     return () => clearInterval(interval)
   }, [])
 
-  async function fetchTodayData() {
-    const { data } = await supabase
-      .from('nutrition_logs')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .eq('date', todayDate())
-      .single()
+  async function fetchNutrition() {
+    const { data } = await supabase.from('nutrition_logs').select('*')
+      .eq('user_id', session.user.id).eq('date', todayDate()).single()
     if (data) {
-      const totalCals = Math.round((data.meals || []).reduce((s, m) => s + Number(m.calories || 0), 0))
-      const totalProtein = Math.round((data.meals || []).reduce((s, m) => s + Number(m.protein || 0), 0))
-      setTodayLog(prev => ({ ...prev, calories: totalCals, protein: totalProtein, water: data.water || 0 }))
+      const meals = data.meals || []
+      setNutrition({
+        calories: Math.round(meals.reduce((s, m) => s + Number(m.calories || 0), 0)),
+        protein: Math.round(meals.reduce((s, m) => s + Number(m.protein || 0), 0)),
+        water: data.water || 0,
+      })
     }
-    const { data: weightData } = await supabase
-      .from('weight_logs')
-      .select('weight')
-      .eq('user_id', session.user.id)
-      .order('date', { ascending: false })
-      .limit(1)
-      .single()
-    if (weightData) setTodayLog(prev => ({ ...prev, weight: weightData.weight }))
   }
 
   async function fetchSessions() {
-    const { data } = await supabase
-      .from('sessions')
-      .select('*')
-      .eq('user_id', session.user.id)
-      .order('date', { ascending: false })
-    if (data) setSessions(data)
+    const { data } = await supabase.from('sessions').select('*')
+      .eq('user_id', session.user.id).order('date', { ascending: false })
+    if (data) {
+      setSessions(data)
+      const today = data.find(s =>
+        new Date(s.date).toDateString() === new Date().toDateString()
+      )
+      setTodaySession(today || null)
+    }
   }
 
-  const todaySession = sessions.find(s =>
-    new Date(s.date).toDateString() === new Date().toDateString()
-  )
+  async function updateWater(amount) {
+    const newWater = Math.max(0, Math.round((nutrition.water + amount) * 10) / 10)
+    setNutrition(n => ({ ...n, water: newWater }))
+    await supabase.from('nutrition_logs').upsert(
+      { user_id: session.user.id, date: todayDate(), water: newWater, meals: [] },
+      { onConflict: 'user_id,date' }
+    )
+  }
 
   function saveSteps() {
     const val = Number(stepsInput)
@@ -330,203 +263,241 @@ export default function Dashboard({ profile, session }) {
     setShowStepsInput(false)
   }
 
+  const card = {
+    margin: '0 16px 12px',
+    background: '#131313',
+    border: '1px solid #222',
+    borderRadius: 18,
+    padding: 16,
+  }
+  const label = {
+    fontSize: 10,
+    color: '#555',
+    textTransform: 'uppercase',
+    letterSpacing: '.06em',
+    fontWeight: 600,
+    marginBottom: 6,
+  }
+
   return (
-    <div className="p-4 space-y-4">
+    <div style={{ paddingTop: 52 }}>
 
       {/* Header */}
-      <div className="pt-4 flex items-start justify-between">
+      <div style={{ padding: '0 16px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p className="text-[#666] text-sm">{getGreeting()},</p>
-          <h1 className="text-2xl font-bold text-white">{profile?.name || 'Athlete'} 👋</h1>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-lg">{config.icon}</span>
-            <span className="text-xs font-medium px-2 py-0.5 rounded-lg"
-              style={{ color: config.color, background: config.color + '20' }}>
-              {config.name}
-            </span>
+          <p style={{ fontSize: 13, color: '#666' }}>{getGreeting()},</p>
+          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.3px' }}>
+            {profile?.name || 'Athlete'} 👋
+          </h1>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 8, marginTop: 4, border: '1px solid', color: config.color, borderColor: config.color + '40', background: config.color + '15' }}>
+            {config.icon} {config.name}
             {profile?.event_name && (
-              <span className="text-[#666] text-xs">· {profile.event_name}</span>
+              <span style={{ color: '#555', fontWeight: 400 }}>· {profile.event_name}</span>
             )}
+          </div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg,#1a0800,#2d1200)', border: '1px solid #FF5A1F40', borderRadius: 12, padding: '7px 12px', fontSize: 13, fontWeight: 700, color: '#FF5A1F' }}>
+          🔥 {sessions.length}
+          <span style={{ fontSize: 10, fontWeight: 400, color: '#888' }}>sessions</span>
+        </div>
+      </div>
+
+      {/* Progress Ring Card */}
+      <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 18 }}>
+        <Ring pct={overallPct} color="#FF5A1F">
+          <span style={{ fontWeight: 700, fontSize: 26, color: '#fff', lineHeight: 1 }}>{overallPct}%</span>
+          <span style={{ fontSize: 10, color: '#555', marginTop: 2 }}>Today</span>
+        </Ring>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {/* Calories row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 30, height: 30, borderRadius: 9, background: '#1a0800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>🔥</div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#FF5A1F' }}>
+                {nutrition.calories} <span style={{ fontSize: 12, fontWeight: 400, color: '#555' }}>/ {calorieGoal} kcal</span>
+              </p>
+              <p style={{ fontSize: 10, color: '#555' }}>Calories consumed</p>
+              <div style={{ height: 3, background: '#1a1a1a', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${calPct}%`, background: '#FF5A1F', borderRadius: 2 }} />
+              </div>
+            </div>
+          </div>
+          {/* Water row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 30, height: 30, borderRadius: 9, background: '#001020', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>💧</div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#3B82F6' }}>
+                {nutrition.water}L <span style={{ fontSize: 12, fontWeight: 400, color: '#555' }}>/ {waterGoal}L</span>
+              </p>
+              <p style={{ fontSize: 10, color: '#555' }}>Water intake</p>
+              <div style={{ height: 3, background: '#1a1a1a', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${waterPct}%`, background: '#3B82F6', borderRadius: 2 }} />
+              </div>
+            </div>
+          </div>
+          {/* Workout row */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 30, height: 30, borderRadius: 9, background: '#001a08', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>💪</div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14, fontWeight: 600, color: '#22C55E' }}>
+                {todaySession ? todaySession.type : 'Rest day'}
+                <span style={{ fontSize: 12, fontWeight: 400, color: '#555' }}>
+                  {todaySession ? ` · RPE ${todaySession.rpe || '--'}/10` : ''}
+                </span>
+              </p>
+              <p style={{ fontSize: 10, color: '#555' }}>Today's session</p>
+              <div style={{ height: 3, background: '#1a1a1a', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${workoutPct}%`, background: '#22C55E', borderRadius: 2 }} />
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Countdown or streak */}
-      {daysLeft !== null ? (
-        <div className="bg-[#1a1a1a] rounded-2xl p-5 border"
-          style={{ borderColor: config.color + '40' }}>
-          <div className="flex items-end gap-3 mb-3">
-            <span className="text-6xl font-bold" style={{ color: config.color }}>{daysLeft}</span>
-            <div className="mb-2">
-              <p className="text-white font-medium">days to {profile?.event_name || 'race'}</p>
-              <p className="text-[#666] text-sm">
-                {weeksLeft} weeks · {new Date(profile.race_date).toLocaleDateString('en-GB', {
-                  day: 'numeric', month: 'long', year: 'numeric'
-                })}
+      {/* Sarcastic AI — right after ring */}
+      <div style={{ ...card, background: '#0a0500', borderColor: '#FF5A1F20' }}>
+        <p style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: '#FF8C42', marginBottom: 5 }}>
+          🤖 OneFitness says
+        </p>
+        <p style={{ fontSize: 13, color: '#bbb', lineHeight: 1.5 }}>{sarcasticMsg}</p>
+      </div>
+
+      {/* Nutrition + Water side by side */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: '0 16px', marginBottom: 12 }}>
+
+        {/* Nutrition card */}
+        <div style={{ background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 14 }}>
+          <p style={label}>Nutrition</p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <Ring pct={calPct} size={62} stroke={8} color="#FF5A1F">
+              <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>{nutrition.calories}</span>
+            </Ring>
+            <div>
+              <p style={{ fontSize: 10, color: '#555' }}>/ {calorieGoal}</p>
+              <p style={{ fontSize: 11, color: '#FF5A1F', fontWeight: 600, marginTop: 2 }}>
+                {Math.max(0, calorieGoal - nutrition.calories)} left
               </p>
             </div>
           </div>
-          <div className="w-full bg-[#2a2a2a] rounded-full h-2">
-            <div className="h-2 rounded-full transition-all"
-              style={{ width: `${Math.max(progressPct, 2)}%`, background: config.color }} />
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
+            {[
+              { label: 'Protein', val: nutrition.protein, goal: goals.protein || 180, color: '#22C55E' },
+              { label: 'Carbs', val: 0, goal: goals.carbs || 300, color: '#3B82F6' },
+              { label: 'Fats', val: 0, goal: goals.fat || 80, color: '#FF8C42' },
+            ].map(({ label: l, val, goal, color }) => (
+              <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10 }}>
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }} />
+                <span style={{ color: '#555', flex: 1 }}>{l}</span>
+                <span style={{ color: '#888' }}>{val}/{goal}g</span>
+              </div>
+            ))}
           </div>
-          <p className="text-[#666] text-xs mt-2">{progressPct}% of prep complete</p>
         </div>
-      ) : (
-        <div className="bg-[#1a1a1a] rounded-2xl p-5 border border-[#2a2a2a]">
-          <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: config.color }}>
-            Training streak
-          </p>
-          <p className="text-4xl font-bold text-white">
-            {sessions.length} <span className="text-lg text-[#666]">sessions logged</span>
-          </p>
-          <p className="text-[#666] text-sm mt-1">Keep the momentum going 💪</p>
-        </div>
-      )}
 
-      {/* Weight progress */}
-      {profile?.goal_weight && weight && Number(profile.weight) !== Number(profile.goal_weight) && (
-        <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-          <p className="text-[#666] text-xs uppercase tracking-wider mb-3">Weight progress</p>
-          <div className="flex items-center justify-between mb-2">
-            <div className="text-center">
-              <p className="text-[#666] text-xs">Start</p>
-              <p className="text-white font-bold">{profile.weight}kg</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[#666] text-xs">Now</p>
-              <p className="font-bold text-lg" style={{ color: config.color }}>{weight}kg</p>
-            </div>
-            <div className="text-center">
-              <p className="text-[#666] text-xs">Goal</p>
-              <p className="text-white font-bold">{profile.goal_weight}kg</p>
-            </div>
+        {/* Water card */}
+        <div style={{ background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 14, display: 'flex', flexDirection: 'column' }}>
+          <p style={label}>Water 💧</p>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <Ring pct={waterPct} size={76} stroke={9} color="#3B82F6">
+              <span style={{ fontSize: 17, fontWeight: 700, color: '#3B82F6', lineHeight: 1 }}>{nutrition.water}</span>
+              <span style={{ fontSize: 9, color: '#555' }}>/ {waterGoal}L</span>
+            </Ring>
           </div>
-          <div className="w-full bg-[#2a2a2a] rounded-full h-2">
-            <div className="h-2 rounded-full transition-all"
-              style={{
-                background: config.color,
-                width: `${Math.min(Math.max(((profile.weight - weight) / (profile.weight - profile.goal_weight)) * 100, 0), 100)}%`
-              }} />
-          </div>
-          <p className="text-[#666] text-xs mt-1">
-            {weight > profile.goal_weight
-              ? `${(weight - profile.goal_weight).toFixed(1)}kg to goal`
-              : 'Goal reached! 🎉'}
+          <p style={{ fontSize: 10, color: '#555', textAlign: 'center', margin: '6px 0 10px' }}>
+            {waterPct >= 100 ? '✓ Goal reached!' : `${Math.round((waterGoal - nutrition.water) * 10) / 10}L to go`}
           </p>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => updateWater(-0.25)}
+              style={{ flex: 1, height: 36, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, color: '#fff', fontSize: 22, cursor: 'pointer', fontWeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
+            <button onClick={() => updateWater(0.25)}
+              style={{ flex: 1, height: 36, background: '#3B82F6', border: 'none', borderRadius: 10, color: '#fff', fontSize: 22, cursor: 'pointer', fontWeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
+          </div>
         </div>
-      )}
-
-      {/* Sport specific section */}
-      <SportSection
-        sport={sport}
-        sessions={sessions}
-        todayLog={todayLog}
-        goals={goals}
-        profile={profile}
-      />
-
-      {/* Sleep tracking */}
-      <SleepCard userId={session.user.id} />
+      </div>
 
       {/* Steps */}
-      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Footprints size={16} style={{ color: config.color }} />
-            <span className="text-white font-medium">{steps.toLocaleString()}</span>
-            <span className="text-[#666] text-sm">/ {stepGoal.toLocaleString()} steps</span>
+      <div style={card}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div>
+            <p style={{ fontSize: 32, fontWeight: 700, color: '#22C55E', lineHeight: 1 }}>
+              {steps.toLocaleString()}
+            </p>
+            <p style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
+              steps · goal {stepGoal.toLocaleString()}
+            </p>
           </div>
-          <button onClick={() => setShowStepsInput(s => !s)}
-            className="text-xs border px-3 py-1 rounded-lg"
-            style={{ color: config.color, borderColor: config.color }}>
-            {showStepsInput ? 'Cancel' : 'Log'}
-          </button>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
+            <span style={{ fontSize: 28 }}>🏃</span>
+            <button onClick={() => setShowStepsInput(s => !s)}
+              style={{ fontSize: 11, color: '#FF5A1F', border: '1px solid #FF5A1F40', borderRadius: 8, padding: '4px 10px', background: '#FF5A1F15', cursor: 'pointer' }}>
+              {showStepsInput ? 'Cancel' : 'Log steps'}
+            </button>
+          </div>
         </div>
-        <div className="w-full bg-[#2a2a2a] rounded-full h-2 mb-1">
-          <div className="h-2 rounded-full transition-all"
-            style={{ width: `${stepPct}%`, background: config.color }} />
+        <div style={{ height: 8, background: '#1a1a1a', borderRadius: 4, overflow: 'hidden', marginBottom: 6 }}>
+          <div style={{ height: '100%', width: `${stepPct}%`, background: 'linear-gradient(90deg,#22C55E,#4ADE80)', borderRadius: 4, transition: '.3s' }} />
         </div>
-        <p className="text-[#666] text-xs">{stepPct}% of daily goal</p>
+        <p style={{ fontSize: 11, color: '#555' }}>
+          {stepPct}% · {Math.max(0, stepGoal - steps).toLocaleString()} to go
+        </p>
         {showStepsInput && (
-          <div className="flex gap-2 mt-3">
-            <input type="number" placeholder="Enter steps (e.g. 8500)"
-              value={stepsInput} onChange={e => setStepsInput(e.target.value)}
-              className="flex-1 bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2 outline-none placeholder-[#444]" />
+          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+            <input type="number" placeholder="e.g. 8500" value={stepsInput}
+              onChange={e => setStepsInput(e.target.value)}
+              style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 12, padding: '10px 14px', color: '#fff', fontSize: 14, outline: 'none' }} />
             <button onClick={saveSteps}
-              className="text-black text-sm font-medium px-4 py-2 rounded-xl"
-              style={{ background: config.color }}>
+              style={{ background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '10px 18px', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Save
             </button>
           </div>
         )}
       </div>
 
-      {/* Today's session */}
-      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-        <div className="flex items-center justify-between mb-3">
-          <p className="text-[#666] text-xs uppercase tracking-wider">Today's Session</p>
-          <ChevronRight size={16} className="text-[#444]" />
-        </div>
-        {todaySession ? (
-          <div>
-            <p className="text-white font-medium">{todaySession.type}</p>
-            <p className="text-[#666] text-sm">{todaySession.notes || 'No notes'}</p>
-          </div>
-        ) : (
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-full bg-[#2a2a2a] flex items-center justify-center">
-              <Zap size={14} className="text-[#444]" />
-            </div>
-            <div>
-              <p className="text-white text-sm">No session planned</p>
-              <p className="text-[#666] text-xs">Go to Training to add one</p>
-            </div>
-          </div>
-        )}
-      </div>
+      {/* Sleep */}
+      <SleepCard userId={session.user.id} />
 
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="bg-[#1a1a1a] rounded-2xl p-3 border border-[#2a2a2a]">
-          <Flame size={16} className="text-[#FF6B35] mb-2" />
-          <p className="text-white font-bold text-lg leading-none">{calories}</p>
-          <p className="text-[#666] text-xs mt-1">of {calorieGoal}</p>
-          <p className="text-[#666] text-xs">kcal</p>
-          <div className="w-full bg-[#2a2a2a] rounded-full h-1 mt-2">
-            <div className="bg-[#FF6B35] h-1 rounded-full"
-              style={{ width: `${Math.min((calories / calorieGoal) * 100, 100)}%` }} />
+      {/* Race countdown */}
+      {daysLeft !== null && daysLeft > 0 && (
+        <div style={{ ...card, background: '#0a0d00', borderColor: config.color + '25' }}>
+          <p style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: config.color, marginBottom: 6 }}>
+            {config.icon} {profile?.event_name || 'Race'} · Countdown
+          </p>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
+            <span style={{ fontSize: 52, fontWeight: 700, color: config.color, lineHeight: 1 }}>{daysLeft}</span>
+            <span style={{ color: '#444', fontSize: 14 }}>
+              days · {new Date(profile.race_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </span>
           </div>
-        </div>
-        <div className="bg-[#1a1a1a] rounded-2xl p-3 border border-[#2a2a2a]">
-          <Droplets size={16} className="text-[#3B9EFF] mb-2" />
-          <p className="text-white font-bold text-lg leading-none">{water}L</p>
-          <p className="text-[#666] text-xs mt-1">of {waterGoal}L</p>
-          <p className="text-[#666] text-xs">water</p>
-          <div className="w-full bg-[#2a2a2a] rounded-full h-1 mt-2">
-            <div className="bg-[#3B9EFF] h-1 rounded-full"
-              style={{ width: `${Math.min((water / waterGoal) * 100, 100)}%` }} />
+          <div style={{ height: 4, background: '#1a1a1a', borderRadius: 2, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: `${progressPct}%`, background: config.color, borderRadius: 2 }} />
           </div>
+          <p style={{ fontSize: 11, color: '#444', marginTop: 5 }}>{progressPct}% of prep complete</p>
         </div>
-        <div className="bg-[#1a1a1a] rounded-2xl p-3 border border-[#2a2a2a]">
-          <Weight size={16} className="text-[#A78BFA] mb-2" />
-          <p className="text-white font-bold text-lg leading-none">{weight || '--'}</p>
-          <p className="text-[#666] text-xs mt-1">&nbsp;</p>
-          <p className="text-[#666] text-xs">kg</p>
-          <div className="w-full bg-[#2a2a2a] rounded-full h-1 mt-2">
-            <div className="bg-[#A78BFA] h-1 rounded-full" style={{ width: '0%' }} />
-          </div>
-        </div>
-      </div>
+      )}
 
-      {/* Daily focus */}
-      <div className="rounded-2xl p-4 border"
-        style={{ background: config.color + '10', borderColor: config.color + '30' }}>
-        <p className="text-xs font-medium uppercase tracking-wider mb-1" style={{ color: config.color }}>
-          {config.icon} Daily Focus
-        </p>
-        <p className="text-white text-sm">{focusMessage}</p>
-      </div>
+      {/* Weight progress */}
+      {profile?.goal_weight && profile?.weight &&
+        Number(profile.weight) !== Number(profile.goal_weight) && (
+        <div style={{ ...card, marginBottom: 14 }}>
+          <p style={label}>Weight progress</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ color: '#555', fontSize: 11 }}>Start</p>
+              <p style={{ color: '#fff', fontWeight: 700 }}>{profile.weight}kg</p>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <p style={{ color: '#555', fontSize: 11 }}>Goal</p>
+              <p style={{ color: '#fff', fontWeight: 700 }}>{profile.goal_weight}kg</p>
+            </div>
+          </div>
+          <div style={{ height: 6, background: '#1a1a1a', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: '100%', width: '8%', background: '#FF5A1F', borderRadius: 3 }} />
+          </div>
+          <p style={{ fontSize: 11, color: '#555', marginTop: 5 }}>
+            {Math.abs(Number(profile.weight) - Number(profile.goal_weight)).toFixed(1)}kg to goal
+          </p>
+        </div>
+      )}
 
     </div>
   )
