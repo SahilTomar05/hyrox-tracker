@@ -1,850 +1,786 @@
-import { useState, useEffect } from 'react'
-import { Plus, X, ChevronDown, ChevronUp, Check, Trash2 } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+import { X, Check, Trash2, ChevronDown, ChevronUp, Plus, Search } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
-const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const ALL_EXERCISES = [
+  // Strength - Chest
+  { name: 'Flat Bench Press', cat: 'Strength', sub: 'Chest' },
+  { name: 'Incline Bench Press', cat: 'Strength', sub: 'Chest' },
+  { name: 'Decline Bench Press', cat: 'Strength', sub: 'Chest' },
+  { name: 'Dumbbell Chest Press', cat: 'Strength', sub: 'Chest' },
+  { name: 'Incline Dumbbell Press', cat: 'Strength', sub: 'Chest' },
+  { name: 'Chest Flyes', cat: 'Strength', sub: 'Chest' },
+  { name: 'Cable Crossover', cat: 'Strength', sub: 'Chest' },
+  { name: 'Pec Deck', cat: 'Strength', sub: 'Chest' },
+  { name: 'Push Ups', cat: 'Strength', sub: 'Chest' },
+  { name: 'Dips', cat: 'Strength', sub: 'Chest' },
+  // Strength - Back
+  { name: 'Deadlift', cat: 'Strength', sub: 'Back' },
+  { name: 'Barbell Row', cat: 'Strength', sub: 'Back' },
+  { name: 'Dumbbell Row', cat: 'Strength', sub: 'Back' },
+  { name: 'Lat Pulldown', cat: 'Strength', sub: 'Back' },
+  { name: 'Seated Cable Row', cat: 'Strength', sub: 'Back' },
+  { name: 'T-Bar Row', cat: 'Strength', sub: 'Back' },
+  { name: 'Face Pulls', cat: 'Strength', sub: 'Back' },
+  { name: 'Pull Ups', cat: 'Strength', sub: 'Back' },
+  { name: 'Chin Ups', cat: 'Strength', sub: 'Back' },
+  { name: 'Rack Pull', cat: 'Strength', sub: 'Back' },
+  // Strength - Shoulders
+  { name: 'Overhead Press', cat: 'Strength', sub: 'Shoulders' },
+  { name: 'Dumbbell Shoulder Press', cat: 'Strength', sub: 'Shoulders' },
+  { name: 'Arnold Press', cat: 'Strength', sub: 'Shoulders' },
+  { name: 'Lateral Raises', cat: 'Strength', sub: 'Shoulders' },
+  { name: 'Front Raises', cat: 'Strength', sub: 'Shoulders' },
+  { name: 'Rear Delt Flyes', cat: 'Strength', sub: 'Shoulders' },
+  { name: 'Shrugs', cat: 'Strength', sub: 'Shoulders' },
+  { name: 'Upright Row', cat: 'Strength', sub: 'Shoulders' },
+  // Strength - Legs
+  { name: 'Barbell Squat', cat: 'Strength', sub: 'Legs' },
+  { name: 'Front Squat', cat: 'Strength', sub: 'Legs' },
+  { name: 'Leg Press', cat: 'Strength', sub: 'Legs' },
+  { name: 'Romanian Deadlift', cat: 'Strength', sub: 'Legs' },
+  { name: 'Leg Curl', cat: 'Strength', sub: 'Legs' },
+  { name: 'Leg Extension', cat: 'Strength', sub: 'Legs' },
+  { name: 'Bulgarian Split Squat', cat: 'Strength', sub: 'Legs' },
+  { name: 'Lunges', cat: 'Strength', sub: 'Legs' },
+  { name: 'Hack Squat', cat: 'Strength', sub: 'Legs' },
+  { name: 'Calf Raises', cat: 'Strength', sub: 'Legs' },
+  { name: 'Hip Thrust', cat: 'Strength', sub: 'Legs' },
+  { name: 'Glute Bridge', cat: 'Strength', sub: 'Legs' },
+  // Strength - Arms
+  { name: 'Barbell Curl', cat: 'Strength', sub: 'Arms' },
+  { name: 'Dumbbell Curl', cat: 'Strength', sub: 'Arms' },
+  { name: 'Hammer Curl', cat: 'Strength', sub: 'Arms' },
+  { name: 'Preacher Curl', cat: 'Strength', sub: 'Arms' },
+  { name: 'Cable Curl', cat: 'Strength', sub: 'Arms' },
+  { name: 'Concentration Curl', cat: 'Strength', sub: 'Arms' },
+  { name: 'Tricep Pushdown', cat: 'Strength', sub: 'Arms' },
+  { name: 'Skull Crushers', cat: 'Strength', sub: 'Arms' },
+  { name: 'Overhead Tricep Extension', cat: 'Strength', sub: 'Arms' },
+  { name: 'Close Grip Bench', cat: 'Strength', sub: 'Arms' },
+  // Strength - Power
+  { name: 'Power Clean', cat: 'Strength', sub: 'Power' },
+  { name: 'Clean & Jerk', cat: 'Strength', sub: 'Power' },
+  { name: 'Snatch', cat: 'Strength', sub: 'Power' },
+  { name: 'Hang Clean', cat: 'Strength', sub: 'Power' },
+  { name: 'Push Press', cat: 'Strength', sub: 'Power' },
+  { name: 'Thruster', cat: 'Strength', sub: 'Power' },
+  { name: 'Farmers Walk', cat: 'Strength', sub: 'Power' },
+  { name: 'Kettlebell Swing', cat: 'Strength', sub: 'Power' },
+  { name: 'Turkish Get Up', cat: 'Strength', sub: 'Power' },
+  { name: 'Sled Push', cat: 'Strength', sub: 'Power' },
+  { name: 'Sled Pull', cat: 'Strength', sub: 'Power' },
+  { name: 'Muscle Ups', cat: 'Strength', sub: 'Power' },
+  { name: 'Handstand Push Ups', cat: 'Strength', sub: 'Power' },
+  // Conditioning - Cardio
+  { name: 'Easy Run', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Tempo Run', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Long Run', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Interval Run', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Hill Run', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Sprint Session', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Fartlek', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Recovery Jog', cat: 'Conditioning', sub: 'Running' },
+  { name: 'Row Erg', cat: 'Conditioning', sub: 'Machine' },
+  { name: 'SkiErg', cat: 'Conditioning', sub: 'Machine' },
+  { name: 'Assault Bike', cat: 'Conditioning', sub: 'Machine' },
+  { name: 'Stairmaster', cat: 'Conditioning', sub: 'Machine' },
+  { name: 'Elliptical', cat: 'Conditioning', sub: 'Machine' },
+  { name: 'Treadmill', cat: 'Conditioning', sub: 'Machine' },
+  { name: 'Steady State Ride', cat: 'Conditioning', sub: 'Cycling' },
+  { name: 'Interval Ride', cat: 'Conditioning', sub: 'Cycling' },
+  { name: 'Indoor Cycling', cat: 'Conditioning', sub: 'Cycling' },
+  { name: 'Burpees', cat: 'Conditioning', sub: 'HIIT' },
+  { name: 'Box Jumps', cat: 'Conditioning', sub: 'HIIT' },
+  { name: 'Jump Rope', cat: 'Conditioning', sub: 'HIIT' },
+  { name: 'Battle Ropes', cat: 'Conditioning', sub: 'HIIT' },
+  { name: 'Mountain Climbers', cat: 'Conditioning', sub: 'HIIT' },
+  { name: 'Tabata', cat: 'Conditioning', sub: 'HIIT' },
+  { name: 'AMRAP', cat: 'Conditioning', sub: 'HIIT' },
+  { name: 'EMOM', cat: 'Conditioning', sub: 'HIIT' },
+  // Conditioning - Core
+  { name: 'Plank', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Side Plank', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Hollow Hold', cat: 'Conditioning', sub: 'Core' },
+  { name: 'L-Sit', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Crunches', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Bicycle Crunches', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Leg Raises', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Hanging Leg Raises', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Ab Wheel Rollout', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Russian Twist', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Dragon Flag', cat: 'Conditioning', sub: 'Core' },
+  { name: 'V Ups', cat: 'Conditioning', sub: 'Core' },
+  { name: 'Dead Bug', cat: 'Conditioning', sub: 'Core' },
+  // Skills
+  { name: 'Football Drills', cat: 'Skills', sub: 'Team Sports' },
+  { name: 'Cricket Batting', cat: 'Skills', sub: 'Team Sports' },
+  { name: 'Cricket Bowling', cat: 'Skills', sub: 'Team Sports' },
+  { name: 'Basketball Drills', cat: 'Skills', sub: 'Team Sports' },
+  { name: 'Volleyball Practice', cat: 'Skills', sub: 'Team Sports' },
+  { name: 'Tennis Drills', cat: 'Skills', sub: 'Racket' },
+  { name: 'Badminton Practice', cat: 'Skills', sub: 'Racket' },
+  { name: 'Squash', cat: 'Skills', sub: 'Racket' },
+  { name: 'Boxing Sparring', cat: 'Skills', sub: 'Combat' },
+  { name: 'MMA Sparring', cat: 'Skills', sub: 'Combat' },
+  { name: 'Kickboxing', cat: 'Skills', sub: 'Combat' },
+  { name: 'Muay Thai', cat: 'Skills', sub: 'Combat' },
+  { name: 'Wrestling', cat: 'Skills', sub: 'Combat' },
+  { name: 'BJJ Rolling', cat: 'Skills', sub: 'Combat' },
+  { name: 'Pad Work', cat: 'Skills', sub: 'Combat' },
+  { name: 'Heavy Bag', cat: 'Skills', sub: 'Combat' },
+  { name: 'Gymnastics Practice', cat: 'Skills', sub: 'Movement' },
+  { name: 'Parkour', cat: 'Skills', sub: 'Movement' },
+  { name: 'Breakdancing', cat: 'Skills', sub: 'Movement' },
+  { name: 'Freestyle Movement', cat: 'Skills', sub: 'Movement' },
+  { name: 'Handstand Practice', cat: 'Skills', sub: 'Movement' },
+  { name: 'Climbing', cat: 'Skills', sub: 'Movement' },
+  { name: 'Dance Practice', cat: 'Skills', sub: 'Movement' },
+  { name: 'Sport Practice', cat: 'Skills', sub: 'General' },
+  { name: 'Scrimmage', cat: 'Skills', sub: 'General' },
+  // Mobility
+  { name: 'Sun Salutation', cat: 'Mobility', sub: 'Yoga' },
+  { name: 'Yoga Flow', cat: 'Mobility', sub: 'Yoga' },
+  { name: 'Yin Yoga', cat: 'Mobility', sub: 'Yoga' },
+  { name: 'Hot Yoga', cat: 'Mobility', sub: 'Yoga' },
+  { name: 'Power Yoga', cat: 'Mobility', sub: 'Yoga' },
+  { name: 'Hip Flexor Stretch', cat: 'Mobility', sub: 'Stretch' },
+  { name: 'Hamstring Stretch', cat: 'Mobility', sub: 'Stretch' },
+  { name: 'Quad Stretch', cat: 'Mobility', sub: 'Stretch' },
+  { name: 'IT Band Stretch', cat: 'Mobility', sub: 'Stretch' },
+  { name: 'Full Body Stretch', cat: 'Mobility', sub: 'Stretch' },
+  { name: 'Hip Mobility', cat: 'Mobility', sub: 'Mobility' },
+  { name: 'Ankle Mobility', cat: 'Mobility', sub: 'Mobility' },
+  { name: 'Shoulder Mobility', cat: 'Mobility', sub: 'Mobility' },
+  { name: 'Thoracic Mobility', cat: 'Mobility', sub: 'Mobility' },
+  { name: 'Cat Cow', cat: 'Mobility', sub: 'Mobility' },
+  { name: "World's Greatest Stretch", cat: 'Mobility', sub: 'Mobility' },
+  { name: 'Foam Rolling', cat: 'Mobility', sub: 'Recovery' },
+  { name: 'Massage Gun', cat: 'Mobility', sub: 'Recovery' },
+  { name: 'Ice Bath', cat: 'Mobility', sub: 'Recovery' },
+  { name: 'Sauna', cat: 'Mobility', sub: 'Recovery' },
+  { name: 'Walk', cat: 'Mobility', sub: 'Recovery' },
+  { name: 'Meditation', cat: 'Mobility', sub: 'Recovery' },
+  { name: 'Breathing Exercises', cat: 'Mobility', sub: 'Recovery' },
+  { name: 'Glute Activation', cat: 'Mobility', sub: 'Prehab' },
+  { name: 'Band Pull Aparts', cat: 'Mobility', sub: 'Prehab' },
+  { name: 'Core Activation', cat: 'Mobility', sub: 'Prehab' },
+]
 
-// Sport-aware workout categories
-const SPORT_WORKOUTS = {
-  hyrox: {
-    categories: ['Hyrox Stations', 'Strength', 'Running', 'HIIT', 'Recovery', 'Custom'],
-    exercises: {
-      'Hyrox Stations': ['SkiErg', 'Sled Push', 'Sled Pull', 'Burpee Broad Jump', 'Row Erg', 'Farmers Carry', 'Sandbag Lunges', 'Wall Balls'],
-      'Strength': ['Deadlift', 'Squat', 'Bench Press', 'Overhead Press', 'Pull Ups', 'Dips', 'Lunges', 'Romanian Deadlift'],
-      'Running': ['Easy Run', 'Tempo Run', 'Interval Run', 'Long Run', 'Hill Run', 'Sprint Session'],
-      'HIIT': ['Burpees', 'Box Jumps', 'Kettlebell Swings', 'Battle Ropes', 'Assault Bike', 'Jump Rope'],
-      'Recovery': ['Foam Rolling', 'Stretching', 'Yoga', 'Ice Bath', 'Walk'],
-    }
-  },
-  marathon: {
-    categories: ['Running', 'Strength', 'Mobility', 'Cross Training', 'Recovery', 'Custom'],
-    exercises: {
-      'Running': ['Easy Run', 'Tempo Run', 'Long Run', 'Interval Run', 'Hill Run', 'Fartlek', 'Recovery Jog', 'Sprint Session'],
-      'Strength': ['Squats', 'Lunges', 'Deadlift', 'Calf Raises', 'Glute Bridge', 'Single Leg RDL', 'Step Ups'],
-      'Mobility': ['Hip Flexor Stretch', 'IT Band Stretch', 'Hamstring Stretch', 'Yoga Flow', 'Foam Rolling'],
-      'Cross Training': ['Cycling', 'Swimming', 'Elliptical', 'Rowing'],
-      'Recovery': ['Ice Bath', 'Compression', 'Massage', 'Walk', 'Rest'],
-    }
-  },
-  bodybuilding: {
-    categories: ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Core', 'Cardio', 'Custom'],
-    exercises: {
-      'Chest': ['Flat Bench Press', 'Incline Bench Press', 'Decline Bench Press', 'Dumbbell Chest Press', 'Incline Dumbbell Press', 'Chest Flyes', 'Cable Crossover', 'Pec Deck', 'Push Ups', 'Dips'],
-      'Back': ['Deadlift', 'Barbell Row', 'Dumbbell Row', 'Lat Pulldown', 'Seated Cable Row', 'T-Bar Row', 'Face Pulls', 'Pull Ups', 'Chin Ups'],
-      'Legs': ['Barbell Squat', 'Leg Press', 'Romanian Deadlift', 'Leg Curl', 'Leg Extension', 'Bulgarian Split Squat', 'Lunges', 'Hack Squat', 'Calf Raises'],
-      'Shoulders': ['Overhead Press', 'Dumbbell Shoulder Press', 'Arnold Press', 'Lateral Raises', 'Front Raises', 'Rear Delt Flyes', 'Shrugs'],
-      'Arms': ['Barbell Curl', 'Dumbbell Curl', 'Hammer Curl', 'Preacher Curl', 'Tricep Pushdown', 'Skull Crushers', 'Overhead Tricep Extension', 'Close Grip Bench'],
-      'Core': ['Crunches', 'Plank', 'Russian Twist', 'Leg Raises', 'Ab Wheel Rollout', 'Cable Woodchop'],
-      'Cardio': ['Treadmill', 'Cycling', 'Stairmaster', 'Elliptical', 'Jump Rope'],
-    }
-  },
-  crossfit: {
-    categories: ['WOD', 'Strength', 'Olympic Lifting', 'Gymnastics', 'Cardio', 'Custom'],
-    exercises: {
-      'WOD': ['Fran', 'Cindy', 'Murph', 'Grace', 'Helen', 'Jackie', 'Custom WOD'],
-      'Strength': ['Back Squat', 'Front Squat', 'Deadlift', 'Press', 'Bench Press', 'Strict Pull Up'],
-      'Olympic Lifting': ['Clean', 'Snatch', 'Clean & Jerk', 'Power Clean', 'Hang Clean', 'Push Press', 'Push Jerk'],
-      'Gymnastics': ['Pull Ups', 'Muscle Ups', 'Handstand Push Up', 'Toes to Bar', 'Ring Dips', 'Box Jumps', 'Double Unders'],
-      'Cardio': ['Row Erg', 'Assault Bike', 'SkiErg', 'Run', 'Jump Rope'],
-    }
-  },
-  cycling: {
-    categories: ['Road Ride', 'Indoor Cycling', 'Strength', 'Mobility', 'Recovery', 'Custom'],
-    exercises: {
-      'Road Ride': ['Steady State Ride', 'Interval Ride', 'Hill Climb', 'Recovery Ride', 'Long Ride', 'Race Simulation'],
-      'Indoor Cycling': ['Zwift Session', 'Trainer Ride', 'Interval Trainer', 'FTP Test'],
-      'Strength': ['Squats', 'Leg Press', 'Deadlift', 'Calf Raises', 'Core Work', 'Hip Flexor Work'],
-      'Mobility': ['Hip Flexor Stretch', 'Quad Stretch', 'Foam Rolling', 'Yoga'],
-      'Recovery': ['Easy Spin', 'Walk', 'Stretching', 'Massage'],
-    }
-  },
-  triathlon: {
-    categories: ['Swim', 'Bike', 'Run', 'Brick', 'Strength', 'Recovery', 'Custom'],
-    exercises: {
-      'Swim': ['Freestyle Laps', 'Open Water Swim', 'Drill Work', 'Pull Buoy', 'Kick Set', 'Interval Swim'],
-      'Bike': ['Steady Ride', 'Interval Ride', 'Hill Climb', 'Recovery Ride', 'Long Ride'],
-      'Run': ['Easy Run', 'Tempo Run', 'Long Run', 'Interval Run', 'Brick Run'],
-      'Brick': ['Bike + Run', 'Swim + Bike', 'Full Brick Session'],
-      'Strength': ['Squats', 'Core Work', 'Hip Work', 'Upper Body'],
-      'Recovery': ['Stretching', 'Foam Rolling', 'Easy Swim', 'Walk'],
-    }
-  },
-  ocr: {
-    categories: ['OCR Training', 'Running', 'Strength', 'Grip Training', 'Obstacle Practice', 'Custom'],
-    exercises: {
-      'OCR Training': ['Devil Circuit Simulation', 'Yodha Race Prep', 'Spartan Training', 'Full OCR Practice'],
-      'Running': ['Trail Run', 'Hill Run', 'Interval Run', 'Long Run', 'Recovery Jog'],
-      'Strength': ['Deadlift', 'Pull Ups', 'Carries', 'Sandbag Work', 'Tire Flips', 'Sled Push'],
-      'Grip Training': ['Dead Hangs', 'Monkey Bars', 'Rope Climb', 'Towel Pull Ups', 'Farmer Carries'],
-      'Obstacle Practice': ['Rope Climb', 'Wall Climb', 'Spear Throw', 'Barbed Wire Crawl', 'Atlas Stone'],
-    }
-  },
-  combat: {
-    categories: ['Sparring', 'Pad Work', 'Bag Work', 'Conditioning', 'Strength', 'Recovery', 'Custom'],
-    exercises: {
-      'Sparring': ['Boxing Sparring', 'MMA Sparring', 'Kickboxing Sparring', 'Grappling', 'Wrestling'],
-      'Pad Work': ['Boxing Combos', 'Kickboxing Combos', 'Muay Thai Combos', 'Defense Drills'],
-      'Bag Work': ['Heavy Bag', 'Speed Bag', 'Double End Bag', 'Maize Bag'],
-      'Conditioning': ['Roadwork', 'Jump Rope', 'Burpees', 'Sprints', 'Circuit Training'],
-      'Strength': ['Squats', 'Deadlift', 'Pull Ups', 'Core Work', 'Explosive Work'],
-      'Recovery': ['Light Bag Work', 'Stretching', 'Sauna', 'Ice Bath'],
-    }
-  },
-  team: {
-    categories: ['Sport Practice', 'Fitness', 'Strength', 'Agility', 'Recovery', 'Custom'],
-    exercises: {
-      'Sport Practice': ['Drills', 'Scrimmage', 'Shooting Practice', 'Passing Drills', 'Team Training'],
-      'Fitness': ['Sprints', 'Interval Runs', 'Agility Ladder', 'Shuttle Runs', 'Beep Test'],
-      'Strength': ['Squats', 'Deadlift', 'Bench Press', 'Pull Ups', 'Core Work'],
-      'Agility': ['Cone Drills', 'Ladder Drills', 'Box Drills', 'Zig Zag Runs'],
-      'Recovery': ['Cool Down', 'Stretching', 'Foam Rolling', 'Ice Bath'],
-    }
-  },
-  calisthenics: {
-    categories: ['Push', 'Pull', 'Legs', 'Core', 'Skills', 'Conditioning', 'Custom'],
-    exercises: {
-      'Push': ['Push Ups', 'Pike Push Ups', 'Dips', 'Handstand Push Ups', 'Archer Push Ups', 'Diamond Push Ups'],
-      'Pull': ['Pull Ups', 'Chin Ups', 'Muscle Ups', 'Australian Pull Ups', 'L-Sit Pull Ups', 'Archer Pull Ups'],
-      'Legs': ['Squats', 'Pistol Squats', 'Jump Squats', 'Lunges', 'Calf Raises', 'Nordic Curls'],
-      'Core': ['Plank', 'L-Sit', 'Dragon Flag', 'Ab Wheel', 'Leg Raises', 'Human Flag Progression'],
-      'Skills': ['Handstand', 'Front Lever', 'Back Lever', 'Planche Progression', 'Human Flag', 'Muscle Up'],
-      'Conditioning': ['Burpees', 'Jump Rope', 'Box Jumps', 'Sprint', 'Circuit Training'],
-    }
-  },
-  general: {
-    categories: ['Strength', 'Cardio', 'Core', 'Yoga / Mobility', 'HIIT', 'Recovery', 'Custom'],
-    exercises: {
-      'Strength': ['Squat', 'Deadlift', 'Bench Press', 'Overhead Press', 'Pull Ups', 'Rows', 'Lunges'],
-      'Cardio': ['Running', 'Cycling', 'Swimming', 'Rowing', 'Jump Rope', 'Elliptical'],
-      'Core': ['Plank', 'Crunches', 'Russian Twist', 'Leg Raises', 'Ab Wheel'],
-      'Yoga / Mobility': ['Sun Salutation', 'Hip Flexor Stretch', 'Hamstring Stretch', 'Foam Rolling'],
-      'HIIT': ['Burpees', 'Box Jumps', 'Mountain Climbers', 'Jumping Jacks', 'High Knees'],
-      'Recovery': ['Walk', 'Stretching', 'Foam Rolling', 'Massage', 'Rest'],
-    }
-  },
+const CAT_META = {
+  'Strength':   { icon: '💪', color: '#FF5A1F', label: 'Strength' },
+  'Conditioning':{ icon: '🔥', color: '#EF4444', label: 'Conditioning' },
+  'Skills':     { icon: '⚽', color: '#3B82F6', label: 'Skills' },
+  'Mobility':   { icon: '🧘', color: '#A855F7', label: 'Mobility' },
+  'Custom':     { icon: '⭐', color: '#F59E0B', label: 'Custom' },
+  'Mixed':      { icon: '🎯', color: '#22C55E', label: 'Mixed' },
 }
 
-// Default fallback
-const DEFAULT_WORKOUTS = SPORT_WORKOUTS.general
+const CATS = ['Strength','Conditioning','Skills','Mobility','Custom']
 
-function getWorkoutsForSport(sport) {
-  return SPORT_WORKOUTS[sport] || DEFAULT_WORKOUTS
+function detectType(exercises) {
+  if (!exercises.length) return null
+  const cats = [...new Set(exercises.map(e => e.cat))]
+  return cats.length === 1 ? cats[0] : 'Mixed'
 }
 
-// Field type based on exercise
-function getFieldType(category, exerciseName) {
-  const cardioCategories = ['Running', 'Cardio', 'Road Ride', 'Indoor Cycling', 'Swim', 'Bike', 'Run']
-  const timedCategories = ['Recovery', 'Mobility', 'Yoga / Mobility', 'WOD']
-  const stationCategories = ['Hyrox Stations', 'OCR Training', 'Obstacle Practice', 'Grip Training']
-  if (stationCategories.includes(category)) return 'station'
-  if (cardioCategories.includes(category)) return 'cardio'
-  if (timedCategories.includes(category)) return 'timed'
+function getFieldType(cat) {
+  if (cat === 'Mobility') return 'timed'
+  if (cat === 'Skills') return 'timed'
+  if (cat === 'Conditioning') return 'cardio'
   return 'strength'
 }
 
-// Sarcastic score based on session
-function getSarcasticScore(exercises, rpe, duration) {
-  let score = 0
-  let reasons = []
-
-  // Volume score
-  const totalSets = exercises.reduce((s, e) => s + (e.sets?.length || 1), 0)
-  if (totalSets >= 20) { score += 30; reasons.push('solid volume') }
-  else if (totalSets >= 12) { score += 20; reasons.push('decent volume') }
-  else if (totalSets >= 6) { score += 10; reasons.push('light volume') }
-  else { score += 0; reasons.push('barely any sets') }
-
-  // RPE score
-  if (rpe >= 8) { score += 30; reasons.push('high effort') }
-  else if (rpe >= 6) { score += 20; reasons.push('moderate effort') }
-  else if (rpe >= 4) { score += 10; reasons.push('easy effort') }
-  else { score += 0; reasons.push('vacation effort') }
-
-  // Duration score
-  const dur = Number(duration) || 0
-  if (dur >= 60) { score += 25; reasons.push('good duration') }
-  else if (dur >= 40) { score += 15; reasons.push('ok duration') }
-  else if (dur >= 20) { score += 8; reasons.push('short session') }
-  else { score += 0; reasons.push('warmup-length session') }
-
-  // Exercise variety
-  if (exercises.length >= 6) { score += 15; }
-  else if (exercises.length >= 3) { score += 8; }
-
-  score = Math.min(score, 100)
-
-  let roast = ''
-  let color = '#FF5A1F'
-  let emoji = '😤'
-
-  if (score >= 85) {
-    roast = `${score}/100. Okay fine, that was actually impressive. Don't let it go to your head.`
-    color = '#22C55E'; emoji = '🔥'
-  } else if (score >= 70) {
-    roast = `${score}/100. Solid session. Not amazing, not terrible. The participation trophy of workouts.`
-    color = '#3B82F6'; emoji = '💪'
-  } else if (score >= 50) {
-    roast = `${score}/100. You showed up, I'll give you that. But your grandma's morning walk had more intensity.`
-    color = '#FF8C42'; emoji = '😐'
-  } else if (score >= 30) {
-    roast = `${score}/100. That was a workout? My plants get more exercise swaying in the breeze. Try harder.`
-    color = '#FF5A1F'; emoji = '😬'
-  } else {
-    roast = `${score}/100. Stop. Just stop. Uninstall the app, do some Zumba, come back when you're serious.`
-    color = '#EF4444'; emoji = '💀'
+function getScore(exercises, rpe, duration) {
+  const isMobOnly = exercises.every(e => e.cat === 'Mobility')
+  if (isMobOnly) return {
+    isRecovery: true, emoji: '🧘', color: '#A855F7',
+    msg: "Smart. Your body repairs during rest, not during reps. Keep this up.",
   }
-
-  return { score, roast, color, emoji }
+  let s = 0
+  const sets = exercises.reduce((a, e) => a + (e.sets?.length || 1), 0)
+  if (sets >= 20) s += 30; else if (sets >= 12) s += 20; else if (sets >= 6) s += 10
+  if (rpe >= 8) s += 30; else if (rpe >= 6) s += 20; else if (rpe >= 4) s += 10
+  const d = Number(duration) || 0
+  if (d >= 60) s += 25; else if (d >= 40) s += 15; else if (d >= 20) s += 8
+  if (exercises.length >= 6) s += 15; else if (exercises.length >= 3) s += 8
+  s = Math.min(s, 100)
+  if (s >= 85) return { isRecovery:false, score:s, emoji:'🔥', color:'#22C55E', msg:`${s}/100. That was genuinely solid. Don't let it go to your head — but don't stop either.` }
+  if (s >= 70) return { isRecovery:false, score:s, emoji:'💪', color:'#3B82F6', msg:`${s}/100. Decent session. Not hall-of-fame material but better than sitting on the couch.` }
+  if (s >= 50) return { isRecovery:false, score:s, emoji:'😐', color:'#FF8C42', msg:`${s}/100. You showed up. That's… something. Your warm-up had more effort than this workout.` }
+  if (s >= 30) return { isRecovery:false, score:s, emoji:'😬', color:'#FF5A1F', msg:`${s}/100. My house plant gets more exercise swaying in the breeze. Add weight. Add sets. Add something.` }
+  return { isRecovery:false, score:s, emoji:'💀', color:'#EF4444', msg:`${s}/100. Respectfully — what was that? Come back when you're ready to actually train.` }
 }
+
+function isSameDay(a, b) { return new Date(a).toDateString() === new Date(b).toDateString() }
 
 function getWeekDates() {
   const today = new Date()
-  const day = today.getDay()
-  const monday = new Date(today)
-  monday.setDate(today.getDate() - ((day + 6) % 7))
-  // Show last 7 days from today
   return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(today)
-    d.setDate(today.getDate() - (6 - i))
-    return d
+    const d = new Date(today); d.setDate(today.getDate() - (6 - i)); return d
   })
-}
-
-function isSameDay(a, b) {
-  return new Date(a).toDateString() === new Date(b).toDateString()
-}
-
-function formatDate(date) {
-  return new Date(date).toISOString().split('T')[0]
 }
 
 export default function Training({ session, profile }) {
   const weekDates = getWeekDates()
   const today = new Date()
-  const sport = profile?.sport || 'general'
-  const workouts = getWorkoutsForSport(sport)
+  const searchRef = useRef(null)
 
   const [selectedDay, setSelectedDay] = useState(today)
   const [sessions, setSessions] = useState([])
   const [customExercises, setCustomExercises] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
-  const [expandedSession, setExpandedSession] = useState(null)
+  const [expandedId, setExpandedId] = useState(null)
   const [saving, setSaving] = useState(false)
   const [scoreModal, setScoreModal] = useState(null)
+  const [setsPicker, setSetsPicker] = useState(null)
 
-  // Form state
-  const [activeCategory, setActiveCategory] = useState(workouts.categories[0])
+  // Form
+  const [activeCat, setActiveCat] = useState(null) // null = all
+  const [query, setQuery] = useState('')
   const [exercises, setExercises] = useState([])
   const [notes, setNotes] = useState('')
   const [rpe, setRpe] = useState(7)
-  const [sessionDuration, setSessionDuration] = useState('')
-
-  // Custom exercise modal
-  const [showCustomModal, setShowCustomModal] = useState(false)
+  const [duration, setDuration] = useState('')
   const [customName, setCustomName] = useState('')
-  const [customCategory, setCustomCategory] = useState('')
-  const [savingCustom, setSavingCustom] = useState(false)
+  const [showCustomInput, setShowCustomInput] = useState(false)
 
-  useEffect(() => {
-    fetchSessions()
-    fetchCustomExercises()
-  }, [])
+  useEffect(() => { fetchAll() }, [])
 
-  async function fetchSessions() {
+  async function fetchAll() {
     setLoading(true)
-    const { data } = await supabase
-      .from('sessions').select('*')
-      .eq('user_id', session.user.id)
-      .order('date', { ascending: false })
-    if (data) setSessions(data)
+    const [{ data: s }, { data: c }] = await Promise.all([
+      supabase.from('sessions').select('*').eq('user_id', session.user.id).order('date', { ascending: false }),
+      supabase.from('custom_exercises').select('*').eq('user_id', session.user.id),
+    ])
+    if (s) setSessions(s)
+    if (c) setCustomExercises(c)
     setLoading(false)
   }
 
-  async function fetchCustomExercises() {
-    const { data } = await supabase
-      .from('custom_exercises').select('*')
-      .eq('user_id', session.user.id)
-    if (data) setCustomExercises(data)
+  const daySessions = sessions.filter(s => isSameDay(s.date, selectedDay))
+
+  // Search results
+  const allEx = [
+    ...ALL_EXERCISES,
+    ...customExercises.map(e => ({ name: e.name, cat: e.category || 'Custom', sub: 'Custom', isCustom: true }))
+  ]
+
+  const filtered = (() => {
+    let list = allEx
+    if (activeCat) list = list.filter(e => e.cat === activeCat)
+    if (query.trim()) {
+      const q = query.toLowerCase()
+      list = list.filter(e => e.name.toLowerCase().includes(q))
+    } else if (!activeCat) {
+      // No filter, no query — show nothing (prompt user to search or pick category)
+      return []
+    }
+    return list.slice(0, 20) // max 20 results
+  })()
+
+  function tapResult(ex) {
+    const already = exercises.find(e => e.name === ex.name)
+    if (already) { setExercises(p => p.filter(e => e.name !== ex.name)); return }
+    const ft = getFieldType(ex.cat)
+    if (ft === 'strength') {
+      setSetsPicker(ex)
+    } else {
+      setExercises(p => [...p, { id: Date.now(), ...ex, fieldType: ft, sets: [], duration: '', distance: '', pace: '', setsCount: '' }])
+    }
   }
 
-  const todaySessions = sessions.filter(s => isSameDay(s.date, selectedDay))
-
-  // Get exercises for current category including custom ones
-  function getExercisesForCategory(category) {
-    const builtin = workouts.exercises?.[category] || []
-    const custom = customExercises
-      .filter(e => e.category === category || e.sport_type === sport)
-      .map(e => e.name)
-    return [...builtin, ...custom]
-  }
-
-  function addExercise(name) {
-    if (exercises.find(e => e.name === name)) return
-    const fieldType = getFieldType(activeCategory, name)
-    setExercises(prev => [...prev, {
-      id: Date.now(),
-      name,
-      category: activeCategory,
-      fieldType,
-      sets: fieldType === 'strength' ? [{ reps: '', weight: '' }] : [],
-      duration: '',
-      distance: '',
-      pace: '',
-      stationTime: '',
-      setsCount: '',
+  function addWithSets(ex, n) {
+    setExercises(p => [...p, {
+      id: Date.now(), ...ex, fieldType: 'strength',
+      sets: Array.from({ length: n }, () => ({ reps: '', weight: '' })),
     }])
+    setSetsPicker(null)
   }
 
-  function removeExercise(id) {
-    setExercises(prev => prev.filter(e => e.id !== id))
-  }
+  function addSet(id) { setExercises(p => p.map(e => e.id === id ? { ...e, sets: [...e.sets, { reps: '', weight: '' }] } : e)) }
+  function removeSet(id, si) { setExercises(p => p.map(e => e.id === id && e.sets.length > 1 ? { ...e, sets: e.sets.filter((_, i) => i !== si) } : e)) }
+  function updSet(id, si, field, val) { setExercises(p => p.map(e => e.id === id ? { ...e, sets: e.sets.map((s, i) => i === si ? { ...s, [field]: val } : s) } : e)) }
+  function updEx(id, field, val) { setExercises(p => p.map(e => e.id === id ? { ...e, [field]: val } : e)) }
 
-  function addSet(exerciseId) {
-    setExercises(prev => prev.map(e =>
-      e.id === exerciseId
-        ? { ...e, sets: [...e.sets, { reps: '', weight: '' }] }
-        : e
-    ))
-  }
-
-  function removeSet(exerciseId, setIndex) {
-    setExercises(prev => prev.map(e =>
-      e.id === exerciseId
-        ? { ...e, sets: e.sets.filter((_, i) => i !== setIndex) }
-        : e
-    ))
-  }
-
-  function updateSet(exerciseId, setIndex, field, value) {
-    setExercises(prev => prev.map(e =>
-      e.id === exerciseId
-        ? { ...e, sets: e.sets.map((s, i) => i === setIndex ? { ...s, [field]: value } : s) }
-        : e
-    ))
-  }
-
-  function updateExercise(id, field, value) {
-    setExercises(prev => prev.map(e => e.id === id ? { ...e, [field]: value } : e))
-  }
-
-  async function saveCustomExercise() {
+  async function saveCustom() {
     if (!customName.trim()) return
-    setSavingCustom(true)
-    const cat = customCategory || activeCategory
+    const cat = activeCat || 'Custom'
     const { data } = await supabase.from('custom_exercises').insert({
-      user_id: session.user.id,
-      name: customName.trim(),
-      sport_type: sport,
-      category: cat,
+      user_id: session.user.id, name: customName.trim(), category: cat, sport_type: profile?.sport || 'general',
     }).select().single()
     if (data) {
-      setCustomExercises(prev => [...prev, data])
-      addExercise(customName.trim())
+      setCustomExercises(p => [...p, data])
+      const ex = { name: customName.trim(), cat, sub: 'Custom', isCustom: true }
+      const ft = getFieldType(cat)
+      if (ft === 'strength') setSetsPicker(ex)
+      else setExercises(p => [...p, { id: Date.now(), ...ex, fieldType: ft, sets: [], duration: '', distance: '', pace: '', setsCount: '' }])
     }
-    setCustomName('')
-    setCustomCategory('')
-    setSavingCustom(false)
-    setShowCustomModal(false)
+    setCustomName(''); setShowCustomInput(false)
   }
 
-  async function deleteCustomExercise(id) {
-    await supabase.from('custom_exercises').delete().eq('id', id)
-    setCustomExercises(prev => prev.filter(e => e.id !== id))
-  }
-
-  async function saveSession() {
-    if (exercises.length === 0) return
+  async function save() {
+    if (!exercises.length) return
     setSaving(true)
-    const result = getSarcasticScore(exercises, rpe, sessionDuration)
-    const sessionData = {
-      user_id: session.user.id,
-      date: selectedDay,
-      type: activeCategory,
-      notes,
-      rpe,
-      duration: sessionDuration,
-      exercises: exercises.map(ex => ({
-        name: ex.name,
-        category: ex.category,
-        fieldType: ex.fieldType,
-        sets: ex.sets,
-        duration: ex.duration,
-        distance: ex.distance,
-        pace: ex.pace,
-        stationTime: ex.stationTime,
-        setsCount: ex.setsCount,
-      })),
-      hyrox_stations: [],
-      muscle_groups: [...new Set(exercises.map(e => e.category))],
-    }
-    const { data, error } = await supabase
-      .from('sessions').insert(sessionData).select().single()
-    if (!error && data) {
-      setSessions(prev => [data, ...prev])
-      setScoreModal(result)
-    }
-    setSaving(false)
-    setShowForm(false)
-    resetForm()
+    const type = detectType(exercises) || 'Mixed'
+    const result = getScore(exercises, rpe, duration)
+    const { data, error } = await supabase.from('sessions').insert({
+      user_id: session.user.id, date: selectedDay, type, notes, rpe, duration,
+      exercises: exercises.map(({ id, ...ex }) => ex),
+      hyrox_stations: [], muscle_groups: [...new Set(exercises.map(e => e.cat))],
+    }).select().single()
+    if (!error && data) { setSessions(p => [data, ...p]); setScoreModal(result) }
+    setSaving(false); setShowForm(false); reset()
   }
 
-  async function deleteSession(id) {
+  async function delSession(id) {
     if (!confirm('Delete this session?')) return
     await supabase.from('sessions').delete().eq('id', id)
-    setSessions(prev => prev.filter(s => s.id !== id))
+    setSessions(p => p.filter(s => s.id !== id))
   }
 
-  function resetForm() {
-  setExercises([])
-  setNotes('')
-  setRpe(7)
-  setSessionDuration('')
-  setActiveCategory(workouts.categories[0])
+  function reset() {
+    setExercises([]); setNotes(''); setRpe(7); setDuration('')
+    setActiveCat(null); setQuery(''); setShowCustomInput(false); setCustomName('')
   }
 
-  const exerciseList = getExercisesForCategory(activeCategory)
+  function openForm() {
+    setShowForm(true); setExpandedId(null)
+    setTimeout(() => searchRef.current?.focus(), 100)
+  }
 
-  const c = {
-    page: { paddingTop: 52 },
-    header: { padding: '0 16px 14px' },
-    title: { fontSize: 22, fontWeight: 700 },
-    sub: { fontSize: 13, color: '#666', marginTop: 2 },
-    card: { margin: '0 16px 12px', background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 16 },
-    label: { fontSize: 10, color: '#555', textTransform: 'uppercase', letterSpacing: '.06em', fontWeight: 600 },
-    input: { width: '100%', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 12, padding: '10px 14px', color: '#fff', fontSize: 14, outline: 'none' },
-    btn: { background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '12px 20px', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' },
+  const detectedType = detectType(exercises)
+  const typeMeta = detectedType ? CAT_META[detectedType] || CAT_META['Mixed'] : null
+
+  const inp = {
+    background: '#0f0f0f', border: '1px solid #252525',
+    borderRadius: 10, padding: '10px 12px', color: '#fff',
+    fontSize: 14, outline: 'none', fontFamily: 'inherit',
   }
 
   return (
-    <div style={c.page}>
+    <div style={{ paddingTop: 52, paddingBottom: 24, background: '#080808', minHeight: '100vh' }}>
 
-      {/* Score Modal */}
-      {scoreModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}
-          onClick={() => setScoreModal(null)}>
-          <div style={{ background: '#111', border: `1px solid ${scoreModal.color}40`, borderRadius: 24, padding: 28, width: '100%', maxWidth: 360, textAlign: 'center' }}
+      {/* Sets Picker */}
+      {setsPicker && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.92)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
+          onClick={() => setSetsPicker(null)}>
+          <div style={{ background:'#0d0d0d', border:'1px solid #222', borderRadius:28, padding:28, width:'100%', maxWidth:290, textAlign:'center' }}
             onClick={e => e.stopPropagation()}>
-            <div style={{ fontSize: 56, marginBottom: 12 }}>{scoreModal.emoji}</div>
-            <div style={{ fontSize: 64, fontWeight: 700, color: scoreModal.color, lineHeight: 1, marginBottom: 6 }}>
-              {scoreModal.score}
+            <div style={{ fontSize:13, color:'#555', marginBottom:6 }}>Adding</div>
+            <p style={{ fontSize:18, fontWeight:700, color:'#fff', marginBottom:4 }}>{setsPicker.name}</p>
+            <p style={{ fontSize:12, color:'#444', marginBottom:24 }}>How many sets?</p>
+            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:10, marginBottom:20 }}>
+              {[1,2,3,4,5,6].map(n => (
+                <button key={n} onClick={() => addWithSets(setsPicker, n)}
+                  style={{ height:56, borderRadius:16, background:'#141414', border:'1px solid #222', color:'#fff', fontSize:22, fontWeight:700, cursor:'pointer', transition:'.15s' }}
+                  onMouseEnter={e => { e.currentTarget.style.background='#FF5A1F'; e.currentTarget.style.borderColor='#FF5A1F' }}
+                  onMouseLeave={e => { e.currentTarget.style.background='#141414'; e.currentTarget.style.borderColor='#222' }}>
+                  {n}
+                </button>
+              ))}
             </div>
-            <p style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>Training Score</p>
-            <div style={{ background: '#1a1a1a', borderRadius: 14, padding: '14px 16px', marginBottom: 20 }}>
-              <p style={{ fontSize: 14, color: '#ccc', lineHeight: 1.6 }}>{scoreModal.roast}</p>
-            </div>
-            <button onClick={() => setScoreModal(null)}
-              style={{ ...c.btn, width: '100%', padding: 14 }}>
-              Got it 😤
-            </button>
+            <button onClick={() => setSetsPicker(null)} style={{ fontSize:13, color:'#333', background:'none', border:'none', cursor:'pointer' }}>Cancel</button>
           </div>
         </div>
       )}
 
-      {/* Custom Exercise Modal */}
-      {showCustomModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.85)', zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
-          onClick={() => setShowCustomModal(false)}>
-          <div style={{ background: '#111', border: '1px solid #222', borderRadius: '24px 24px 0 0', padding: '24px 20px 40px', width: '100%', maxWidth: 420 }}
+      {/* Score Modal */}
+      {scoreModal && (
+        <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.94)', zIndex:300, display:'flex', alignItems:'center', justifyContent:'center', padding:24 }}
+          onClick={() => setScoreModal(null)}>
+          <div style={{ background:'#0a0a0a', border:`1px solid ${scoreModal.color}25`, borderRadius:28, padding:32, width:'100%', maxWidth:310, textAlign:'center' }}
             onClick={e => e.stopPropagation()}>
-            <div style={{ width: 36, height: 4, background: '#333', borderRadius: 2, margin: '0 auto 20px' }} />
-            <p style={{ fontSize: 17, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Add custom exercise</p>
-            <p style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>
-              It'll be saved to your library for next time under <span style={{ color: '#FF5A1F' }}>{activeCategory}</span>
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <div>
-                <p style={{ ...c.label, marginBottom: 6 }}>Exercise name</p>
-                <input
-                  placeholder={`e.g. Freestyle Drill, Breakdance Footwork...`}
-                  value={customName}
-                  onChange={e => setCustomName(e.target.value)}
-                  style={c.input}
-                  autoFocus
-                />
-              </div>
-              <div>
-                <p style={{ ...c.label, marginBottom: 6 }}>Category (optional)</p>
-                <select
-                  value={customCategory}
-                  onChange={e => setCustomCategory(e.target.value)}
-                  style={{ ...c.input, background: '#1a1a1a' }}>
-                  <option value="">Use current: {activeCategory}</option>
-                  {workouts.categories.filter(c => c !== 'Custom').map(cat => (
-                    <option key={cat} value={cat}>{cat}</option>
-                  ))}
-                  <option value="__new__">Create new category</option>
-                </select>
-              </div>
-              {/* Existing custom exercises */}
-              {customExercises.length > 0 && (
-                <div>
-                  <p style={{ ...c.label, marginBottom: 8 }}>Your library</p>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 160, overflowY: 'auto' }}>
-                    {customExercises.map(ex => (
-                      <div key={ex.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#1a1a1a', borderRadius: 10, padding: '8px 12px' }}>
-                        <div>
-                          <p style={{ fontSize: 13, color: '#fff' }}>{ex.name}</p>
-                          <p style={{ fontSize: 11, color: '#555' }}>{ex.category || ex.sport_type}</p>
-                        </div>
-                        <button onClick={() => deleteCustomExercise(ex.id)}
-                          style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', padding: 4 }}>
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+            <div style={{ fontSize:64, marginBottom:12 }}>{scoreModal.emoji}</div>
+            {scoreModal.isRecovery ? (
+              <>
+                <p style={{ fontSize:20, fontWeight:700, color:'#A855F7', marginBottom:12 }}>Recovery Day</p>
+                <p style={{ fontSize:14, color:'#777', lineHeight:1.7, marginBottom:24 }}>{scoreModal.msg}</p>
+              </>
+            ) : (
+              <>
+                <div style={{ fontSize:76, fontWeight:700, color:scoreModal.color, lineHeight:1, marginBottom:6 }}>{scoreModal.score}</div>
+                <p style={{ fontSize:11, color:'#333', textTransform:'uppercase', letterSpacing:'.12em', fontWeight:600, marginBottom:20 }}>Training Score</p>
+                <div style={{ background:'#111', borderRadius:14, padding:'14px 18px', marginBottom:24 }}>
+                  <p style={{ fontSize:14, color:'#999', lineHeight:1.7 }}>{scoreModal.msg}</p>
                 </div>
-              )}
-              <button onClick={saveCustomExercise} disabled={!customName.trim() || savingCustom}
-                style={{ ...c.btn, width: '100%', padding: 14, opacity: !customName.trim() ? 0.4 : 1 }}>
-                {savingCustom ? 'Saving...' : '+ Add to library & session'}
-              </button>
-            </div>
+              </>
+            )}
+            <button onClick={() => setScoreModal(null)}
+              style={{ width:'100%', background:'#FF5A1F', border:'none', borderRadius:14, padding:15, color:'#fff', fontSize:15, fontWeight:700, cursor:'pointer' }}>
+              {scoreModal.isRecovery ? 'Rest well 🙏' : 'Got it 💪'}
+            </button>
           </div>
         </div>
       )}
 
       {/* Header */}
-      <div style={c.header}>
-        <h1 style={c.title}>Training</h1>
-        <p style={c.sub}>
-          {(() => {
-            const sportEmojis = { hyrox: '⚡', marathon: '🏃', bodybuilding: '🏋️', crossfit: '🏇', cycling: '🚴', triathlon: '🏊', ocr: '🏔️', combat: '🥊', team: '⚽', calisthenics: '🤸', general: '🎯' }
-            return `${sportEmojis[sport] || '🎯'} ${(sport.charAt(0).toUpperCase() + sport.slice(1))} training`
-          })()}
-        </p>
+      <div style={{ padding:'0 20px 16px' }}>
+        <h1 style={{ fontSize:26, fontWeight:700, letterSpacing:'-.5px' }}>Training</h1>
+        <p style={{ fontSize:13, color:'#444', marginTop:3 }}>Log your sessions</p>
       </div>
 
-      {/* Week strip — last 7 days */}
-      <div style={{ display: 'flex', gap: 6, padding: '0 16px', marginBottom: 14, overflowX: 'auto' }}>
+      {/* Week strip */}
+      <div style={{ display:'flex', gap:8, padding:'0 20px', marginBottom:16, overflowX:'auto', scrollbarWidth:'none' }}>
         {weekDates.map((date, i) => {
-          const hasSesh = sessions.some(s => isSameDay(s.date, date))
-          const isToday = isSameDay(date, today)
-          const isSelected = isSameDay(date, selectedDay)
-          const dayName = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()]
+          const has = sessions.some(s => isSameDay(s.date, date))
+          const isT = isSameDay(date, today)
+          const isSel = isSameDay(date, selectedDay)
+          const dn = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][date.getDay()]
           return (
             <button key={i} onClick={() => setSelectedDay(date)}
-              style={{
-                flexShrink: 0,
-                display: 'flex', flexDirection: 'column', alignItems: 'center',
-                padding: '8px 10px', borderRadius: 14, cursor: 'pointer',
-                minWidth: 44, border: '1px solid',
-                background: isSelected ? '#FF5A1F' : isToday ? '#1a0800' : '#131313',
-                borderColor: isSelected ? '#FF5A1F' : isToday ? '#FF5A1F60' : '#222',
-                transition: '.15s',
-              }}>
-              <span style={{ fontSize: 10, fontWeight: 500, color: isSelected ? '#fff' : '#666' }}>{dayName}</span>
-              <span style={{ fontSize: 15, fontWeight: 700, color: isSelected ? '#fff' : isToday ? '#FF5A1F' : '#fff', marginTop: 2 }}>
-                {date.getDate()}
-              </span>
-              {hasSesh && (
-                <div style={{ width: 5, height: 5, borderRadius: '50%', marginTop: 4, background: isSelected ? '#fff' : '#FF5A1F' }} />
-              )}
+              style={{ flexShrink:0, display:'flex', flexDirection:'column', alignItems:'center', padding:'10px 12px', borderRadius:16, cursor:'pointer', minWidth:46, border:'1px solid', transition:'.2s', background: isSel ? '#FF5A1F' : isT ? '#150800' : '#0d0d0d', borderColor: isSel ? '#FF5A1F' : isT ? '#FF5A1F40' : '#1a1a1a' }}>
+              <span style={{ fontSize:10, fontWeight:600, color: isSel ? 'rgba(255,255,255,.6)' : '#333', marginBottom:4 }}>{dn}</span>
+              <span style={{ fontSize:17, fontWeight:700, color: isSel ? '#fff' : isT ? '#FF5A1F' : '#fff' }}>{date.getDate()}</span>
+              <div style={{ width:4, height:4, borderRadius:'50%', marginTop:5, background: has ? (isSel ? '#fff' : '#FF5A1F') : 'transparent' }} />
             </button>
           )
         })}
       </div>
 
-      {/* Day label + add button */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 16px', marginBottom: 12 }}>
-        <p style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>
-          {isSameDay(selectedDay, today) ? 'Today'
-            : new Date(selectedDay).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
+      {/* Day row */}
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 20px', marginBottom:14 }}>
+        <p style={{ fontSize:16, fontWeight:600 }}>
+          {isSameDay(selectedDay, today) ? 'Today' : new Date(selectedDay).toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'short' })}
         </p>
-        <button onClick={() => { setShowForm(true); setExpandedSession(null) }}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '8px 14px', color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-          <Plus size={14} /> Add session
+        <button onClick={openForm}
+          style={{ display:'flex', alignItems:'center', gap:6, background:'#FF5A1F', border:'none', borderRadius:12, padding:'9px 18px', color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer' }}>
+          <Plus size={14} strokeWidth={3} /> Add session
         </button>
       </div>
 
       {/* Loading */}
       {loading && (
-        <div style={{ textAlign: 'center', padding: '40px 0' }}>
-          <p style={{ color: '#555', fontSize: 14 }}>Loading sessions...</p>
+        <div style={{ textAlign:'center', padding:'48px 0' }}>
+          <div style={{ width:28, height:28, borderRadius:'50%', border:'2px solid #1a1a1a', borderTopColor:'#FF5A1F', margin:'0 auto', animation:'spin 1s linear infinite' }} />
+          <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
         </div>
       )}
 
-      {/* No sessions */}
-      {!loading && todaySessions.length === 0 && !showForm && (
-        <div style={{ ...c.card, textAlign: 'center', padding: '32px 16px' }}>
-          <p style={{ fontSize: 32, marginBottom: 8 }}>😴</p>
-          <p style={{ color: '#555', fontSize: 14 }}>No sessions logged for this day</p>
-          <p style={{ color: '#333', fontSize: 12, marginTop: 4 }}>Tap + Add session to log one</p>
+      {/* Empty */}
+      {!loading && daySessions.length === 0 && !showForm && (
+        <div style={{ margin:'0 20px', background:'#0a0a0a', border:'1px solid #141414', borderRadius:20, padding:'36px 20px', textAlign:'center' }}>
+          <div style={{ fontSize:40, marginBottom:10 }}>🛌</div>
+          <p style={{ color:'#333', fontSize:14, fontWeight:500 }}>No sessions logged</p>
         </div>
       )}
 
       {/* Session cards */}
-      {todaySessions.map(s => (
-        <div key={s.id} style={{ margin: '0 16px 10px', background: '#131313', border: '1px solid #222', borderRadius: 18, overflow: 'hidden' }}>
-          <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
-            onClick={() => setExpandedSession(expandedSession === s.id ? null : s.id)}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 40, height: 40, borderRadius: 12, background: '#1a0800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>
-                {(() => {
-                  const icons = { 'Hyrox Stations': '⚡', 'Running': '🏃', 'Strength': '🏋️', 'Chest': '💪', 'Back': '🔙', 'Legs': '🦵', 'Cardio': '❤️', 'HIIT': '🔥', 'Recovery': '😌', 'Custom': '⭐', 'Swim': '🏊', 'Bike': '🚴', 'WOD': '🏇', 'OCR Training': '🏔️', 'Sparring': '🥊' }
-                  return icons[s.type] || '🎯'
-                })()}
-              </div>
-              <div>
-                <p style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{s.type}</p>
-                <div style={{ display: 'flex', gap: 8, marginTop: 2 }}>
-                  {s.duration && <span style={{ fontSize: 11, color: '#666' }}>⏱ {s.duration}min</span>}
-                  {s.rpe && <span style={{ fontSize: 11, color: '#666' }}>RPE {s.rpe}/10</span>}
-                  <span style={{ fontSize: 11, color: '#666' }}>{(s.exercises || []).length} exercises</span>
+      {daySessions.map(s => {
+        const meta = CAT_META[s.type] || CAT_META['Mixed']
+        const isExp = expandedId === s.id
+        return (
+          <div key={s.id} style={{ margin:'0 20px 10px', background:'#0a0a0a', border:`1px solid ${isExp ? meta.color+'30' : '#141414'}`, borderRadius:18, overflow:'hidden', transition:'.2s border-color' }}>
+            <div style={{ padding:'14px 16px', display:'flex', alignItems:'center', justifyContent:'space-between', cursor:'pointer' }}
+              onClick={() => setExpandedId(isExp ? null : s.id)}>
+              <div style={{ display:'flex', alignItems:'center', gap:12 }}>
+                <div style={{ width:44, height:44, borderRadius:13, background: meta.color+'15', border:`1px solid ${meta.color}20`, display:'flex', alignItems:'center', justifyContent:'center', fontSize:22 }}>
+                  {meta.icon}
                 </div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <button onClick={e => { e.stopPropagation(); deleteSession(s.id) }}
-                style={{ width: 30, height: 30, borderRadius: 8, background: '#2d0000', border: '1px solid #EF444430', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                <X size={13} color="#EF4444" />
-              </button>
-              {expandedSession === s.id
-                ? <ChevronUp size={16} color="#555" />
-                : <ChevronDown size={16} color="#555" />}
-            </div>
-          </div>
-
-          {expandedSession === s.id && (
-            <div style={{ borderTop: '1px solid #1a1a1a', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {s.notes && (
-                <p style={{ fontSize: 13, color: '#888', fontStyle: 'italic' }}>"{s.notes}"</p>
-              )}
-              {(s.exercises || []).map((ex, i) => (
-                <div key={i} style={{ background: '#1a1a1a', borderRadius: 12, padding: '10px 14px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-                    <p style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{ex.name}</p>
-                    <p style={{ fontSize: 11, color: '#555' }}>{ex.category}</p>
+                <div>
+                  <p style={{ fontSize:15, fontWeight:700 }}>{s.type}</p>
+                  <div style={{ display:'flex', gap:10, marginTop:3 }}>
+                    {s.duration && <span style={{ fontSize:11, color:'#444' }}>⏱ {s.duration}m</span>}
+                    {s.rpe && <span style={{ fontSize:11, color:'#444' }}>RPE {s.rpe}/10</span>}
+                    <span style={{ fontSize:11, color:'#444' }}>{(s.exercises||[]).length} exercises</span>
                   </div>
-                  {ex.fieldType === 'strength' && (ex.sets || []).map((set, si) => (
-                    <p key={si} style={{ fontSize: 12, color: '#888', marginTop: 2 }}>
-                      Set {si + 1}: {set.reps} reps {set.weight ? `@ ${set.weight}kg` : ''}
-                    </p>
-                  ))}
-                  {ex.fieldType === 'cardio' && (
-                    <p style={{ fontSize: 12, color: '#3B82F6' }}>
-                      {ex.distance ? `${ex.distance}km` : ''} {ex.duration ? `· ${ex.duration}min` : ''} {ex.pace ? `· ${ex.pace}/km` : ''}
-                    </p>
-                  )}
-                  {ex.fieldType === 'station' && (
-                    <p style={{ fontSize: 12, color: '#FF5A1F' }}>
-                      Time: {ex.stationTime || '--'}
-                    </p>
-                  )}
-                  {ex.fieldType === 'timed' && (
-                    <p style={{ fontSize: 12, color: '#A855F7' }}>
-                      {ex.setsCount ? `${ex.setsCount} sets` : ''} {ex.duration ? `× ${ex.duration}` : ''}
-                    </p>
-                  )}
                 </div>
-              ))}
+              </div>
+              <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                <button onClick={e => { e.stopPropagation(); delSession(s.id) }}
+                  style={{ width:32, height:32, borderRadius:9, background:'#150000', border:'1px solid #EF444415', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
+                  <X size={13} color="#EF4444" />
+                </button>
+                <div style={{ color:'#2a2a2a' }}>{isExp ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}</div>
+              </div>
             </div>
-          )}
-        </div>
-      ))}
+            {isExp && (
+              <div style={{ borderTop:'1px solid #111', padding:'12px 16px', display:'flex', flexDirection:'column', gap:8 }}>
+                {s.notes && <p style={{ fontSize:13, color:'#555', fontStyle:'italic', paddingBottom:8, borderBottom:'1px solid #111' }}>"{s.notes}"</p>}
+                {(s.exercises||[]).map((ex, i) => (
+                  <div key={i} style={{ background:'#0d0d0d', borderRadius:12, padding:'10px 14px' }}>
+                    <div style={{ display:'flex', justifyContent:'space-between', marginBottom:4 }}>
+                      <p style={{ fontSize:13, fontWeight:600, color:'#e0e0e0' }}>{ex.name}</p>
+                      <span style={{ fontSize:10, color:'#333', background:'#141414', padding:'2px 8px', borderRadius:6 }}>{ex.sub || ex.cat}</span>
+                    </div>
+                    {ex.fieldType === 'strength' && (ex.sets||[]).map((set,si) => (
+                      <p key={si} style={{ fontSize:12, color:'#555', marginTop:2 }}>
+                        Set {si+1} · {set.reps||'—'} reps {set.weight ? `@ ${set.weight}kg` : ''}
+                      </p>
+                    ))}
+                    {ex.fieldType === 'cardio' && (
+                      <p style={{ fontSize:12, color:'#3B82F6' }}>
+                        {[ex.distance&&`${ex.distance}km`, ex.duration&&`${ex.duration}min`, ex.pace&&`${ex.pace}/km`].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
+                    {ex.fieldType === 'timed' && (
+                      <p style={{ fontSize:12, color:'#A855F7' }}>
+                        {[ex.setsCount&&`${ex.setsCount}x`, ex.duration].filter(Boolean).join(' · ')}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      })}
 
-      {/* Add session form */}
+      {/* ADD FORM */}
       {showForm && (
-        <div style={{ margin: '0 16px 12px', background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 16, display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ margin:'0 20px 16px', background:'#0a0a0a', border:'1px solid #1a1a1a', borderRadius:22, overflow:'hidden' }}>
 
-          {/* Form header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <p style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>New Session</p>
-            <button onClick={() => { setShowForm(false); resetForm() }}
-              style={{ width: 30, height: 30, borderRadius: 8, background: '#1a1a1a', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-              <X size={14} color="#666" />
+          {/* Header */}
+          <div style={{ padding:'14px 16px', background:'#0a0a0a', borderBottom:'1px solid #111', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:52, zIndex:20 }}>
+            <div>
+              <p style={{ fontSize:16, fontWeight:700 }}>New Session</p>
+              {detectedType
+                ? <p style={{ fontSize:11, color: typeMeta?.color, marginTop:2 }}>{typeMeta?.icon} {detectedType} · {exercises.length} exercise{exercises.length!==1?'s':''}</p>
+                : <p style={{ fontSize:11, color:'#2a2a2a', marginTop:2 }}>Search and add exercises below</p>
+              }
+            </div>
+            <button onClick={() => { setShowForm(false); reset() }}
+              style={{ width:32, height:32, borderRadius:10, background:'#111', border:'1px solid #1e1e1e', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
+              <X size={15} color="#444" />
             </button>
           </div>
 
-          {/* Category selector */}
-          <div>
-            <p style={{ ...c.label, marginBottom: 8 }}>Workout type</p>
-            <div style={{ display: 'flex', gap: 6, overflowX: 'auto', paddingBottom: 4 }}>
-              {workouts.categories.map(cat => (
-                <button key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  style={{
-                    flexShrink: 0, padding: '7px 14px', borderRadius: 10, fontSize: 12, fontWeight: 500, cursor: 'pointer', border: '1px solid', transition: '.15s',
-                    background: activeCategory === cat ? '#FF5A1F' : '#1a1a1a',
-                    borderColor: activeCategory === cat ? '#FF5A1F' : '#2a2a2a',
-                    color: activeCategory === cat ? '#fff' : '#666',
-                  }}>
-                  {cat}
-                </button>
-              ))}
-            </div>
-          </div>
+          <div style={{ padding:16, display:'flex', flexDirection:'column', gap:14 }}>
 
-          {/* Exercise picker */}
-          {activeCategory !== 'Custom' && (
-            <div>
-              <p style={{ ...c.label, marginBottom: 8 }}>
-                Add exercises · <span style={{ color: '#FF5A1F' }}>{activeCategory}</span>
-              </p>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 10 }}>
-                {exerciseList.map(name => {
-                  const isAdded = exercises.find(e => e.name === name)
+            {/* SEARCH — the hero element */}
+            <div style={{ position:'relative' }}>
+              <Search size={16} color="#444" style={{ position:'absolute', left:14, top:'50%', transform:'translateY(-50%)', pointerEvents:'none' }} />
+              <input
+                ref={searchRef}
+                placeholder="Search any exercise... (bench, squat, run...)"
+                value={query}
+                onChange={e => setQuery(e.target.value)}
+                style={{ ...inp, width:'100%', paddingLeft:42, boxSizing:'border-box', fontSize:15, padding:'13px 14px 13px 42px', borderRadius:14 }}
+              />
+              {query && (
+                <button onClick={() => setQuery('')}
+                  style={{ position:'absolute', right:12, top:'50%', transform:'translateY(-50%)', background:'none', border:'none', cursor:'pointer', color:'#444' }}>
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* Category filter pills */}
+            <div style={{ display:'flex', gap:6, overflowX:'auto', scrollbarWidth:'none' }}>
+              <button onClick={() => setActiveCat(null)}
+                style={{ flexShrink:0, padding:'5px 12px', borderRadius:20, fontSize:11, fontWeight:600, cursor:'pointer', border:'1px solid', background: !activeCat ? '#FF5A1F' : 'transparent', borderColor: !activeCat ? '#FF5A1F' : '#1e1e1e', color: !activeCat ? '#fff' : '#444' }}>
+                All
+              </button>
+              {CATS.map(cat => {
+                const m = CAT_META[cat]
+                const on = activeCat === cat
+                return (
+                  <button key={cat} onClick={() => setActiveCat(on ? null : cat)}
+                    style={{ flexShrink:0, display:'flex', alignItems:'center', gap:4, padding:'5px 12px', borderRadius:20, fontSize:11, fontWeight:600, cursor:'pointer', border:'1px solid', whiteSpace:'nowrap', background: on ? m.color+'20' : 'transparent', borderColor: on ? m.color : '#1e1e1e', color: on ? m.color : '#444' }}>
+                    {m.icon} {cat}
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Prompt state */}
+            {!query && !activeCat && (
+              <div style={{ textAlign:'center', padding:'20px 0' }}>
+                <div style={{ fontSize:32, marginBottom:8 }}>🔍</div>
+                <p style={{ color:'#333', fontSize:14 }}>Type to search all exercises</p>
+                <p style={{ color:'#222', fontSize:12, marginTop:4 }}>or tap a category to browse</p>
+              </div>
+            )}
+
+            {/* Search results */}
+            {(query || activeCat) && (
+              <div>
+                {filtered.length === 0 ? (
+                  <div style={{ padding:'16px 0' }}>
+                    <p style={{ color:'#333', fontSize:14, marginBottom:12 }}>
+                      No results for "{query}" — add it as custom
+                    </p>
+                    {!showCustomInput ? (
+                      <button onClick={() => { setCustomName(query); setShowCustomInput(true) }}
+                        style={{ display:'flex', alignItems:'center', gap:6, padding:'9px 16px', borderRadius:12, border:'1px dashed #FF5A1F40', background:'#FF5A1F08', color:'#FF5A1F', fontSize:13, fontWeight:600, cursor:'pointer' }}>
+                        ⭐ Add "{query}" to my library
+                      </button>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div style={{ display:'flex', flexDirection:'column', gap:2 }}>
+                    {filtered.map(ex => {
+                      const isAdded = !!exercises.find(e => e.name === ex.name)
+                      const m = CAT_META[ex.cat] || CAT_META['Custom']
+                      return (
+                        <button key={ex.name} onClick={() => tapResult(ex)}
+                          style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'11px 14px', borderRadius:12, border:`1px solid ${isAdded ? m.color+'30' : '#141414'}`, background: isAdded ? m.color+'10' : '#0d0d0d', cursor:'pointer', transition:'.15s', textAlign:'left' }}>
+                          <div style={{ display:'flex', alignItems:'center', gap:10 }}>
+                            <span style={{ fontSize:16 }}>{m.icon}</span>
+                            <div>
+                              <p style={{ fontSize:14, fontWeight: isAdded ? 600 : 500, color: isAdded ? m.color : '#ddd' }}>{ex.name}</p>
+                              <p style={{ fontSize:11, color:'#333', marginTop:1 }}>{ex.sub} · {ex.cat}</p>
+                            </div>
+                          </div>
+                          {isAdded
+                            ? <div style={{ width:24, height:24, borderRadius:'50%', background: m.color, display:'flex', alignItems:'center', justifyContent:'center' }}><Check size={12} color="#fff" strokeWidth={3}/></div>
+                            : <Plus size={16} color="#333" />
+                          }
+                        </button>
+                      )
+                    })}
+                    {filtered.length === 20 && (
+                      <p style={{ fontSize:11, color:'#2a2a2a', textAlign:'center', padding:'8px 0' }}>Showing top 20 — type more to narrow down</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Custom input */}
+            {showCustomInput && (
+              <div style={{ display:'flex', gap:8, padding:'12px', background:'#0d0d0d', borderRadius:14, border:'1px solid #FF5A1F20' }}>
+                <input
+                  placeholder="Custom exercise name..."
+                  value={customName}
+                  onChange={e => setCustomName(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && saveCustom()}
+                  autoFocus
+                  style={{ ...inp, flex:1 }}
+                />
+                <button onClick={saveCustom} disabled={!customName.trim()}
+                  style={{ background:'#FF5A1F', border:'none', borderRadius:10, padding:'0 16px', color:'#fff', fontSize:13, fontWeight:700, cursor:'pointer', opacity:!customName.trim()?0.4:1 }}>
+                  Add
+                </button>
+                <button onClick={() => { setShowCustomInput(false); setCustomName('') }}
+                  style={{ background:'#141414', border:'1px solid #1e1e1e', borderRadius:10, padding:'0 10px', color:'#444', cursor:'pointer' }}>
+                  <X size={14} />
+                </button>
+              </div>
+            )}
+
+            {/* Added exercises */}
+            {exercises.length > 0 && (
+              <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between' }}>
+                  <p style={{ fontSize:10, color:'#333', textTransform:'uppercase', letterSpacing:'.1em', fontWeight:700 }}>
+                    Added · {exercises.length}
+                  </p>
+                </div>
+                {exercises.map(ex => {
+                  const m = CAT_META[ex.cat] || CAT_META['Custom']
                   return (
-                    <button key={name} onClick={() => addExercise(name)}
-                      style={{
-                        padding: '6px 12px', borderRadius: 10, fontSize: 12, cursor: 'pointer', border: '1px solid', transition: '.15s',
-                        background: isAdded ? '#FF5A1F20' : '#1a1a1a',
-                        borderColor: isAdded ? '#FF5A1F' : '#2a2a2a',
-                        color: isAdded ? '#FF5A1F' : '#888',
-                        fontWeight: isAdded ? 600 : 400,
-                      }}>
-                      {isAdded ? '✓ ' : '+ '}{name}
-                    </button>
+                    <div key={ex.id} style={{ background:'#0d0d0d', border:`1px solid ${m.color}15`, borderRadius:16, padding:14 }}>
+                      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:10 }}>
+                        <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+                          <span style={{ fontSize:18 }}>{m.icon}</span>
+                          <div>
+                            <p style={{ fontSize:14, fontWeight:700, color:'#fff' }}>{ex.name}</p>
+                            <p style={{ fontSize:11, color:'#333', marginTop:1 }}>{ex.sub} · {ex.cat}</p>
+                          </div>
+                        </div>
+                        <button onClick={() => setExercises(p => p.filter(e => e.id !== ex.id))}
+                          style={{ width:30, height:30, borderRadius:9, background:'#150000', border:'1px solid #EF444415', display:'flex', alignItems:'center', justifyContent:'center', cursor:'pointer' }}>
+                          <X size={12} color="#EF4444" />
+                        </button>
+                      </div>
+
+                      {/* Strength sets */}
+                      {ex.fieldType === 'strength' && (
+                        <div>
+                          <div style={{ display:'grid', gridTemplateColumns:'28px 1fr 1fr 30px', gap:6, marginBottom:8 }}>
+                            {['','Reps','kg',''].map((h,i) => (
+                              <span key={i} style={{ fontSize:10, color:'#2a2a2a', textAlign:'center', fontWeight:700 }}>{h}</span>
+                            ))}
+                          </div>
+                          {ex.sets.map((set, si) => (
+                            <div key={si} style={{ display:'grid', gridTemplateColumns:'28px 1fr 1fr 30px', gap:6, marginBottom:6, alignItems:'center' }}>
+                              <div style={{ height:38, background:'#080808', borderRadius:9, display:'flex', alignItems:'center', justifyContent:'center', fontSize:12, color:'#333', fontWeight:700 }}>{si+1}</div>
+                              <input type="number" inputMode="numeric" placeholder="12" value={set.reps}
+                                onChange={e => updSet(ex.id, si, 'reps', e.target.value)}
+                                style={{ ...inp, height:38, textAlign:'center', padding:'0 6px', fontSize:16, fontWeight:700 }} />
+                              <input type="number" inputMode="decimal" placeholder="—" value={set.weight}
+                                onChange={e => updSet(ex.id, si, 'weight', e.target.value)}
+                                style={{ ...inp, height:38, textAlign:'center', padding:'0 6px', fontSize:16, fontWeight:700 }} />
+                              <button onClick={() => removeSet(ex.id, si)} disabled={ex.sets.length === 1}
+                                style={{ height:30, width:30, borderRadius:8, background: ex.sets.length===1?'transparent':'#150000', border:`1px solid ${ex.sets.length===1?'transparent':'#EF444415'}`, display:'flex', alignItems:'center', justifyContent:'center', cursor: ex.sets.length===1?'not-allowed':'pointer' }}>
+                                <Trash2 size={11} color={ex.sets.length===1?'#1a1a1a':'#EF4444'} />
+                              </button>
+                            </div>
+                          ))}
+                          <button onClick={() => addSet(ex.id)}
+                            style={{ width:'100%', padding:9, borderRadius:10, border:`1px dashed ${m.color}20`, background:'transparent', color: m.color, fontSize:12, fontWeight:600, cursor:'pointer', marginTop:4, opacity:.8 }}>
+                            + Add set
+                          </button>
+                        </div>
+                      )}
+
+                      {/* Cardio */}
+                      {ex.fieldType === 'cardio' && (
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                          {[['Distance (km)','distance','number','5.0'],['Duration (min)','duration','number','30'],['Pace (min/km)','pace','text','5:30']].map(([label,field,type,ph]) => (
+                            <div key={field} style={{ gridColumn: field==='pace'?'span 2':'auto' }}>
+                              <p style={{ fontSize:10, color:'#333', fontWeight:700, marginBottom:5 }}>{label}</p>
+                              <input type={type} placeholder={ph} value={ex[field]}
+                                onChange={e => updEx(ex.id, field, e.target.value)}
+                                style={{ ...inp, width:'100%', boxSizing:'border-box' }} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Timed */}
+                      {ex.fieldType === 'timed' && (
+                        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:8 }}>
+                          {[['Sets / Rounds','setsCount','number','3'],['Duration / Notes','duration','text','30 min']].map(([label,field,type,ph]) => (
+                            <div key={field}>
+                              <p style={{ fontSize:10, color:'#333', fontWeight:700, marginBottom:5 }}>{label}</p>
+                              <input type={type} placeholder={ph} value={ex[field]}
+                                onChange={e => updEx(ex.id, field, e.target.value)}
+                                style={{ ...inp, width:'100%', boxSizing:'border-box' }} />
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   )
                 })}
               </div>
-              <button onClick={() => setShowCustomModal(true)}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 10, fontSize: 12, cursor: 'pointer', border: '1px dashed #FF5A1F40', background: '#FF5A1F10', color: '#FF5A1F', fontWeight: 500 }}>
-                ⭐ Add custom exercise to library
-              </button>
-            </div>
-          )}
+            )}
 
-          {activeCategory === 'Custom' && (
-            <button onClick={() => setShowCustomModal(true)}
-              style={{ width: '100%', padding: 14, borderRadius: 14, border: '1px dashed #FF5A1F40', background: '#FF5A1F10', color: '#FF5A1F', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
-              ⭐ Add your custom exercise
-            </button>
-          )}
-
-          {/* Exercise blocks with sets */}
-          {exercises.length > 0 && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-              <p style={{ ...c.label }}>Your exercises ({exercises.length})</p>
-              {exercises.map(ex => (
-                <div key={ex.id} style={{ background: '#1a1a1a', borderRadius: 14, padding: 14 }}>
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
-                    <div>
-                      <p style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{ex.name}</p>
-                      <p style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{ex.category} · {ex.fieldType}</p>
-                    </div>
-                    <button onClick={() => removeExercise(ex.id)}
-                      style={{ width: 28, height: 28, borderRadius: 8, background: '#2d0000', border: '1px solid #EF444430', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
-                      <X size={12} color="#EF4444" />
-                    </button>
-                  </div>
-
-                  {/* Strength: sets x reps x weight */}
-                  {ex.fieldType === 'strength' && (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                      <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr 1fr 32px', gap: 6 }}>
-                        <span style={{ fontSize: 10, color: '#555', textAlign: 'center' }}>Set</span>
-                        <span style={{ fontSize: 10, color: '#555', textAlign: 'center' }}>Reps</span>
-                        <span style={{ fontSize: 10, color: '#555', textAlign: 'center' }}>kg</span>
-                        <span></span>
-                      </div>
-                      {(ex.sets || []).map((set, si) => (
-                        <div key={si} style={{ display: 'grid', gridTemplateColumns: '32px 1fr 1fr 32px', gap: 6, alignItems: 'center' }}>
-                          <div style={{ height: 34, background: '#131313', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, color: '#555' }}>{si + 1}</div>
-                          <input type="number" placeholder="12" value={set.reps}
-                            onChange={e => updateSet(ex.id, si, 'reps', e.target.value)}
-                            style={{ height: 34, background: '#131313', border: '1px solid #2a2a2a', borderRadius: 8, color: '#fff', fontSize: 13, textAlign: 'center', outline: 'none' }} />
-                          <input type="number" placeholder="50" value={set.weight}
-                            onChange={e => updateSet(ex.id, si, 'weight', e.target.value)}
-                            style={{ height: 34, background: '#131313', border: '1px solid #2a2a2a', borderRadius: 8, color: '#fff', fontSize: 13, textAlign: 'center', outline: 'none' }} />
-                          <button onClick={() => removeSet(ex.id, si)} disabled={ex.sets.length === 1}
-                            style={{ height: 34, width: 32, borderRadius: 8, background: ex.sets.length === 1 ? '#111' : '#2d0000', border: `1px solid ${ex.sets.length === 1 ? '#1a1a1a' : '#EF444430'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: ex.sets.length === 1 ? 'not-allowed' : 'pointer' }}>
-                            <Trash2 size={11} color={ex.sets.length === 1 ? '#333' : '#EF4444'} />
-                          </button>
-                        </div>
-                      ))}
-                      <button onClick={() => addSet(ex.id)}
-                        style={{ width: '100%', padding: '8px', borderRadius: 10, border: '1px dashed #FF5A1F30', background: '#FF5A1F10', color: '#FF5A1F', fontSize: 12, fontWeight: 500, cursor: 'pointer' }}>
-                        + Add set
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Cardio */}
-                  {ex.fieldType === 'cardio' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                      <div>
-                        <p style={{ ...c.label, marginBottom: 4 }}>Distance (km)</p>
-                        <input type="number" placeholder="5.0" value={ex.distance}
-                          onChange={e => updateExercise(ex.id, 'distance', e.target.value)}
-                          style={{ ...c.input, padding: '8px 12px' }} />
-                      </div>
-                      <div>
-                        <p style={{ ...c.label, marginBottom: 4 }}>Duration (min)</p>
-                        <input type="number" placeholder="30" value={ex.duration}
-                          onChange={e => updateExercise(ex.id, 'duration', e.target.value)}
-                          style={{ ...c.input, padding: '8px 12px' }} />
-                      </div>
-                      <div style={{ gridColumn: 'span 2' }}>
-                        <p style={{ ...c.label, marginBottom: 4 }}>Pace (min/km)</p>
-                        <input placeholder="5:30" value={ex.pace}
-                          onChange={e => updateExercise(ex.id, 'pace', e.target.value)}
-                          style={{ ...c.input, padding: '8px 12px' }} />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Station (Hyrox) */}
-                  {ex.fieldType === 'station' && (
-                    <div>
-                      <p style={{ ...c.label, marginBottom: 4 }}>Time (e.g. 4:32)</p>
-                      <input placeholder="4:32" value={ex.stationTime}
-                        onChange={e => updateExercise(ex.id, 'stationTime', e.target.value)}
-                        style={c.input} />
-                    </div>
-                  )}
-
-                  {/* Timed (recovery, yoga) */}
-                  {ex.fieldType === 'timed' && (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                      <div>
-                        <p style={{ ...c.label, marginBottom: 4 }}>Sets</p>
-                        <input type="number" placeholder="3" value={ex.setsCount}
-                          onChange={e => updateExercise(ex.id, 'setsCount', e.target.value)}
-                          style={{ ...c.input, padding: '8px 12px' }} />
-                      </div>
-                      <div>
-                        <p style={{ ...c.label, marginBottom: 4 }}>Duration</p>
-                        <input placeholder="30 sec / 5 min" value={ex.duration}
-                          onChange={e => updateExercise(ex.id, 'duration', e.target.value)}
-                          style={{ ...c.input, padding: '8px 12px' }} />
-                      </div>
-                    </div>
-                  )}
+            {/* Session meta */}
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+              <div>
+                <p style={{ fontSize:10, color:'#333', fontWeight:700, marginBottom:6 }}>Duration (min)</p>
+                <input type="number" placeholder="60" value={duration}
+                  onChange={e => setDuration(e.target.value)}
+                  style={{ ...inp, width:'100%', boxSizing:'border-box' }} />
+              </div>
+              <div>
+                <p style={{ fontSize:10, color:'#333', fontWeight:700, marginBottom:6 }}>Effort · {rpe}/10</p>
+                <div style={{ display:'flex', alignItems:'center', gap:8, marginTop:8 }}>
+                  <input type="range" min="1" max="10" value={rpe}
+                    onChange={e => setRpe(Number(e.target.value))}
+                    style={{ flex:1, accentColor:'#FF5A1F' }} />
+                  <span style={{ fontSize:15, fontWeight:700, color:'#FF5A1F', minWidth:20 }}>{rpe}</span>
                 </div>
-              ))}
+              </div>
             </div>
-          )}
 
-          {/* Session details */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div>
-              <p style={{ ...c.label, marginBottom: 6 }}>Duration (min)</p>
-              <input type="number" placeholder="60" value={sessionDuration}
-                onChange={e => setSessionDuration(e.target.value)}
-                style={c.input} />
-            </div>
-            <div>
-              <p style={{ ...c.label, marginBottom: 6 }}>Effort (RPE) — {rpe}/10</p>
-              <input type="range" min="1" max="10" value={rpe}
-                onChange={e => setRpe(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#FF5A1F', marginTop: 8 }} />
-            </div>
+            <textarea placeholder="Notes (optional)" value={notes}
+              onChange={e => setNotes(e.target.value)} rows={2}
+              style={{ ...inp, width:'100%', resize:'none', lineHeight:1.6, boxSizing:'border-box' }} />
+
+            {/* Save */}
+            <button onClick={save} disabled={saving || !exercises.length}
+              style={{ width:'100%', background: exercises.length ? 'linear-gradient(135deg,#FF5A1F,#FF8C42)' : '#0d0d0d', border:'none', borderRadius:14, padding:16, color: exercises.length ? '#fff' : '#2a2a2a', fontSize:15, fontWeight:700, cursor: exercises.length ? 'pointer' : 'not-allowed', letterSpacing:'.02em', boxShadow: exercises.length ? '0 4px 20px rgba(255,90,31,.3)' : 'none' }}>
+              {saving ? 'Saving...' : !exercises.length ? 'Add at least one exercise' : `Save ${detectedType || 'Session'} · ${exercises.length} exercise${exercises.length>1?'s':''}`}
+            </button>
+
           </div>
-
-          <textarea placeholder="Session notes (optional)" value={notes}
-            onChange={e => setNotes(e.target.value)} rows={2}
-            style={{ ...c.input, resize: 'none', lineHeight: 1.5 }} />
-
-          <button onClick={saveSession} disabled={saving || exercises.length === 0}
-            style={{ ...c.btn, width: '100%', padding: 14, fontSize: 15, opacity: exercises.length === 0 ? 0.4 : 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
-            <Check size={16} />
-            {saving ? 'Saving...' : exercises.length === 0 ? 'Add at least 1 exercise' : `Save Session (${exercises.length} exercises)`}
-          </button>
         </div>
       )}
-
     </div>
   )
 }
