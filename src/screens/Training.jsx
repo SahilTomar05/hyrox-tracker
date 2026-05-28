@@ -532,7 +532,7 @@ export default function Training({ session, profile }) {
         <div style={{ margin:'0 20px 16px', background:'#0a0a0a', border:'1px solid #1a1a1a', borderRadius:22, overflow:'hidden' }}>
 
           {/* Header */}
-          <div style={{ padding:'14px 16px', background:'#0a0a0a', borderBottom:'1px solid #111', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:52, zIndex:20 }}>
+          <div style={{ padding:'14px 16px', background:'#0a0a0a', borderBottom:'1px solid #111', display:'flex', alignItems:'center', justifyContent:'space-between', position:'sticky', top:0, zIndex:20}}>
             <div>
               <p style={{ fontSize:16, fontWeight:700 }}>New Session</p>
               {detectedType
@@ -546,7 +546,7 @@ export default function Training({ session, profile }) {
             </button>
           </div>
 
-          <div style={{ padding:16, display:'flex', flexDirection:'column', gap:14 }}>
+          <div style={{ padding:16, display:'flex', flexDirection:'column', gap:14, maxHeight:'65vh', overflowY:'auto', scrollbarWidth:'none' }}>
 
             {/* SEARCH — the hero element */}
             <div style={{ position:'relative' }}>
