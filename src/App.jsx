@@ -83,7 +83,7 @@ export default function App() {
         {activeTab === 'dashboard' && <Dashboard profile={profile} session={session} />}
         {activeTab === 'training' && <Training profile={profile} session={session} />}
         {activeTab === 'nutrition' && <Nutrition profile={profile} session={session} />}
-        {activeTab === 'progress' && <Progress profile={profile} session={session} />}
+        {activeTab === 'progress' && <Progress session={session} profile={profile} />}
         {activeTab === 'settings' && (
           <Settings profile={profile} onUpdate={handleProfileUpdate} onReset={handleReset} />
         )}
