@@ -72,8 +72,8 @@ function ShareModal({ profile, stats, onClose }) {
   function handleShare() {
     if (navigator.share) {
       navigator.share({
-        title: 'My OneFitness Progress',
-        text: `${profile?.name} — ${stats.consistencyScore}/100 this week! ${stats.sessionsThisWeek} sessions, ${stats.avgCalories} avg kcal/day 💪 #OneFitness`,
+        title: 'My Pace4 Progress',
+        text: `${profile?.name} — ${stats.consistencyScore}/100 this week! ${stats.sessionsThisWeek} sessions, ${stats.avgCalories} avg kcal/day 💪 #Pace4`,
       })
     } else {
       alert('Screenshot this card and share it!')
@@ -92,7 +92,7 @@ function ShareModal({ profile, stats, onClose }) {
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
             <div style={{display:'flex',alignItems:'center',gap:10}}>
               <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,#FF5A1F,#FF8C42)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,color:'#fff'}}>1F</div>
-              <span style={{fontWeight:700,fontSize:15,color:'#fff'}}>OneFitness</span>
+              <span style={{fontWeight:700,fontSize:15,color:'#fff'}}>Pace4</span>
             </div>
             {daysLeft&&daysLeft>0&&(
               <div style={{background:'#FF5A1F15',border:'1px solid #FF5A1F30',borderRadius:10,padding:'4px 12px'}}>
@@ -142,8 +142,8 @@ function ShareModal({ profile, stats, onClose }) {
 
           {/* Footer */}
           <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-            <p style={{fontSize:11,color:'#2a2a2a'}}>onefitness.in</p>
-            <p style={{fontSize:11,color:'#2a2a2a'}}>#OneFitness #Athletics</p>
+            <p style={{fontSize:11,color:'#2a2a2a'}}>Pace4.in</p>
+            <p style={{fontSize:11,color:'#2a2a2a'}}>#Pace4 #Athletics</p>
           </div>
         </div>
 

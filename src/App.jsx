@@ -66,9 +66,9 @@ export default function App() {
         <div className="text-center">
           <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
             style={{ background: 'linear-gradient(135deg, #FF5A1F, #FF8C42)' }}>
-            <span className="text-black font-bold text-2xl">1F</span>
+            <span className="text-black font-bold text-2xl">P4</span>
           </div>
-          <p style={{ color: '#555' }} className="text-sm">Loading OneFitness...</p>
+          <p style={{ color: '#555' }} className="text-sm">Loading Pace4....</p>
         </div>
       </div>
     )
@@ -87,7 +87,7 @@ export default function App() {
         {activeTab === 'settings' && (
           <Settings profile={profile} onUpdate={handleProfileUpdate} onReset={handleReset} />
         )}
-      </div>
+      </div> 
 
       {/* Quick log modal */}
       {showQuickLog && (

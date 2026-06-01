@@ -1,8 +1,8 @@
 {
-  "name": "OneFitness",
-  "short_name": "OneFitness",
+  "name": "Pace4",
+  "short_name": "Pace4",
   "description": "One app for every Indian athlete",
-  "start_url": "/hyrox-tracker/",
+  "start_url": "/",
   "scope": "/hyrox-tracker/",
   "display": "standalone",
   "background_color": "#0f0f0f",

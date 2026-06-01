@@ -47,7 +47,7 @@ export default function Auth() {
           <div className="w-16 h-16 bg-[#00E5A0] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <span className="text-black font-bold text-2xl">1F</span>
           </div>
-          <h1 className="text-2xl font-bold text-white">OneFitness</h1>
+          <h1 className="text-2xl font-bold text-white">Pace4</h1>
           <p className="text-[#666] text-sm mt-1">Your Hyrox training companion</p>
         </div>
 
@@ -118,7 +118,7 @@ export default function Auth() {
         </div>
 
         <p className="text-center text-[#444] text-xs mt-6">
-          By continuing you agree to OneFitness Terms & Privacy Policy
+          By continuing you agree to Pace4 Terms & Privacy Policy
         </p>
       </div>
     </div>
