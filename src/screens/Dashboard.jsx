@@ -357,7 +357,7 @@ export default function Dashboard({ profile, session }) {
       {/* Sarcastic AI — right after ring */}
       <div style={{ ...card, background: '#0a0500', borderColor: '#FF5A1F20' }}>
         <p style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: '#FF8C42', marginBottom: 5 }}>
-          🤖 OneFitness says
+          🤖 Pace4 says
         </p>
         <p style={{ fontSize: 13, color: '#bbb', lineHeight: 1.5 }}>{sarcasticMsg}</p>
       </div>

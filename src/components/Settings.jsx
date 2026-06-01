@@ -1,329 +1,196 @@
 import { useState } from 'react'
-import { Save, LogOut } from 'lucide-react'
-import { requestNotificationPermission, scheduleNotifications, saveNotificationSettings, loadNotificationSettings } from '../lib/notifications'
-
-function NotificationSettings({ stepGoal }) {
-  const [settings, setSettings] = useState(loadNotificationSettings)
-  const [permissionGranted, setPermissionGranted] = useState(Notification.permission === 'granted')
-  const [saved, setSaved] = useState(false)
-
-  async function handleEnable() {
-    const granted = await requestNotificationPermission()
-    setPermissionGranted(granted)
-    if (!granted) alert('Please allow notifications in your browser settings!')
-  }
-
-  function toggle(key) {
-    setSettings(s => ({ ...s, [key]: !s[key] }))
-  }
-
-  function handleSave() {
-    const finalSettings = { ...settings, stepGoal }
-    saveNotificationSettings(finalSettings)
-    scheduleNotifications(finalSettings)
-    setSaved(true)
-    setTimeout(() => setSaved(false), 2000)
-  }
-
-  return (
-    <div className="space-y-4">
-      {!permissionGranted && (
-        <div className="bg-[#2d1a0d] rounded-2xl p-4 border border-[#FF6B35]/30">
-          <p className="text-[#FF6B35] text-sm font-medium mb-2">🔔 Notifications disabled</p>
-          <p className="text-[#666] text-xs mb-3">Enable notifications to get meal, workout, water and step reminders.</p>
-          <button onClick={handleEnable}
-            className="w-full bg-[#FF6B35] text-black font-medium py-2.5 rounded-xl text-sm">
-            Enable Notifications
-          </button>
-        </div>
-      )}
-
-      <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-4">
-        <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Reminders</p>
-
-        {[
-          { key: 'mealReminders', label: '🍽️ Meal reminders', desc: '9am, 1pm, 7pm — log breakfast, lunch, dinner' },
-          { key: 'waterReminders', label: '💧 Water reminders', desc: 'Every 2 hours from 8am to 8pm' },
-          { key: 'stepsReminder', label: '👟 Steps reminder', desc: '7pm nudge if you haven\'t hit your goal' },
-          { key: 'workoutReminder', label: '💪 Workout reminder', desc: 'Custom time daily' },
-        ].map(({ key, label, desc }) => (
-          <div key={key} className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-white text-sm">{label}</p>
-              <p className="text-[#666] text-xs">{desc}</p>
-            </div>
-            <button onClick={() => toggle(key)}
-              className={`w-12 h-6 rounded-full transition-all relative ${settings[key] ? 'bg-[#00E5A0]' : 'bg-[#2a2a2a]'}`}>
-              <div className={`w-5 h-5 bg-white rounded-full absolute top-0.5 transition-all ${settings[key] ? 'left-6' : 'left-0.5'}`} />
-            </button>
-          </div>
-        ))}
-
-        {settings.workoutReminder && (
-          <div>
-            <label className="text-[#666] text-xs mb-1 block">Workout reminder time</label>
-            <input type="time" value={settings.workoutTime}
-              onChange={e => setSettings(s => ({ ...s, workoutTime: e.target.value }))}
-              className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
-          </div>
-        )}
-      </div>
-
-      <button onClick={handleSave}
-        className={`w-full py-3 rounded-2xl font-medium transition-all
-          ${saved ? 'bg-[#0d2d1f] text-[#00E5A0] border border-[#00E5A0]' : 'bg-[#00E5A0] text-black'}`}>
-        {saved ? 'Notifications saved! ✓' : 'Save notification settings'}
-      </button>
-    </div>
-  )
-}
-
-const ACTIVITY_LEVELS = [
-  { id: 'sedentary', label: 'Sedentary', multiplier: 1.2 },
-  { id: 'light', label: 'Lightly Active', multiplier: 1.375 },
-  { id: 'moderate', label: 'Moderately Active', multiplier: 1.55 },
-  { id: 'very', label: 'Very Active', multiplier: 1.725 },
-]
+import { supabase } from '../lib/supabase'
+import { useTheme } from '../context/ThemeContext'
+import { Moon, Sun, LogOut, ChevronRight, User, Target, Bell, Dumbbell, Scale } from 'lucide-react'
 
 const SPORTS = [
-  { id: 'marathon', icon: '🏃', name: 'Marathon' },
-  { id: 'hyrox', icon: '⚡', name: 'Hyrox' },
-  { id: 'ocr', icon: '🏔️', name: 'OCR / Adventure' },
-  { id: 'cycling', icon: '🚴', name: 'Cycling' },
-  { id: 'bodybuilding', icon: '🏋️', name: 'Bodybuilding' },
-  { id: 'crossfit', icon: '🏇', name: 'CrossFit' },
-  { id: 'triathlon', icon: '🏊', name: 'Triathlon' },
-  { id: 'combat', icon: '🥊', name: 'Combat Sports' },
-  { id: 'team', icon: '⚽', name: 'Team Sports' },
-  { id: 'calisthenics', icon: '🤸', name: 'Calisthenics' },
-  { id: 'general', icon: '🎯', name: 'General Fitness' },
-  { id: 'custom', icon: '🏄', name: 'Custom Sport' },
+  { id: 'hyrox', icon: '⚡', label: 'Hyrox' },
+  { id: 'marathon', icon: '🏃', label: 'Marathon' },
+  { id: 'bodybuilding', icon: '🏋️', label: 'Bodybuilding' },
+  { id: 'crossfit', icon: '🏇', label: 'CrossFit' },
+  { id: 'cycling', icon: '🚴', label: 'Cycling' },
+  { id: 'triathlon', icon: '🏊', label: 'Triathlon' },
+  { id: 'ocr', icon: '🏔️', label: 'OCR' },
+  { id: 'combat', icon: '🥊', label: 'Combat' },
+  { id: 'team', icon: '⚽', label: 'Team Sports' },
+  { id: 'calisthenics', icon: '🤸', label: 'Calisthenics' },
+  { id: 'general', icon: '🎯', label: 'General Fitness' },
+  { id: 'custom', icon: '🏄', label: 'Custom' },
 ]
 
-const INDIAN_EVENTS = {
-  marathon: ['Tata Mumbai Marathon', 'Delhi Half Marathon (ADHM)', 'Ladakh Marathon', 'Bengaluru Marathon', 'Pune Marathon', 'Airtel Hyderabad Marathon', 'Vedanta Chennai Marathon', 'Kolkata Marathon', 'Satara Hill Marathon', 'Custom Marathon Event'],
-  hyrox: ['Hyrox Mumbai', 'Hyrox Delhi', 'Hyrox Bengaluru', 'Hyrox Chennai', 'Hyrox Hyderabad', 'Custom Hyrox Event'],
-  ocr: ['Devil Circuit', 'Yodha Race', 'Spartan India', 'Tough Mudder India', 'Guerrilla Race India', 'Custom OCR Event'],
-  cycling: ['Tour of Nilgiris', 'Mumbai Cyclothon', 'Delhi Cyclothon', 'Dirty Dozen Shimla', 'Ladakh Cycling Expedition', 'Custom Cycling Event'],
-  triathlon: ['Ironman India', 'Ironman 70.3 Goa', 'Mumbai Triathlon', 'Delhi Triathlon', 'Custom Triathlon Event'],
-  crossfit: ['CrossFit Open', 'CrossFit Sanctional India', 'Local Box Competition', 'Custom CrossFit Event'],
-  bodybuilding: ['Mr. India', 'IBBF National Championship', 'State Championship', 'Physique Competition', 'No competition — personal goal'],
-  combat: ['Amateur MMA bout', 'Boxing tournament', 'Wrestling competition', 'No event — fitness only'],
-  team: ['Football league', 'Cricket tournament', 'Basketball league', 'No event — fitness only'],
-  calisthenics: ['Calisthenics competition', 'Street workout event', 'No event — skill goals'],
-  general: ['No event — just staying fit'],
-  custom: ['Custom event'],
-}
-
-function calculateGoals({ age, gender, weight, height, activityLevel, sport, primaryGoal }) {
-  const activity = ACTIVITY_LEVELS.find(a => a.id === activityLevel)
-  const multiplier = activity ? activity.multiplier : 1.55
-  let bmr
-  if (gender === 'male') {
-    bmr = 10 * weight + 6.25 * height - 5 * age + 5
-  } else {
-    bmr = 10 * weight + 6.25 * height - 5 * age - 161
-  }
-  const tdee = Math.round(bmr * multiplier)
-  let calorieAdjust = 0
-  if (primaryGoal?.toLowerCase().includes('cut') || primaryGoal?.toLowerCase().includes('lose')) calorieAdjust = -400
-  if (primaryGoal?.toLowerCase().includes('bulk') || primaryGoal?.toLowerCase().includes('muscle')) calorieAdjust = 300
-  const calories = tdee + calorieAdjust
-  let proteinMultiplier = 1.8
-  if (['bodybuilding', 'crossfit', 'hyrox'].includes(sport)) proteinMultiplier = 2.2
-  if (['marathon', 'cycling', 'triathlon'].includes(sport)) proteinMultiplier = 1.6
-  if (['combat'].includes(sport)) proteinMultiplier = 2.0
-  const protein = Math.round(weight * proteinMultiplier)
-  const fat = Math.round((calories * 0.25) / 9)
-  const carbs = Math.round((calories - protein * 4 - fat * 9) / 4)
-  return { calories, protein, carbs: Math.max(carbs, 100), fat, water: Math.round(weight * 0.035 * 10) / 10 }
-}
-
 export default function Settings({ profile, onUpdate, onReset }) {
-  const [form, setForm] = useState({ ...profile })
-  const [saved, setSaved] = useState(false)
+  const { theme, brand, isDark, toggleTheme } = useTheme()
   const [activeSection, setActiveSection] = useState('profile')
+  const [form, setForm] = useState({
+    name: profile?.name || '',
+    sport: profile?.sport || 'general',
+    event_name: profile?.event_name || '',
+    race_date: profile?.race_date || '',
+    has_race: profile?.has_race || false,
+    weight: profile?.weight || '',
+    goal_weight: profile?.goal_weight || '',
+    height: profile?.height || '',
+    age: profile?.age || '',
+    gender: profile?.gender || '',
+    primary_goal: profile?.primary_goal || '',
+    training_days_per_week: profile?.training_days_per_week || '4 days',
+    goals: profile?.goals || { calories: 2800, protein: 180, carbs: 300, fat: 80, water: 3 },
+    step_goal: profile?.step_goal || 10000,
+  })
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
 
-  function update(key, val) { setForm(f => ({ ...f, [key]: val })) }
+  function update(field, value) {
+    setForm(p => ({ ...p, [field]: value }))
+  }
 
-  async function handleSave() {
-    const goals = calculateGoals({
-      age: Number(form.age), gender: form.gender,
-      weight: Number(form.weight), height: Number(form.height),
-      activityLevel: form.activity_level, sport: form.sport,
-      primaryGoal: form.primary_goal,
-    })
-    const updated = {
-      ...form,
-      goals,
-      weight: Number(form.weight),
-      height: Number(form.height),
-      age: Number(form.age),
-      goal_weight: Number(form.goal_weight),
-      step_goal: Number(form.step_goal),
-    }
-    onUpdate(updated)
+  async function save() {
+    setSaving(true)
+    await onUpdate(form)
+    setSaving(false)
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
   }
 
-  function handleReset() {
-    if (confirm('This will sign you out and clear your session. Your cloud data stays safe. Continue?')) {
-      onReset()
-    }
+  const c = {
+    page: { paddingTop: 52, paddingBottom: 24, background: theme.bg, minHeight: '100vh' },
+    card: { margin: '0 16px 12px', background: theme.card, border: `1px solid ${theme.border}`, borderRadius: 18, padding: 16 },
+    label: { fontSize: 10, color: theme.muted, textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 600, marginBottom: 6 },
+    inp: { width: '100%', background: isDark ? '#0f0f0f' : '#f5f5f5', border: `1px solid ${theme.border}`, borderRadius: 10, padding: '10px 12px', color: theme.text, fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' },
+    sectionBtn: (id) => ({
+      display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', background: 'none', border: 'none', cursor: 'pointer', width: '100%', borderBottom: `1px solid ${theme.border}`,
+    }),
   }
 
-  const events = form.sport ? (INDIAN_EVENTS[form.sport] || []) : []
-  const goals = calculateGoals({
-    age: Number(form.age), gender: form.gender,
-    weight: Number(form.weight), height: Number(form.height),
-    activityLevel: form.activity_level, sport: form.sport,
-    primaryGoal: form.primary_goal,
-  })
-
-  const sections = ['profile', 'sport', 'goals', 'nutrition', 'notifications']
+  const SECTIONS = [
+    { id: 'profile', icon: <User size={18}/>, label: 'Profile & Body' },
+    { id: 'sport', icon: <Dumbbell size={18}/>, label: 'Sport & Race' },
+    { id: 'goals', icon: <Target size={18}/>, label: 'Nutrition Goals' },
+    { id: 'steps', icon: <Scale size={18}/>, label: 'Steps & Weight' },
+    { id: 'notifications', icon: <Bell size={18}/>, label: 'Notifications' },
+  ]
 
   return (
-    <div className="p-4 space-y-4">
-      <div className="pt-4">
-        <h1 className="text-2xl font-bold text-white">Settings</h1>
-        <p className="text-[#666] text-sm">Update your profile & goals</p>
+    <div style={c.page}>
+
+      {/* Header */}
+      <div style={{ padding: '0 16px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-.5px', color: theme.text }}>Profile</h1>
+          <p style={{ fontSize: 13, color: theme.muted, marginTop: 3 }}>Settings & preferences</p>
+        </div>
+        {/* Dark mode toggle */}
+        <button onClick={toggleTheme}
+          style={{ width: 44, height: 44, borderRadius: 14, background: isDark ? '#1a1a1a' : '#f0f0f0', border: `1px solid ${theme.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          {isDark ? <Sun size={18} color={brand.orange}/> : <Moon size={18} color={brand.orange}/>}
+        </button>
       </div>
 
-      {/* Section tabs */}
-      <div className="grid grid-cols-4 gap-1">
-        {sections.map(s => (
-          <button key={s} onClick={() => setActiveSection(s)}
-            className={`py-2 rounded-xl text-xs font-medium capitalize transition-all
-              ${activeSection === s ? 'bg-[#00E5A0] text-black' : 'bg-[#1a1a1a] text-[#666]'}`}>
-            {s}
+      {/* Profile hero card */}
+      <div style={{ ...c.card, display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ width: 64, height: 64, borderRadius: '50%', background: `linear-gradient(135deg,${brand.orange},${brand.orange2})`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, fontWeight: 700, color: '#fff', flexShrink: 0 }}>
+          {form.name?.charAt(0)?.toUpperCase() || 'A'}
+        </div>
+        <div style={{ flex: 1 }}>
+          <p style={{ fontSize: 18, fontWeight: 700, color: theme.text }}>{form.name || 'Athlete'}</p>
+          <p style={{ fontSize: 12, color: brand.orange, marginTop: 2 }}>
+            {SPORTS.find(s => s.id === form.sport)?.icon} {SPORTS.find(s => s.id === form.sport)?.label}
+          </p>
+          <div style={{ display: 'flex', gap: 12, marginTop: 6 }}>
+            {form.weight && <span style={{ fontSize: 11, color: theme.muted }}>{form.weight}kg</span>}
+            {form.height && <span style={{ fontSize: 11, color: theme.muted }}>{form.height}cm</span>}
+            {form.age && <span style={{ fontSize: 11, color: theme.muted }}>{form.age}y</span>}
+          </div>
+        </div>
+      </div>
+
+      {/* Section nav */}
+      <div style={{ ...c.card, padding: 0, overflow: 'hidden' }}>
+        {SECTIONS.map((sec, i) => (
+          <button key={sec.id} onClick={() => setActiveSection(activeSection === sec.id ? null : sec.id)}
+            style={{ ...c.sectionBtn(sec.id), borderBottom: i < SECTIONS.length - 1 ? `1px solid ${theme.border}` : 'none', background: activeSection === sec.id ? brand.orange + '10' : 'transparent' }}>
+            <span style={{ color: activeSection === sec.id ? brand.orange : theme.muted }}>{sec.icon}</span>
+            <span style={{ flex: 1, fontSize: 14, fontWeight: 500, color: theme.text, textAlign: 'left' }}>{sec.label}</span>
+            <ChevronRight size={16} color={theme.muted} style={{ transform: activeSection === sec.id ? 'rotate(90deg)' : 'none', transition: '.2s' }} />
           </button>
         ))}
       </div>
 
       {/* Profile section */}
       {activeSection === 'profile' && (
-        <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-4">
-          <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Personal Info</p>
-          <div>
-            <label className="text-[#666] text-xs mb-1 block">Name</label>
-            <input value={form.name || ''} onChange={e => update('name', e.target.value)}
-              className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
+        <div style={c.card}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { label: 'Full name', field: 'name', placeholder: 'Your name' },
+              { label: 'Age', field: 'age', placeholder: '25', type: 'number' },
+              { label: 'Height (cm)', field: 'height', placeholder: '175', type: 'number' },
+            ].map(({ label, field, placeholder, type }) => (
+              <div key={field}>
+                <p style={c.label}>{label}</p>
+                <input type={type || 'text'} placeholder={placeholder} value={form[field]}
+                  onChange={e => update(field, e.target.value)} style={c.inp} />
+              </div>
+            ))}
             <div>
-              <label className="text-[#666] text-xs mb-1 block">Age</label>
-              <input type="number" value={form.age || ''} onChange={e => update('age', e.target.value)}
-                className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
+              <p style={c.label}>Gender</p>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {['Male', 'Female', 'Other'].map(g => (
+                  <button key={g} onClick={() => update('gender', g)}
+                    style={{ flex: 1, padding: '9px 0', borderRadius: 10, border: `1px solid ${form.gender === g ? brand.orange : theme.border}`, background: form.gender === g ? brand.orange + '20' : 'transparent', color: form.gender === g ? brand.orange : theme.muted, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+                    {g}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div>
-              <label className="text-[#666] text-xs mb-1 block">Height (cm)</label>
-              <input type="number" value={form.height || ''} onChange={e => update('height', e.target.value)}
-                className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-[#666] text-xs mb-1 block">Current weight (kg)</label>
-              <input type="number" value={form.weight || ''} onChange={e => update('weight', e.target.value)}
-                className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
-            </div>
-            <div>
-              <label className="text-[#666] text-xs mb-1 block">Goal weight (kg)</label>
-              <input type="number" value={form.goal_weight || ''} onChange={e => update('goal_weight', e.target.value)}
-                className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
-            </div>
-          </div>
-          <div>
-            <label className="text-[#666] text-xs mb-2 block">Gender</label>
-            <div className="grid grid-cols-2 gap-2">
-              {['male', 'female'].map(g => (
-                <button key={g} onClick={() => update('gender', g)}
-                  className={`py-2 rounded-xl text-sm font-medium capitalize transition-all
-                    ${form.gender === g ? 'bg-[#00E5A0] text-black' : 'bg-[#2a2a2a] text-[#666]'}`}>
-                  {g === 'male' ? '♂ Male' : '♀ Female'}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div>
-            <label className="text-[#666] text-xs mb-1 block">Daily step goal</label>
-            <input type="number" value={form.step_goal || 10000} onChange={e => update('step_goal', e.target.value)}
-              className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
           </div>
         </div>
       )}
 
       {/* Sport section */}
       {activeSection === 'sport' && (
-        <div className="space-y-4">
-          <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-3">
-            <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Your Sport</p>
-            <div className="grid grid-cols-2 gap-2">
-              {SPORTS.map(sport => (
-                <button key={sport.id} onClick={() => update('sport', sport.id)}
-                  className={`flex items-center gap-2 p-3 rounded-2xl border text-left transition-all
-                    ${form.sport === sport.id ? 'bg-[#0d2d1f] border-[#00E5A0]' : 'bg-[#2a2a2a] border-[#3a3a3a]'}`}>
-                  <span>{sport.icon}</span>
-                  <span className={`text-xs font-medium ${form.sport === sport.id ? 'text-[#00E5A0]' : 'text-white'}`}>
-                    {sport.name}
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-3">
-            <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Event</p>
-            <div className="grid grid-cols-2 gap-2">
-              {['yes', 'no'].map(opt => (
-                <button key={opt} onClick={() => update('has_race', opt === 'yes')}
-                  className={`py-2 rounded-xl text-sm font-medium transition-all
-                    ${form.has_race === (opt === 'yes') ? 'bg-[#00E5A0] text-black' : 'bg-[#2a2a2a] text-[#666]'}`}>
-                  {opt === 'yes' ? '🏆 Have event' : '🎯 No event'}
-                </button>
-              ))}
-            </div>
-            {form.has_race && (
-              <>
-                <div>
-                  <label className="text-[#666] text-xs mb-1 block">Event name</label>
-                  <select value={form.event_name || ''}
-                    onChange={e => update('event_name', e.target.value)}
-                    className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none">
-                    <option value="">Select event...</option>
-                    {events.map(e => <option key={e} value={e}>{e}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="text-[#666] text-xs mb-1 block">Event date</label>
-                  <input type="date" value={form.race_date || ''}
-                    onChange={e => update('race_date', e.target.value)}
-                    className="w-full bg-[#2a2a2a] text-white text-sm rounded-xl px-3 py-2.5 outline-none" />
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-3">
-            <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Experience</p>
-            <div className="grid grid-cols-3 gap-2">
-              {['beginner', 'intermediate', 'advanced'].map(level => (
-                <button key={level} onClick={() => update('experience_level', level)}
-                  className={`py-2 rounded-xl text-xs font-medium capitalize transition-all
-                    ${form.experience_level === level ? 'bg-[#00E5A0] text-black' : 'bg-[#2a2a2a] text-[#666]'}`}>
-                  {level}
-                </button>
-              ))}
+        <div style={c.card}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <p style={c.label}>Your sport</p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {SPORTS.map(s => (
+                  <button key={s.id} onClick={() => update('sport', s.id)}
+                    style={{ padding: '7px 12px', borderRadius: 10, border: `1px solid ${form.sport === s.id ? brand.orange : theme.border}`, background: form.sport === s.id ? brand.orange + '20' : 'transparent', color: form.sport === s.id ? brand.orange : theme.muted, fontSize: 12, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5 }}>
+                    {s.icon} {s.label}
+                  </button>
+                ))}
+              </div>
             </div>
             <div>
-              <label className="text-[#666] text-xs mb-2 block">Training days per week</label>
-              <div className="grid grid-cols-3 gap-2">
-                {['2 days', '3 days', '4 days', '5 days', '6 days', '7 days'].map(d => (
+              <p style={c.label}>Event / Race name</p>
+              <input placeholder="e.g. Hyrox Delhi, Mumbai Marathon" value={form.event_name}
+                onChange={e => update('event_name', e.target.value)} style={c.inp} />
+            </div>
+            <div>
+              <p style={c.label}>Race date</p>
+              <input type="date" value={form.race_date}
+                onChange={e => update('race_date', e.target.value)} style={c.inp} />
+            </div>
+            <div>
+              <p style={c.label}>Primary goal</p>
+              <select value={form.primary_goal} onChange={e => update('primary_goal', e.target.value)}
+                style={{ ...c.inp }}>
+                <option value="">Select goal</option>
+                <option value="Finish the race">Finish the race</option>
+                <option value="Hit a PB">Hit a PB</option>
+                <option value="Lose weight">Lose weight</option>
+                <option value="Build muscle">Build muscle</option>
+                <option value="Improve fitness">Improve fitness</option>
+                <option value="Compete and win">Compete and win</option>
+              </select>
+            </div>
+            <div>
+              <p style={c.label}>Training days per week</p>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {['3 days', '4 days', '5 days', '6 days', '7 days'].map(d => (
                   <button key={d} onClick={() => update('training_days_per_week', d)}
-                    className={`py-2 rounded-xl text-xs font-medium transition-all
-                      ${form.training_days_per_week === d ? 'bg-[#00E5A0] text-black' : 'bg-[#2a2a2a] text-[#666]'}`}>
-                    {d}
+                    style={{ flex: 1, padding: '9px 0', borderRadius: 10, border: `1px solid ${form.training_days_per_week === d ? brand.orange : theme.border}`, background: form.training_days_per_week === d ? brand.orange + '20' : 'transparent', color: form.training_days_per_week === d ? brand.orange : theme.muted, fontSize: 11, fontWeight: 600, cursor: 'pointer' }}>
+                    {d.split(' ')[0]}
                   </button>
                 ))}
               </div>
@@ -334,91 +201,83 @@ export default function Settings({ profile, onUpdate, onReset }) {
 
       {/* Goals section */}
       {activeSection === 'goals' && (
-        <div className="space-y-4">
-          <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-3">
-            <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Activity Level</p>
-            {ACTIVITY_LEVELS.map(level => (
-              <button key={level.id} onClick={() => update('activity_level', level.id)}
-                className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl border transition-all
-                  ${form.activity_level === level.id ? 'bg-[#0d2d1f] border-[#00E5A0]' : 'bg-[#2a2a2a] border-[#3a3a3a]'}`}>
-                <span className={`text-sm font-medium ${form.activity_level === level.id ? 'text-[#00E5A0]' : 'text-white'}`}>
-                  {level.label}
-                </span>
-                {form.activity_level === level.id && (
-                  <div className="w-5 h-5 rounded-full bg-[#00E5A0] flex items-center justify-center">
-                    <span className="text-black text-xs">✓</span>
-                  </div>
-                )}
-              </button>
+        <div style={c.card}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {[
+              { label: 'Daily calories (kcal)', field: 'calories', placeholder: '2800' },
+              { label: 'Protein goal (g)', field: 'protein', placeholder: '180' },
+              { label: 'Carbs goal (g)', field: 'carbs', placeholder: '300' },
+              { label: 'Fat goal (g)', field: 'fat', placeholder: '80' },
+              { label: 'Water goal (L)', field: 'water', placeholder: '3.0' },
+            ].map(({ label, field, placeholder }) => (
+              <div key={field}>
+                <p style={c.label}>{label}</p>
+                <input type="number" placeholder={placeholder}
+                  value={form.goals[field] || ''}
+                  onChange={e => update('goals', { ...form.goals, [field]: Number(e.target.value) })}
+                  style={c.inp} />
+              </div>
             ))}
           </div>
+        </div>
+      )}
 
-          {/* Calculated goals preview */}
-          <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a]">
-            <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider mb-3">
-              Calculated goals
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-                <p className="text-[#FF6B35] text-lg font-bold">{goals.calories}</p>
-                <p className="text-[#666] text-xs">kcal / day</p>
-              </div>
-              <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-                <p className="text-[#A78BFA] text-lg font-bold">{goals.protein}g</p>
-                <p className="text-[#666] text-xs">protein / day</p>
-              </div>
-              <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-                <p className="text-[#3B9EFF] text-lg font-bold">{goals.carbs}g</p>
-                <p className="text-[#666] text-xs">carbs / day</p>
-              </div>
-              <div className="bg-[#0f0f0f] rounded-xl p-3 text-center">
-                <p className="text-white text-lg font-bold">{goals.water}L</p>
-                <p className="text-[#666] text-xs">water / day</p>
-              </div>
+      {/* Steps & Weight section */}
+      {activeSection === 'steps' && (
+        <div style={c.card}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <p style={c.label}>Daily step goal</p>
+              <input type="number" placeholder="10000" value={form.step_goal}
+                onChange={e => update('step_goal', Number(e.target.value))} style={c.inp} />
+            </div>
+            <div>
+              <p style={c.label}>Current weight (kg)</p>
+              <input type="number" placeholder="75" value={form.weight}
+                onChange={e => update('weight', e.target.value)} style={c.inp} />
+            </div>
+            <div>
+              <p style={c.label}>Goal weight (kg)</p>
+              <input type="number" placeholder="70" value={form.goal_weight}
+                onChange={e => update('goal_weight', e.target.value)} style={c.inp} />
             </div>
           </div>
         </div>
       )}
 
-      {/* Nutrition section */}
-      {activeSection === 'nutrition' && (
-        <div className="bg-[#1a1a1a] rounded-2xl p-4 border border-[#2a2a2a] space-y-4">
-          <p className="text-[#00E5A0] text-xs font-medium uppercase tracking-wider">Nutrition Goals</p>
-          <p className="text-[#666] text-xs">These are auto-calculated from your stats. Update your body stats in Profile tab to recalculate.</p>
-          <div className="space-y-3">
-            {[
-              { label: 'Daily calories (kcal)', val: goals.calories, color: '#FF6B35' },
-              { label: 'Protein (g)', val: goals.protein, color: '#A78BFA' },
-              { label: 'Carbs (g)', val: goals.carbs, color: '#3B9EFF' },
-              { label: 'Fat (g)', val: goals.fat, color: '#FF6B35' },
-              { label: 'Water (L)', val: goals.water, color: '#3B9EFF' },
-            ].map(({ label, val, color }) => (
-              <div key={label} className="flex items-center justify-between bg-[#2a2a2a] rounded-xl px-4 py-3">
-                <span className="text-white text-sm">{label}</span>
-                <span className="font-bold text-sm" style={{ color }}>{val}</span>
-              </div>
-            ))}
-          </div>
+      {/* Notifications section */}
+      {activeSection === 'notifications' && (
+        <div style={c.card}>
+          <p style={{ color: theme.muted, fontSize: 13 }}>Notification settings coming soon.</p>
         </div>
       )}
 
-      {/* Notifications section */}
-        {activeSection === 'notifications' && (
-          <NotificationSettings stepGoal={form.step_goal || 10000} />
-      )}
-
       {/* Save button */}
-      <button onClick={handleSave}
-        className={`w-full py-3 rounded-2xl font-medium flex items-center justify-center gap-2 transition-all
-          ${saved ? 'bg-[#0d2d1f] text-[#00E5A0] border border-[#00E5A0]' : 'bg-[#00E5A0] text-black'}`}>
-        <Save size={16} />
-        {saved ? 'Saved! ✓' : 'Save changes'}
-      </button>
+      <div style={{ padding: '0 16px 12px' }}>
+        <button onClick={save} disabled={saving}
+          style={{ width: '100%', background: saved ? brand.green : `linear-gradient(135deg,${brand.orange},${brand.orange2})`, border: 'none', borderRadius: 14, padding: 15, color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', boxShadow: `0 4px 20px ${brand.orange}40`, transition: '.2s' }}>
+          {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save changes'}
+        </button>
+      </div>
 
-      <button onClick={handleReset}
-        className="w-full py-3 rounded-2xl border border-red-900 text-red-500 text-sm flex items-center justify-center gap-2">
-        <LogOut size={16} /> Sign out
-      </button>
+      {/* Sign out */}
+      <div style={{ padding: '0 16px 24px' }}>
+        <button onClick={onReset}
+          style={{ width: '100%', background: 'transparent', border: `1px solid ${theme.border}`, borderRadius: 14, padding: 14, color: '#EF4444', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <LogOut size={16} color="#EF4444" /> Sign out
+        </button>
+      </div>
+
+      {/* App info */}
+      <div style={{ textAlign: 'center', padding: '0 16px 20px' }}>
+        <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg,${brand.orange},${brand.orange2})`, display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px', boxShadow: `0 4px 16px ${brand.orange}40` }}>
+          <span style={{ color: '#fff', fontWeight: 900, fontSize: 16 }}>P4</span>
+        </div>
+        <p style={{ fontSize: 13, fontWeight: 700, color: brand.orange }}>Pace4</p>
+        <p style={{ fontSize: 10, color: theme.muted, marginTop: 2, letterSpacing: '.08em', textTransform: 'uppercase' }}>Progress · Action · Consistency · Evolution</p>
+        <p style={{ fontSize: 10, color: theme.subtle, marginTop: 6 }}>v1.0.0 · pace4.in</p>
+      </div>
+
     </div>
   )
 }

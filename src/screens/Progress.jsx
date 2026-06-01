@@ -5,6 +5,7 @@ import {
 } from 'recharts'
 import { Share2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { supabase } from '../lib/supabase'
+import { useTheme } from '../context/ThemeContext'
 
 function isSameWeek(date1, date2) {
   const d1 = new Date(date1)
@@ -60,20 +61,32 @@ const CustomTooltip = ({ active, payload, label, unit='' }) => {
   return null
 }
 
-function ShareModal({ profile, stats, onClose }) {
+function ShareModal({ profile, stats, sessions, nutrition, steps, onClose }) {
+  const { theme, brand, isDark } = useTheme()
+  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   const daysLeft = profile?.race_date
     ? Math.ceil((new Date(profile.race_date) - new Date()) / (1000*60*60*24))
     : null
 
-  const scoreColor = stats.consistencyScore >= 80 ? '#22C55E'
-    : stats.consistencyScore >= 60 ? '#FF5A1F'
-    : '#EF4444'
+  // Today's workout
+  const todaySession = sessions.find(s =>
+    new Date(s.date).toDateString() === new Date().toDateString()
+  )
+
+  // Today's best lifts
+  const todayStrength = todaySession
+    ? (todaySession.exercises || []).filter(e => e.fieldType === 'strength').map(ex => ({
+        name: ex.name,
+        best: Math.max(...(ex.sets || []).map(s => Number(s.weight || 0)))
+      })).filter(e => e.best > 0).slice(0, 3)
+    : []
 
   function handleShare() {
     if (navigator.share) {
       navigator.share({
         title: 'My Pace4 Progress',
-        text: `${profile?.name} — ${stats.consistencyScore}/100 this week! ${stats.sessionsThisWeek} sessions, ${stats.avgCalories} avg kcal/day 💪 #Pace4`,
+        text: `${profile?.name} — ${stats.consistencyScore}/100 consistency! ${stats.sessionsThisWeek} sessions this week 💪 #Pace4 #Athletics`,
+        url: 'https://www.pace4.in',
       })
     } else {
       alert('Screenshot this card and share it!')
@@ -81,84 +94,115 @@ function ShareModal({ profile, stats, onClose }) {
   }
 
   return (
-    <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.88)',zIndex:300,display:'flex',alignItems:'center',justifyContent:'center',padding:20}}
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.9)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}
       onClick={onClose}>
-      <div style={{width:'100%',maxWidth:360,display:'flex',flexDirection:'column',gap:14}}
-        onClick={e=>e.stopPropagation()}>
+      <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 12 }}
+        onClick={e => e.stopPropagation()}>
 
-        {/* Card */}
-        <div style={{background:'linear-gradient(160deg,#0d0d0d,#111)',border:'1px solid #FF5A1F25',borderRadius:28,padding:24}}>
+        {/* Share card */}
+        <div style={{ background: 'linear-gradient(160deg,#0a0a0a,#141414)', border: '1px solid #FF5A1F25', borderRadius: 24, padding: 20, overflow: 'hidden', position: 'relative' }}>
+
+          {/* Background glow */}
+          <div style={{ position: 'absolute', top: -40, right: -40, width: 160, height: 160, borderRadius: '50%', background: '#FF5A1F10', filter: 'blur(40px)', pointerEvents: 'none' }} />
+
           {/* Header */}
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:20}}>
-            <div style={{display:'flex',alignItems:'center',gap:10}}>
-              <div style={{width:36,height:36,borderRadius:10,background:'linear-gradient(135deg,#FF5A1F,#FF8C42)',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,color:'#fff'}}>1F</div>
-              <span style={{fontWeight:700,fontSize:15,color:'#fff'}}>Pace4</span>
-            </div>
-            {daysLeft&&daysLeft>0&&(
-              <div style={{background:'#FF5A1F15',border:'1px solid #FF5A1F30',borderRadius:10,padding:'4px 12px'}}>
-                <span style={{fontSize:12,color:'#FF5A1F',fontWeight:600}}>{daysLeft}d to go 🏁</span>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: '#fff', fontWeight: 900, fontSize: 13 }}>P4</span>
               </div>
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Pace4</p>
+                <p style={{ fontSize: 9, color: '#FF5A1F', textTransform: 'uppercase', letterSpacing: '.06em' }}>pace4.in</p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: 11, color: '#555' }}>{today}</p>
+              {daysLeft && daysLeft > 0 && (
+                <p style={{ fontSize: 11, color: '#FF5A1F', fontWeight: 600, marginTop: 2 }}>🏁 {daysLeft}d to race</p>
+              )}
+            </div>
+          </div>
+
+          {/* Athlete name */}
+          <p style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{profile?.name}</p>
+          <p style={{ fontSize: 12, color: '#FF5A1F', marginBottom: 16 }}>{profile?.event_name || 'Athlete'}</p>
+
+          {/* Today's workout */}
+          <div style={{ background: '#ffffff08', borderRadius: 14, padding: '12px 14px', marginBottom: 12 }}>
+            <p style={{ fontSize: 10, color: '#555', textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>💪 Today's Training</p>
+            {todaySession ? (
+              <>
+                <p style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{todaySession.type}</p>
+                <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
+                  {todaySession.duration && <span style={{ fontSize: 11, color: '#888' }}>⏱ {todaySession.duration}min</span>}
+                  {todaySession.rpe && <span style={{ fontSize: 11, color: '#888' }}>RPE {todaySession.rpe}/10</span>}
+                  <span style={{ fontSize: 11, color: '#888' }}>{(todaySession.exercises || []).length} exercises</span>
+                </div>
+                {todayStrength.length > 0 && (
+                  <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+                    {todayStrength.map(ex => (
+                      <span key={ex.name} style={{ fontSize: 11, color: '#FF5A1F', background: '#FF5A1F15', padding: '3px 8px', borderRadius: 6 }}>
+                        {ex.name} {ex.best}kg
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <p style={{ fontSize: 13, color: '#555' }}>Rest day</p>
             )}
           </div>
 
-          {/* Name */}
-          <p style={{fontSize:11,color:'#444',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:4}}>Weekly Update</p>
-          <h2 style={{fontSize:26,fontWeight:700,color:'#fff',marginBottom:4}}>{profile?.name}</h2>
-          {profile?.event_name&&<p style={{fontSize:12,color:'#FF5A1F',marginBottom:16}}>{profile.event_name}</p>}
-          <p style={{fontSize:11,color:'#333',marginBottom:20}}>{new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}</p>
-
-          {/* Consistency hero */}
-          <div style={{background:scoreColor+'10',border:`1px solid ${scoreColor}25`,borderRadius:18,padding:20,textAlign:'center',marginBottom:16}}>
-            <p style={{fontSize:11,color:'#444',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:8}}>Weekly Consistency Score</p>
-            <div style={{fontSize:68,fontWeight:700,color:scoreColor,lineHeight:1,marginBottom:4}}>{stats.consistencyScore}</div>
-            <p style={{fontSize:13,color:scoreColor,fontWeight:600}}>
-              {stats.consistencyScore>=80?'Crushing it 🔥':stats.consistencyScore>=60?'On track 💪':stats.consistencyScore>=40?'Building momentum':'Time to level up'}
-            </p>
-          </div>
-
-          {/* Stats grid */}
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10,marginBottom:16}}>
+          {/* Daily stats grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
             {[
-              {label:'Sessions this week',val:stats.sessionsThisWeek,icon:'💪',color:'#FF5A1F'},
-              {label:'Avg kcal/day',val:stats.avgCalories,icon:'🔥',color:'#EF4444'},
-              {label:'Avg protein/day',val:`${stats.avgProtein}g`,icon:'🥩',color:'#A855F7'},
-              {label:'Avg steps/day',val:stats.avgSteps.toLocaleString(),icon:'👟',color:'#22C55E'},
-            ].map(({label,val,icon,color})=>(
-              <div key={label} style={{background:'#ffffff08',borderRadius:14,padding:'12px 14px'}}>
-                <p style={{fontSize:20,fontWeight:700,color,lineHeight:1,marginBottom:4}}>{val}</p>
-                <p style={{fontSize:11,color:'#444'}}>{icon} {label}</p>
+              { label: 'Calories', val: stats.todayCalories || stats.avgCalories, unit: 'kcal', color: '#FF5A1F', icon: '🔥' },
+              { label: 'Protein', val: `${stats.todayProtein || stats.avgProtein}g`, unit: '', color: '#22C55E', icon: '🥩' },
+              { label: 'Steps', val: (stats.todaySteps || 0).toLocaleString(), unit: '', color: '#3B82F6', icon: '👟' },
+              { label: 'Water', val: `${stats.todayWater || 0}L`, unit: '', color: '#3B82F6', icon: '💧' },
+            ].map(({ label, val, unit, color, icon }) => (
+              <div key={label} style={{ background: '#ffffff06', borderRadius: 12, padding: '10px 12px' }}>
+                <p style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1 }}>{val}{unit}</p>
+                <p style={{ fontSize: 11, color: '#444', marginTop: 3 }}>{icon} {label}</p>
               </div>
             ))}
           </div>
 
-          {/* Top improvement */}
-          {stats.topImprovement&&(
-            <div style={{background:'#FF5A1F10',border:'1px solid #FF5A1F20',borderRadius:14,padding:'12px 16px',marginBottom:16}}>
-              <p style={{fontSize:10,color:'#555',textTransform:'uppercase',letterSpacing:'.08em',marginBottom:4}}>🏆 Top improvement</p>
-              <p style={{fontSize:14,fontWeight:600,color:'#fff'}}>{stats.topImprovement.exercise}</p>
-              <p style={{fontSize:13,color:'#FF5A1F',fontWeight:700}}>+{stats.topImprovement.pct}% this week</p>
+          {/* Consistency score */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff06', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
+            <div>
+              <p style={{ fontSize: 11, color: '#555', marginBottom: 2 }}>Weekly Consistency</p>
+              <p style={{ fontSize: 28, fontWeight: 700, color: stats.consistencyScore >= 80 ? '#22C55E' : stats.consistencyScore >= 60 ? '#FF5A1F' : '#EF4444', lineHeight: 1 }}>{stats.consistencyScore}<span style={{ fontSize: 14, fontWeight: 400, color: '#444' }}>/100</span></p>
             </div>
-          )}
+            {stats.topImprovement && (
+              <div style={{ textAlign: 'right' }}>
+                <p style={{ fontSize: 10, color: '#555', marginBottom: 2 }}>🏆 Top lift</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{stats.topImprovement.exercise}</p>
+                <p style={{ fontSize: 12, color: '#22C55E', fontWeight: 700 }}>+{stats.topImprovement.pct}%</p>
+              </div>
+            )}
+          </div>
 
           {/* Footer */}
-          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-            <p style={{fontSize:11,color:'#2a2a2a'}}>Pace4.in</p>
-            <p style={{fontSize:11,color:'#2a2a2a'}}>#Pace4 #Athletics</p>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <p style={{ fontSize: 10, color: '#2a2a2a' }}>pace4.in</p>
+            <p style={{ fontSize: 10, color: '#2a2a2a' }}>#Pace4 #Athletics #IndianAthlete</p>
           </div>
         </div>
 
-        {/* Actions */}
-        <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:10}}>
+        {/* Buttons */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <button onClick={handleShare}
-            style={{background:'linear-gradient(135deg,#FF5A1F,#FF8C42)',border:'none',borderRadius:14,padding:14,color:'#fff',fontSize:14,fontWeight:700,cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',gap:6}}>
-            <Share2 size={15}/> Share
+            style={{ background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 14, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            📤 Share
           </button>
           <button onClick={onClose}
-            style={{background:'#111',border:'1px solid #1e1e1e',borderRadius:14,padding:14,color:'#666',fontSize:14,fontWeight:600,cursor:'pointer'}}>
+            style={{ background: '#111', border: '1px solid #1e1e1e', borderRadius: 14, padding: 14, color: '#666', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
             Close
           </button>
         </div>
-        <p style={{textAlign:'center',fontSize:11,color:'#2a2a2a'}}>Screenshot → share on Instagram / WhatsApp</p>
+        <p style={{ textAlign: 'center', fontSize: 11, color: '#333' }}>Screenshot → share on Instagram / WhatsApp</p>
       </div>
     </div>
   )
@@ -348,19 +392,22 @@ export default function Progress({ session, profile }) {
   return (
     <div style={{paddingTop:52,paddingBottom:24,background:'#080808',minHeight:'100vh'}}>
 
-      {showShare && <ShareModal profile={profile} stats={shareStats} onClose={()=>setShowShare(false)}/>}
-
-      {/* Header */}
-      <div style={{padding:'0 20px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-        <div>
-          <h1 style={{fontSize:26,fontWeight:700,letterSpacing:'-.5px'}}>Progress</h1>
-          <p style={{fontSize:13,color:'#444',marginTop:3}}>Your numbers over time</p>
-        </div>
-        <button onClick={()=>setShowShare(true)}
-          style={{display:'flex',alignItems:'center',gap:6,background:'#FF5A1F',border:'none',borderRadius:12,padding:'9px 16px',color:'#fff',fontSize:13,fontWeight:700,cursor:'pointer'}}>
-          <Share2 size={14}/> Share
-        </button>
-      </div>
+      {showShare && (
+        <ShareModal
+          profile={profile}
+          stats={{
+          ...shareStats,
+          todayCalories: totals?.calories || avgCalories,
+          todayProtein: totals?.protein || avgProtein,
+          todaySteps: last7StepsVals[6] || 0,
+          todayWater: todayWater || 0,
+        }}
+      sessions={sessions}
+      nutrition={nutritionLogs}
+      steps={stepsHistory}
+      onClose={() => setShowShare(false)}
+      />
+    )}
 
       {/* Tabs */}
       <div style={{display:'flex',gap:6,padding:'0 20px',marginBottom:16,overflowX:'auto',scrollbarWidth:'none'}}>

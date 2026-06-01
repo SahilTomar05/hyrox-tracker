@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { X, Check, Trash2, ChevronDown, ChevronUp, Plus, Search, ArrowLeft } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
+import { ALL_EXERCISES } from '../config/exercises'
 const ALL_EXERCISES = [
   { name: 'Flat Bench Press', cat: 'Strength', sub: 'Chest' },
   { name: 'Incline Bench Press', cat: 'Strength', sub: 'Chest' },
