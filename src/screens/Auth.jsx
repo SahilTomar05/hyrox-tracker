@@ -11,8 +11,7 @@ export default function Auth() {
   const [error, setError] = useState('')
 
   async function handleLogin() {
-    setLoading(true)
-    setError('')
+    setLoading(true); setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     if (error) setError(error.message)
     setLoading(false)
@@ -20,11 +19,10 @@ export default function Auth() {
 
   async function handleSignup() {
     if (!name.trim()) { setError('Please enter your name'); return }
-    setLoading(true)
-    setError('')
+    setLoading(true); setError('')
     const { error } = await supabase.auth.signUp({
       email, password,
-      options: { data: { name } }
+      options: { data: { name }, emailRedirectTo: 'https://www.pace4.in' }
     })
     if (error) setError(error.message)
     else setMessage('Check your email to confirm your account!')
@@ -34,44 +32,49 @@ export default function Auth() {
   async function handleGoogle() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: window.location.origin }
+      options: { redirectTo: 'https://www.pace4.in' }
     })
   }
 
+  const inp = {
+    width: '100%', background: '#0f0f0f', border: '1px solid #252525',
+    borderRadius: 14, padding: '13px 16px', color: '#fff', fontSize: 15,
+    outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box',
+  }
+
   return (
-    <div className="min-h-screen bg-[#0f0f0f] flex flex-col items-center justify-center p-6">
-      <div className="w-full max-w-sm">
+    <div style={{ minHeight: '100vh', background: '#080808', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 24 }}>
+      <div style={{ width: '100%', maxWidth: 360 }}>
 
         {/* Logo */}
-        <div className="text-center mb-10">
-          <div className="w-16 h-16 bg-[#00E5A0] rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <span className="text-black font-bold text-2xl">1F</span>
-          </div>
-          <h1 className="text-2xl font-bold text-white">Pace4</h1>
-          <p className="text-[#666] text-sm mt-1">Your Hyrox training companion</p>
+        <div style={{ textAlign: 'center', marginBottom: 40 }}>
+          <img
+            src="/icon-512.png"
+            alt="Pace4"
+            style={{ width: 80, height: 80, borderRadius: 22, margin: '0 auto 16px', display: 'block', boxShadow: '0 8px 32px rgba(255,90,31,.3)' }}
+          />
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', letterSpacing: '-.5px', marginBottom: 6 }}>Pace4</h1>
+          <p style={{ fontSize: 13, color: '#444' }}>Progress · Action · Consistency · Evolution</p>
         </div>
 
         {/* Tab toggle */}
-        <div className="grid grid-cols-2 gap-2 mb-6 bg-[#1a1a1a] p-1 rounded-2xl">
-          <button onClick={() => { setMode('login'); setError(''); setMessage('') }}
-            className={`py-2 rounded-xl text-sm font-medium transition-all
-              ${mode === 'login' ? 'bg-[#00E5A0] text-black' : 'text-[#666]'}`}>
-            Log in
-          </button>
-          <button onClick={() => { setMode('signup'); setError(''); setMessage('') }}
-            className={`py-2 rounded-xl text-sm font-medium transition-all
-              ${mode === 'signup' ? 'bg-[#00E5A0] text-black' : 'text-[#666]'}`}>
-            Sign up
-          </button>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, background: '#0f0f0f', border: '1px solid #1a1a1a', borderRadius: 16, padding: 4, marginBottom: 24 }}>
+          {['login', 'signup'].map(m => (
+            <button key={m} onClick={() => { setMode(m); setError(''); setMessage('') }}
+              style={{ padding: '10px 0', borderRadius: 12, fontSize: 14, fontWeight: 600, cursor: 'pointer', border: 'none', transition: '.2s', background: mode === m ? '#FF5A1F' : 'transparent', color: mode === m ? '#fff' : '#444' }}>
+              {m === 'login' ? 'Log in' : 'Sign up'}
+            </button>
+          ))}
         </div>
 
-        <div className="space-y-3">
+        {/* Form */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           {mode === 'signup' && (
             <input
               placeholder="Your name"
               value={name}
               onChange={e => setName(e.target.value)}
-              className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-2xl px-4 py-3 outline-none placeholder-[#444] focus:border-[#00E5A0] text-sm"
+              style={inp}
             />
           )}
           <input
@@ -79,34 +82,41 @@ export default function Auth() {
             type="email"
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-2xl px-4 py-3 outline-none placeholder-[#444] focus:border-[#00E5A0] text-sm"
+            style={inp}
           />
           <input
             placeholder="Password"
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white rounded-2xl px-4 py-3 outline-none placeholder-[#444] focus:border-[#00E5A0] text-sm"
+            onKeyDown={e => e.key === 'Enter' && (mode === 'login' ? handleLogin() : handleSignup())}
+            style={inp}
           />
 
-          {error && <p className="text-red-400 text-xs px-1">{error}</p>}
-          {message && <p className="text-[#00E5A0] text-xs px-1">{message}</p>}
+          {error && (
+            <p style={{ color: '#EF4444', fontSize: 13, padding: '0 4px' }}>{error}</p>
+          )}
+          {message && (
+            <div style={{ background: '#FF5A1F15', border: '1px solid #FF5A1F30', borderRadius: 12, padding: '12px 14px' }}>
+              <p style={{ color: '#FF5A1F', fontSize: 13 }}>✓ {message}</p>
+            </div>
+          )}
 
           <button
             onClick={mode === 'login' ? handleLogin : handleSignup}
             disabled={loading}
-            className="w-full bg-[#00E5A0] text-black font-medium py-3 rounded-2xl text-sm disabled:opacity-50">
+            style={{ width: '100%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: '14px 0', color: '#fff', fontSize: 15, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', opacity: loading ? 0.7 : 1, boxShadow: '0 4px 20px rgba(255,90,31,.35)', letterSpacing: '.02em' }}>
             {loading ? 'Please wait...' : mode === 'login' ? 'Log in' : 'Create account'}
           </button>
 
-          <div className="flex items-center gap-3 my-2">
-            <div className="flex-1 h-px bg-[#2a2a2a]" />
-            <span className="text-[#444] text-xs">or</span>
-            <div className="flex-1 h-px bg-[#2a2a2a]" />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '4px 0' }}>
+            <div style={{ flex: 1, height: 1, background: '#1a1a1a' }} />
+            <span style={{ color: '#333', fontSize: 12 }}>or</span>
+            <div style={{ flex: 1, height: 1, background: '#1a1a1a' }} />
           </div>
 
           <button onClick={handleGoogle}
-            className="w-full bg-[#1a1a1a] border border-[#2a2a2a] text-white font-medium py-3 rounded-2xl text-sm flex items-center justify-center gap-2">
+            style={{ width: '100%', background: '#0f0f0f', border: '1px solid #1e1e1e', borderRadius: 14, padding: '13px 0', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10 }}>
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
@@ -117,7 +127,7 @@ export default function Auth() {
           </button>
         </div>
 
-        <p className="text-center text-[#444] text-xs mt-6">
+        <p style={{ textAlign: 'center', color: '#2a2a2a', fontSize: 12, marginTop: 24 }}>
           By continuing you agree to Pace4 Terms & Privacy Policy
         </p>
       </div>
