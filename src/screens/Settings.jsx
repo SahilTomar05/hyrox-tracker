@@ -7,9 +7,12 @@ export default function Settings({ profile, onReset }) {
   const { isDark, toggleTheme } = useTheme()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
-  const [notifications, setNotifications] = useState({
-    meals: false, water: false, workout: false, steps: false,
-  })
+  const [notifications, setNotifications] = useState(() => {
+  try {
+    const saved = localStorage.getItem('pace4_notifications')
+    return saved ? JSON.parse(saved) : { meals: false, water: false, workout: false, steps: false }
+  } catch { return { meals: false, water: false, workout: false, steps: false } }
+})
 
   async function deleteAccount() {
     setDeleting(true)
@@ -115,7 +118,11 @@ export default function Settings({ profile, onReset }) {
               <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{label}</p>
               <p style={c.sub}>{sub}</p>
             </div>
-            <Toggle on={notifications[key]} onToggle={() => setNotifications(p => ({ ...p, [key]: !p[key] }))} />
+            <Toggle on={notifications[key]} onToggle={() => {
+              const updated = { ...notifications, [key]: !notifications[key] }
+              setNotifications(updated)
+              localStorage.setItem('pace4_notifications', JSON.stringify(updated))
+            }} />
           </div>
         ))}
       </div>

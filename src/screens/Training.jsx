@@ -20,10 +20,13 @@ function detectType(exs) {
   return cats.length === 1 ? cats[0] : 'Mixed'
 }
 
-function getFieldType(cat) {
+function getFieldType(cat, exerciseFieldType) {
+  // Use the fieldType from the exercise database if available
+  if (exerciseFieldType) return exerciseFieldType
+  // Fallback
   if (cat === 'Mobility') return 'timed'
-  if (cat === 'Skills') return 'timed'
-  if (cat === 'Conditioning') return 'cardio'
+  if (cat === 'Skills') return 'sport'
+  if (cat === 'Conditioning') return 'reps_only'
   return 'strength'
 }
 
@@ -116,12 +119,16 @@ export default function Training({ session, profile }) {
   })()
 
   function tapExercise(ex) {
-    const already = exercises.find(e => e.name === ex.name)
-    if (already) { setExercises(p => p.filter(e => e.name !== ex.name)); return }
-    const ft = getFieldType(ex.cat)
-    if (ft === 'strength') { setSetsPicker(ex); return }
-    setExercises(p => [...p, { id: Date.now(), ...ex, fieldType: ft, sets: [], duration: '', distance: '', pace: '', setsCount: '' }])
-  }
+  const already = exercises.find(e => e.name === ex.name)
+  if (already) { setExercises(p => p.filter(e => e.name !== ex.name)); return }
+  const ft = getFieldType(ex.cat, ex.fieldType)
+  if (ft === 'strength') { setSetsPicker(ex); return }
+  setExercises(p => [...p, {
+    id: Date.now(), ...ex, fieldType: ft,
+    sets: [], duration: '', distance: '', pace: '', setsCount: '',
+    distanceM: '', // for machine (meters)
+  }])
+}
 
   function addWithSets(ex, n) {
     setExercises(p => [...p, {
@@ -623,81 +630,145 @@ export default function Training({ session, profile }) {
                     </div>
 
                     {/* STRENGTH */}
+                    {/* STRENGTH: reps + weight */}
                     {ex.fieldType === 'strength' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                         {ex.sets.map((set, si) => (
                           <div key={si} style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
-                            <div style={{ width: 28, height: 40, borderRadius: 9, background: '#080808', border: '1px solid #1a1a1a', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: '#333', fontWeight: 700, flexShrink: 0 }}>
-                              {si + 1}
-                            </div>
+                            <div style={{ width: 28, height: 40, borderRadius: 9, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--muted)', fontWeight: 700, flexShrink: 0 }}>{si + 1}</div>
                             <div style={{ flex: 1 }}>
-                              <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Reps</p>
+                              <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Reps</p>
                               <input type="number" inputMode="numeric" placeholder="12" value={set.reps}
                                 onChange={e => updSet(ex.id, si, 'reps', e.target.value)}
                                 style={{ ...inp, width: '100%', height: 40, textAlign: 'center', padding: 0, fontSize: 17, fontWeight: 700, boxSizing: 'border-box' }} />
                             </div>
                             <div style={{ flex: 1 }}>
-                              <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>kg</p>
+                              <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>kg</p>
                               <input type="number" inputMode="decimal" placeholder="—" value={set.weight}
                                 onChange={e => updSet(ex.id, si, 'weight', e.target.value)}
                                 style={{ ...inp, width: '100%', height: 40, textAlign: 'center', padding: 0, fontSize: 17, fontWeight: 700, boxSizing: 'border-box' }} />
                             </div>
                             <button onClick={() => removeSet(ex.id, si)} disabled={ex.sets.length === 1}
                               style={{ width: 32, height: 32, borderRadius: 9, flexShrink: 0, background: ex.sets.length === 1 ? 'transparent' : '#150000', border: `1px solid ${ex.sets.length === 1 ? 'transparent' : '#EF444415'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: ex.sets.length === 1 ? 'not-allowed' : 'pointer', marginBottom: 4 }}>
-                              <Trash2 size={12} color={ex.sets.length === 1 ? '#1a1a1a' : '#EF4444'} />
+                              <Trash2 size={12} color={ex.sets.length === 1 ? 'var(--subtle)' : '#EF4444'} />
                             </button>
                           </div>
                         ))}
                         <button onClick={() => addSet(ex.id)}
-                          style={{ width: '100%', padding: 9, borderRadius: 10, border: `1px dashed ${m.color}25`, background: 'transparent', color: m.color, fontSize: 12, fontWeight: 600, cursor: 'pointer', marginTop: 2, opacity: .7 }}>
+                          style={{ width: '100%', padding: 9, borderRadius: 10, border: `1px dashed ${m.color}25`, background: 'transparent', color: m.color, fontSize: 12, fontWeight: 600, cursor: 'pointer', opacity: .7 }}>
                           + Add set
                         </button>
                       </div>
                     )}
 
-                    {/* CARDIO */}
-                    {ex.fieldType === 'cardio' && (
+                    {/* REPS ONLY: just reps, no weight */}
+                    {ex.fieldType === 'reps_only' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        {(ex.sets?.length ? ex.sets : [{ reps: '' }]).map((set, si) => (
+                          <div key={si} style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
+                            <div style={{ width: 28, height: 40, borderRadius: 9, background: 'var(--bg)', border: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--muted)', fontWeight: 700, flexShrink: 0 }}>{si + 1}</div>
+                            <div style={{ flex: 1 }}>
+                              <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Reps</p>
+                              <input type="number" inputMode="numeric" placeholder="15" value={set.reps}
+                                onChange={e => {
+                                  const newSets = [...(ex.sets || [{ reps: '' }])]
+                                  newSets[si] = { reps: e.target.value }
+                                  updEx(ex.id, 'sets', newSets)
+                                }}
+                                style={{ ...inp, width: '100%', height: 40, textAlign: 'center', padding: 0, fontSize: 17, fontWeight: 700, boxSizing: 'border-box' }} />
+                            </div>
+                            <button onClick={() => {
+                              const newSets = (ex.sets || []).filter((_, i) => i !== si)
+                              if (newSets.length > 0) updEx(ex.id, 'sets', newSets)
+                            }} disabled={(ex.sets?.length || 1) <= 1}
+                              style={{ width: 32, height: 32, borderRadius: 9, flexShrink: 0, background: (ex.sets?.length || 1) <= 1 ? 'transparent' : '#150000', border: `1px solid ${(ex.sets?.length || 1) <= 1 ? 'transparent' : '#EF444415'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: (ex.sets?.length || 1) <= 1 ? 'not-allowed' : 'pointer', marginBottom: 4 }}>
+                              <Trash2 size={12} color={(ex.sets?.length || 1) <= 1 ? 'var(--subtle)' : '#EF4444'} />
+                            </button>
+                          </div>
+                        ))}
+                        <button onClick={() => updEx(ex.id, 'sets', [...(ex.sets || [{ reps: '' }]), { reps: '' }])}
+                          style={{ width: '100%', padding: 9, borderRadius: 10, border: `1px dashed ${m.color}25`, background: 'transparent', color: m.color, fontSize: 12, fontWeight: 600, cursor: 'pointer', opacity: .7 }}>
+                          + Add set
+                        </button>
+                      </div>
+                    )}
+
+                    {/* CARDIO RUN: km + duration + pace */}
+                    {ex.fieldType === 'cardio_run' && (
                       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                           <div>
-                            <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Distance (km)</p>
-                            <input type="number" placeholder="5.0" value={ex.distance}
-                              onChange={e => updEx(ex.id, 'distance', e.target.value)}
-                              style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                            <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Distance (km)</p>
+                            <input type="number" placeholder="5.0" value={ex.distance} onChange={e => updEx(ex.id, 'distance', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
                           </div>
                           <div>
-                            <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration (min)</p>
-                            <input type="number" placeholder="30" value={ex.duration}
-                              onChange={e => updEx(ex.id, 'duration', e.target.value)}
-                              style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                            <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration (min)</p>
+                            <input type="number" placeholder="30" value={ex.duration} onChange={e => updEx(ex.id, 'duration', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
                           </div>
                         </div>
                         <div>
-                          <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Pace (min/km)</p>
-                          <input placeholder="5:30" value={ex.pace}
-                            onChange={e => updEx(ex.id, 'pace', e.target.value)}
-                            style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Pace (min/km) — optional</p>
+                          <input placeholder="5:30" value={ex.pace} onChange={e => updEx(ex.id, 'pace', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
                         </div>
                       </div>
                     )}
 
-                    {/* TIMED */}
-                    {ex.fieldType === 'timed' && (
+                    {/* CARDIO MACHINE: meters + duration (rowing, skierg) */}
+                    {ex.fieldType === 'cardio_machine' && (
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                         <div>
-                          <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Sets / Rounds</p>
-                          <input type="number" placeholder="3" value={ex.setsCount}
-                            onChange={e => updEx(ex.id, 'setsCount', e.target.value)}
-                            style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Distance (m)</p>
+                          <input type="number" placeholder="1000" value={ex.distanceM} onChange={e => updEx(ex.id, 'distanceM', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
                         </div>
                         <div>
-                          <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration / Notes</p>
-                          <input placeholder="30 min" value={ex.duration}
-                            onChange={e => updEx(ex.id, 'duration', e.target.value)}
-                            style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Time (min:sec)</p>
+                          <input placeholder="4:32" value={ex.duration} onChange={e => updEx(ex.id, 'duration', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
                         </div>
                       </div>
                     )}
+
+                    {/* CARDIO CYCLE: km + duration */}
+                    {ex.fieldType === 'cardio_cycle' && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                        <div>
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Distance (km)</p>
+                          <input type="number" placeholder="30" value={ex.distance} onChange={e => updEx(ex.id, 'distance', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                        </div>
+                        <div>
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration (min)</p>
+                          <input type="number" placeholder="60" value={ex.duration} onChange={e => updEx(ex.id, 'duration', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* TIMED: duration only (plank, yoga, stretching) */}
+                    {ex.fieldType === 'timed' && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                        <div>
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration (sec/min)</p>
+                          <input placeholder="60 sec" value={ex.duration} onChange={e => updEx(ex.id, 'duration', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                        </div>
+                        <div>
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Sets / Rounds</p>
+                          <input type="number" placeholder="3" value={ex.setsCount} onChange={e => updEx(ex.id, 'setsCount', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* SPORT: duration + notes */}
+                    {ex.fieldType === 'sport' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div>
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration (min)</p>
+                          <input type="number" placeholder="60" value={ex.duration} onChange={e => updEx(ex.id, 'duration', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                        </div>
+                        <div>
+                          <p style={{ fontSize: 9, color: 'var(--subtle)', fontWeight: 700, marginBottom: 4, textTransform: 'uppercase', letterSpacing: '.06em' }}>Notes (optional)</p>
+                          <input placeholder="e.g. 3 rounds, intense sparring" value={ex.pace} onChange={e => updEx(ex.id, 'pace', e.target.value)} style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
+                        </div>
+                      </div>
+                    )}
+                    
                   </div>
                 )
               })}

@@ -376,28 +376,22 @@ export default function Dashboard({ profile, session }) {
       </div>
 
       {/* Sarcastic + Daily Rating */}
-      <div style={{ ...card, background: '#0a050015', borderColor: '#FF5A1F20' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-          <div style={{ flex: 1 }}>
-            <p style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: '#FF8C42', marginBottom: 5 }}>
-              🤖 Pace4 says
-            </p>
-            <p style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>{sarcasticMsg}</p>
-          </div>
-          {/* Daily rating */}
-          <div style={{ textAlign: 'center', flexShrink: 0 }}>
-            <div style={{ fontSize: 28, fontWeight: 700, color: dailyRating >= 4 ? '#22C55E' : dailyRating >= 3 ? '#FF5A1F' : '#EF4444', lineHeight: 1 }}>
-              {dailyRating}
-            </div>
-            <div style={{ display: 'flex', gap: 2, marginTop: 4, justifyContent: 'center' }}>
-              {[1,2,3,4,5].map(i => (
-                <span key={i} style={{ fontSize: 10, opacity: i <= dailyRating ? 1 : 0.2 }}>⭐</span>
-              ))}
-            </div>
-            <p style={{ fontSize: 9, color: 'var(--muted)', marginTop: 3, textTransform: 'uppercase', letterSpacing: '.05em' }}>Daily rating</p>
-          </div>
-        </div>
+    <div style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <div>
+        <p style={{ fontSize: 10, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', fontWeight: 600, marginBottom: 4 }}>Today's Rating</p>
+      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+        {[1,2,3,4,5].map(i => (
+          <span key={i} style={{ fontSize: 22, opacity: i <= dailyRating ? 1 : 0.15 }}>⭐</span>
+        ))}
       </div>
+      <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>
+        {dailyRating >= 5 ? 'Perfect day 🔥' : dailyRating >= 4 ? 'Great effort 💪' : dailyRating >= 3 ? 'On track 👍' : dailyRating >= 2 ? 'Keep pushing 🎯' : 'Room to improve 📈'}
+      </p>
+      </div>
+    <div style={{ fontSize: 48, fontWeight: 700, color: dailyRating >= 4 ? '#22C55E' : dailyRating >= 3 ? '#FF5A1F' : '#EF4444', lineHeight: 1 }}>
+      {dailyRating}<span style={{ fontSize: 18, color: 'var(--muted)', fontWeight: 400 }}>/5</span>
+    </div>
+    </div>
 
       {/* Nutrition + Water */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: '0 16px', marginBottom: 12 }}>

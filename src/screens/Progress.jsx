@@ -56,9 +56,9 @@ function calc1RM(reps, weight) {
 const CustomTooltip = ({ active, payload, label, unit = '' }) => {
   if (active && payload?.length) {
     return (
-      <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '8px 14px' }}>
-        <p style={{ color: '#555', fontSize: 11, marginBottom: 2 }}>{label}</p>
-        <p style={{ color: '#fff', fontSize: 15, fontWeight: 700 }}>{payload[0].value}{unit}</p>
+      <div style={{ background: 'var(--card)', border: '1px solid #2a2a2a', borderRadius: 10, padding: '8px 14px' }}>
+        <p style={{ color: 'var(--muted)', fontSize: 11, marginBottom: 2 }}>{label}</p>
+        <p style={{ color: 'var(--text)', fontSize: 15, fontWeight: 700 }}>{payload[0].value}{unit}</p>
       </div>
     )
   }
@@ -93,7 +93,7 @@ function ShareModal({ profile, stats, sessions, onClose }) {
     if (!card) return
     try {
       const canvas = await html2canvas(card, {
-        backgroundColor: '#0a0a0a',
+        backgroundColor: 'var(--card)',
         scale: 2,
         useCORS: true,
         allowTaint: true,
@@ -115,7 +115,7 @@ function ShareModal({ profile, stats, sessions, onClose }) {
     const card = document.getElementById('pace4-share-card')
     if (navigator.share && card) {
       try {
-        const canvas = await html2canvas(card, { backgroundColor: '#0a0a0a', scale: 2, useCORS: true })
+        const canvas = await html2canvas(card, { backgroundColor: 'var(--card)', scale: 2, useCORS: true })
         canvas.toBlob(async blob => {
           const file = new File([blob], 'pace4-progress.png', { type: 'image/png' })
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
@@ -143,17 +143,18 @@ function ShareModal({ profile, stats, sessions, onClose }) {
 
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <div style={{ width: 32, height: 32, borderRadius: 9, background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 900, fontSize: 13 }}>P4</span>
-              </div>
-              <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Pace4</p>
-                <p style={{ fontSize: 9, color: '#FF5A1F', textTransform: 'uppercase', letterSpacing: '.06em' }}>pace4.in</p>
-              </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img src="/icon-512.png" alt="Pace4"
+              style={{ width: 40, height: 40, borderRadius: 11, boxShadow: '0 2px 12px rgba(255,90,31,.4)' }} />
+            <div>
+              <p style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Pace4</p>
+              <p style={{ fontSize: 10, color: '#FF5A1F', letterSpacing: '.04em' }}>
+                #P4Athlete · pace4.in
+              </p>
             </div>
+          </div>
             <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 11, color: '#555' }}>{today}</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)' }}>{today}</p>
               {daysLeft && daysLeft > 0 && (
                 <p style={{ fontSize: 11, color: '#FF5A1F', fontWeight: 600, marginTop: 2 }}>🏁 {daysLeft}d to race</p>
               )}
@@ -161,7 +162,7 @@ function ShareModal({ profile, stats, sessions, onClose }) {
           </div>
 
           {/* Athlete */}
-          <p style={{ fontSize: 22, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{profile?.name}</p>
+          <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{profile?.name}</p>
           <p style={{ fontSize: 12, color: '#FF5A1F', marginBottom: 16 }}>{profile?.event_name || 'Athlete'}</p>
 
           {/* Daily rating hero */}
@@ -176,14 +177,14 @@ function ShareModal({ profile, stats, sessions, onClose }) {
                   <span key={i} style={{ fontSize: 12, opacity: i <= stats.dailyRating ? 1 : 0.2 }}>⭐</span>
                 ))}
               </div>
-              <p style={{ fontSize: 10, color: '#555', marginTop: 3 }}>Daily Rating</p>
+              <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 3 }}>Daily Rating</p>
             </div>
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
               {/* Today's workout */}
               {todaySession && (
                 <div style={{ background: '#ffffff08', borderRadius: 10, padding: '8px 10px' }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{todaySession.type}</p>
-                  <p style={{ fontSize: 10, color: '#666' }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{todaySession.type}</p>
+                  <p style={{ fontSize: 10, color: 'var(--muted)' }}>
                     {todaySession.duration ? `${todaySession.duration}min` : ''} {todaySession.rpe ? `· RPE ${todaySession.rpe}` : ''}
                   </p>
                   {todayLifts.length > 0 && (
@@ -206,11 +207,10 @@ function ShareModal({ profile, stats, sessions, onClose }) {
               { label: 'Calories Burned', val: `${stats.caloriesBurned || 0}`, unit: 'kcal', color: '#FF5A1F', icon: '🔥' },
               { label: 'Water Intake', val: `${stats.todayWater || 0}`, unit: 'L', color: '#3B82F6', icon: '💧' },
               { label: 'Steps', val: (stats.todaySteps || 0).toLocaleString(), unit: '', color: '#22C55E', icon: '👟' },
-              { label: 'Protein', val: `${stats.todayProtein || 0}`, unit: 'g', color: '#A855F7', icon: '🥩' },
             ].map(({ label, val, unit, color, icon }) => (
               <div key={label} style={{ background: '#ffffff06', borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1 }}>{val}<span style={{ fontSize: 11, fontWeight: 400, color: '#555' }}>{unit}</span></p>
-                <p style={{ fontSize: 11, color: '#444', marginTop: 3 }}>{icon} {label}</p>
+                <p style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1 }}>{val}<span style={{ fontSize: 11, fontWeight: 400, color: 'var(--muted)' }}>{unit}</span></p>
+                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3 }}>{icon} {label}</p>
               </div>
             ))}
           </div>
@@ -218,25 +218,32 @@ function ShareModal({ profile, stats, sessions, onClose }) {
           {/* Consistency + top lift */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff06', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
             <div>
-              <p style={{ fontSize: 11, color: '#555', marginBottom: 2 }}>Weekly Consistency</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 2 }}>Weekly Consistency</p>
               <p style={{ fontSize: 28, fontWeight: 700, color: scoreColor, lineHeight: 1 }}>
-                {stats.consistencyScore}<span style={{ fontSize: 14, fontWeight: 400, color: '#444' }}>/100</span>
+                {stats.consistencyScore}<span style={{ fontSize: 14, fontWeight: 400, color: 'var(--muted)' }}>/100</span>
               </p>
             </div>
             {stats.topImprovement && (
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 10, color: '#555', marginBottom: 2 }}>🏆 Top lift</p>
-                <p style={{ fontSize: 13, fontWeight: 600, color: '#fff' }}>{stats.topImprovement.exercise}</p>
+                <p style={{ fontSize: 10, color: 'var(--muted)', marginBottom: 2 }}>🏆 Top lift</p>
+                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{stats.topImprovement.exercise}</p>
                 <p style={{ fontSize: 12, color: '#22C55E', fontWeight: 700 }}>+{stats.topImprovement.pct}%</p>
               </div>
             )}
           </div>
 
           {/* Footer */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <p style={{ fontSize: 10, color: '#2a2a2a' }}>pace4.in</p>
-            <p style={{ fontSize: 10, color: '#2a2a2a' }}>#Pace4 #IndianAthlete</p>
+          <div style={{ borderTop: '1px solid #ffffff10', paddingTop: 10, marginTop: 4 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <img src="/icon-512.png" alt="P4" style={{ width: 18, height: 18, borderRadius: 5 }} />
+              <p style={{ fontSize: 10, color: '#444' }}>pace4.in</p>
+            </div>
+            <p style={{ fontSize: 10, color: '#555', letterSpacing: '.02em' }}>
+              #P4Athlete #Pace4 #IndianAthlete
+            </p>
           </div>
+        </div>
         </div>
 
         {/* Action buttons */}
@@ -246,7 +253,7 @@ function ShareModal({ profile, stats, sessions, onClose }) {
             💾 Save Image
           </button>
           <button onClick={handleShare}
-            style={{ background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 14, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            style={{ background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 14, color: 'var(--text)', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             📤 Share
           </button>
         </div>
@@ -442,17 +449,17 @@ export default function Progress({ session, profile }) {
   })(),
 }
 
-  const inp = { background: '#0f0f0f', border: '1px solid #252525', borderRadius: 10, padding: '9px 12px', color: '#fff', fontSize: 14, outline: 'none', fontFamily: 'inherit' }
+  const inp = { background: '#0f0f0f', border: '1px solid #252525', borderRadius: 10, padding: '9px 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit' }
 
   if (loading) return (
-    <div style={{ paddingTop: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', background: '#080808' }}>
+    <div style={{ paddingTop: 52, display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', background: 'var(--bg)' }}>
       <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid #1a1a1a', borderTopColor: '#FF5A1F', animation: 'spin 1s linear infinite' }} />
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
     </div>
   )
 
   return (
-    <div style={{ paddingTop: 52, paddingBottom: 24, background: '#080808', minHeight: '100vh' }}>
+    <div style={{ paddingTop: 52, paddingBottom: 24, background: 'var(--bg)', minHeight: '100vh' }}>
 
       {showShare && (
         <ShareModal
@@ -466,11 +473,11 @@ export default function Progress({ session, profile }) {
       {/* Header */}
       <div style={{ padding: '0 20px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-.5px', color: '#fff' }}>Progress</h1>
-          <p style={{ fontSize: 13, color: '#444', marginTop: 3 }}>Your numbers over time</p>
+          <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-.5px', color: 'var(--text)' }}>Progress</h1>
+          <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>Your numbers over time</p>
         </div>
         <button onClick={() => setShowShare(true)}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '9px 16px', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '9px 16px', color: 'var(--text)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
           <Share2 size={14} /> Share
         </button>
       </div>
@@ -479,7 +486,7 @@ export default function Progress({ session, profile }) {
       <div style={{ display: 'flex', gap: 6, padding: '0 20px', marginBottom: 16, overflowX: 'auto', scrollbarWidth: 'none' }}>
         {[{ id: 'overview', label: 'Overview' }, { id: 'strength', label: 'Strength' }, { id: 'charts', label: 'Charts' }, { id: 'body', label: 'Body' }].map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            style={{ flexShrink: 0, padding: '7px 16px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: '1px solid', transition: '.15s', background: activeTab === tab.id ? '#FF5A1F' : 'transparent', borderColor: activeTab === tab.id ? '#FF5A1F' : '#1e1e1e', color: activeTab === tab.id ? '#fff' : '#555' }}>
+            style={{ flexShrink: 0, padding: '7px 16px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: '1px solid', transition: '.15s', background: activeTab === tab.id ? '#FF5A1F' : 'transparent', borderColor: activeTab === tab.id ? '#FF5A1F' : '#1e1e1e', color: activeTab === tab.id ? 'var(--text)' : 'var(--muted)' }}>
             {tab.label}
           </button>
         ))}
@@ -489,7 +496,7 @@ export default function Progress({ session, profile }) {
       {activeTab === 'overview' && (
         <>
           {/* Weekly stats row */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, margin: '0 20px 14px', overflow: 'hidden' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, margin: '0 20px 14px', overflow: 'hidden' }}>
             {[
               { label: 'Workouts', val: thisWeekSessions.length, sub: `/${profile?.training_days_per_week?.split(' ')[0] || 5} planned`, color: '#FF5A1F' },
               { label: 'Calories', val: avgCalories || 0, sub: 'avg/day', color: '#EF4444' },
@@ -498,54 +505,54 @@ export default function Progress({ session, profile }) {
             ].map(({ label, val, sub, color }, i, arr) => (
               <div key={label} style={{ padding: '14px 8px', textAlign: 'center', borderRight: i < arr.length - 1 ? '1px solid #141414' : 'none' }}>
                 <p style={{ fontSize: 17, fontWeight: 700, color }}>{val}</p>
-                <p style={{ fontSize: 9, color: '#333', marginTop: 3, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>{label}</p>
-                <div style={{ height: 2, background: '#111', borderRadius: 1, margin: '6px auto 0', width: '70%', overflow: 'hidden' }}>
+                <p style={{ fontSize: 9, color: 'var(--subtle)', marginTop: 3, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.05em' }}>{label}</p>
+                <div style={{ height: 2, background: 'var(--card2)', borderRadius: 1, margin: '6px auto 0', width: '70%', overflow: 'hidden' }}>
                   <div style={{ height: '100%', background: color, width: '60%', borderRadius: 1 }} />
                 </div>
-                <p style={{ fontSize: 9, color: '#2a2a2a', marginTop: 4 }}>{sub}</p>
+                <p style={{ fontSize: 9, color: 'var(--border2)', marginTop: 4 }}>{sub}</p>
               </div>
             ))}
           </div>
 
           {/* Consistency score */}
-          <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: `1px solid ${scoreColor}20`, borderRadius: 18, padding: 16 }}>
+          <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: `1px solid ${scoreColor}20`, borderRadius: 18, padding: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <div>
-                <p style={{ fontSize: 10, color: '#444', textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 600, marginBottom: 4 }}>Weekly Consistency Score</p>
+                <p style={{ fontSize: 10, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.08em', fontWeight: 600, marginBottom: 4 }}>Weekly Consistency Score</p>
                 <div style={{ display: 'flex', alignItems: 'baseline', gap: 6 }}>
                   <span style={{ fontSize: 48, fontWeight: 700, color: scoreColor, lineHeight: 1 }}>{consistencyScore}</span>
-                  <span style={{ fontSize: 14, color: '#333' }}>/100</span>
+                  <span style={{ fontSize: 14, color: 'var(--subtle)' }}>/100</span>
                 </div>
                 <p style={{ fontSize: 13, color: scoreColor, fontWeight: 600, marginTop: 2 }}>{scoreLabel}</p>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 11, color: '#333' }}>Training {Math.round(sessionDays / 7 * 100)}%</p>
-                <p style={{ fontSize: 11, color: '#333', marginTop: 2 }}>Nutrition {Math.round(nutritionDaysThisWeek / 7 * 100)}%</p>
-                <p style={{ fontSize: 11, color: '#333', marginTop: 2 }}>Steps {Math.round(stepsDays / 7 * 100)}%</p>
+                <p style={{ fontSize: 11, color: 'var(--subtle)' }}>Training {Math.round(sessionDays / 7 * 100)}%</p>
+                <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 2 }}>Nutrition {Math.round(nutritionDaysThisWeek / 7 * 100)}%</p>
+                <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 2 }}>Steps {Math.round(stepsDays / 7 * 100)}%</p>
               </div>
             </div>
-            <div style={{ height: 6, background: '#111', borderRadius: 3, overflow: 'hidden' }}>
+            <div style={{ height: 6, background: 'var(--card2)', borderRadius: 3, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${consistencyScore}%`, background: `linear-gradient(90deg,${scoreColor},${scoreColor}aa)`, borderRadius: 3, transition: '.5s' }} />
             </div>
           </div>
 
           {/* Calories chart */}
-          <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
+          <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
               <div>
-                <p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Calories Consumed</p>
-                <p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>Last 7 days</p>
+                <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>Calories Consumed</p>
+                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Last 7 days</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ fontSize: 20, fontWeight: 700, color: '#FF5A1F' }}>{avgCalories}</p>
-                <p style={{ fontSize: 11, color: '#444' }}>avg kcal/day</p>
+                <p style={{ fontSize: 11, color: 'var(--muted)' }}>avg kcal/day</p>
               </div>
             </div>
             <ResponsiveContainer width="100%" height={130}>
               <BarChart data={caloriesByDay} barSize={22}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#111" vertical={false} />
-                <XAxis dataKey="date" tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} width={30} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                <XAxis dataKey="date" tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} width={30} />
                 <Tooltip content={<CustomTooltip unit=" kcal" />} />
                 <Bar dataKey="calories" fill="#FF5A1F" radius={[6, 6, 0, 0]} opacity={0.85} />
               </BarChart>
@@ -561,40 +568,40 @@ export default function Progress({ session, profile }) {
             ].map(({ label, val, color, pct, sub, icon }) => {
               const r = 24; const circ = 2 * Math.PI * r; const dash = (pct / 100) * circ
               return (
-                <div key={label} style={{ background: '#0a0a0a', border: '1px solid #141414', borderRadius: 16, padding: '14px 10px', textAlign: 'center' }}>
+                <div key={label} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 10px', textAlign: 'center' }}>
                   <div style={{ position: 'relative', width: 56, height: 56, margin: '0 auto 8px' }}>
                     <svg width={56} height={56} style={{ transform: 'rotate(-90deg)' }}>
-                      <circle cx={28} cy={28} r={r} fill="none" stroke="#111" strokeWidth={7} />
+                      <circle cx={28} cy={28} r={r} fill="none" stroke="var(--border)" strokeWidth={7} />
                       <circle cx={28} cy={28} r={r} fill="none" stroke={color} strokeWidth={7} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
                     </svg>
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: icon ? 20 : 12, fontWeight: 700, color: '#fff' }}>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: icon ? 20 : 12, fontWeight: 700, color: 'var(--text)' }}>
                       {icon || val}
                     </div>
                   </div>
                   {icon && <p style={{ fontSize: 14, fontWeight: 700, color, marginBottom: 2 }}>{val}</p>}
                   <p style={{ fontSize: 11, fontWeight: 600, color: '#ccc' }}>{label}</p>
-                  <p style={{ fontSize: 10, color: '#333', marginTop: 2 }}>{sub}</p>
+                  <p style={{ fontSize: 10, color: 'var(--subtle)', marginTop: 2 }}>{sub}</p>
                 </div>
               )
             })}
           </div>
 
           {/* Training breakdown */}
-          <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
-            <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 14 }}>Training Breakdown</p>
+          <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
+            <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 14 }}>Training Breakdown</p>
             {Object.keys(typeCount).length === 0
-              ? <p style={{ color: '#333', fontSize: 13 }}>No sessions logged yet</p>
+              ? <p style={{ color: 'var(--subtle)', fontSize: 13 }}>No sessions logged yet</p>
               : Object.entries(typeCount).sort((a, b) => b[1] - a[1]).map(([type, count]) => {
                 const pct = Math.round((count / totalCount) * 100)
                 const colors = { 'Strength': '#FF5A1F', 'Conditioning': '#EF4444', 'Skills': '#3B82F6', 'Mobility': '#A855F7', 'Mixed': '#22C55E' }
-                const color = colors[type] || '#666'
+                const color = colors[type] || 'var(--muted)'
                 return (
                   <div key={type} style={{ marginBottom: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 5 }}>
                       <span style={{ fontSize: 13, color, fontWeight: 600 }}>{type}</span>
-                      <span style={{ fontSize: 12, color: '#444' }}>{count} sessions · {pct}%</span>
+                      <span style={{ fontSize: 12, color: 'var(--muted)' }}>{count} sessions · {pct}%</span>
                     </div>
-                    <div style={{ height: 6, background: '#111', borderRadius: 3, overflow: 'hidden' }}>
+                    <div style={{ height: 6, background: 'var(--card2)', borderRadius: 3, overflow: 'hidden' }}>
                       <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3 }} />
                     </div>
                   </div>
@@ -607,15 +614,15 @@ export default function Progress({ session, profile }) {
       {/* ── STRENGTH TAB ── */}
       {activeTab === 'strength' && (
         <>
-          <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, overflow: 'hidden' }}>
+          <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, overflow: 'hidden' }}>
             <div style={{ padding: '14px 16px', borderBottom: '1px solid #111', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <p style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Strength Progress</p>
-              <p style={{ fontSize: 11, color: '#444' }}>{strengthPRs.length} exercises tracked</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>Strength Progress</p>
+              <p style={{ fontSize: 11, color: 'var(--muted)' }}>{strengthPRs.length} exercises tracked</p>
             </div>
             {strengthPRs.length === 0 ? (
               <div style={{ padding: '32px 20px', textAlign: 'center' }}>
                 <p style={{ fontSize: 32, marginBottom: 8 }}>🏋️</p>
-                <p style={{ color: '#333', fontSize: 13 }}>Log strength sessions to track 1RM progress</p>
+                <p style={{ color: 'var(--subtle)', fontSize: 13 }}>Log strength sessions to track 1RM progress</p>
               </div>
             ) : strengthPRs.map(({ name, rm, delta, count }) => (
               <div key={name}
@@ -623,8 +630,8 @@ export default function Progress({ session, profile }) {
                 onClick={() => setSelectedExercise(selectedExercise === name ? '' : name)}>
                 <div style={{ width: 38, height: 38, borderRadius: 10, background: '#FF5A1F15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0 }}>💪</div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <p style={{ fontSize: 14, fontWeight: 600, color: '#fff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</p>
-                  <p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>Est. 1RM · {count}x logged</p>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{name}</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Est. 1RM · {count}x logged</p>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
                   <p style={{ fontSize: 16, fontWeight: 700, color: '#FF5A1F' }}>{rm} kg</p>
@@ -642,31 +649,31 @@ export default function Progress({ session, profile }) {
           </div>
 
           {selectedExercise && exerciseChartData.length > 0 && (
-            <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
+            <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
                 <div>
-                  <p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{selectedExercise}</p>
-                  <p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>Estimated 1RM over time</p>
+                  <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{selectedExercise}</p>
+                  <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Estimated 1RM over time</p>
                 </div>
                 {selectedImprovement && (
                   <div style={{ textAlign: 'right' }}>
                     <p style={{ fontSize: 16, fontWeight: 700, color: selectedImprovement.pct >= 0 ? '#22C55E' : '#EF4444' }}>
                       {selectedImprovement.pct >= 0 ? '+' : ''}{selectedImprovement.pct}%
                     </p>
-                    <p style={{ fontSize: 11, color: '#444' }}>{selectedImprovement.from}→{selectedImprovement.to}kg</p>
+                    <p style={{ fontSize: 11, color: 'var(--muted)' }}>{selectedImprovement.from}→{selectedImprovement.to}kg</p>
                   </div>
                 )}
               </div>
               <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={exerciseChartData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#111" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} width={35} domain={['dataMin - 5', 'dataMax + 5']} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} width={35} domain={['dataMin - 5', 'dataMax + 5']} />
                   <Tooltip content={<CustomTooltip unit="kg" />} />
                   <Line type="monotone" dataKey="value" stroke="#FF5A1F" strokeWidth={2.5} dot={{ fill: '#FF5A1F', r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
               </ResponsiveContainer>
-              <div style={{ marginTop: 12, padding: '10px 14px', background: '#111', borderRadius: 12 }}>
+              <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--card2)', borderRadius: 12 }}>
                 <p style={{ fontSize: 13, color: '#888', lineHeight: 1.6 }}>
                   {!selectedImprovement ? 'Log more sessions to see trends.'
                     : selectedImprovement.pct > 20 ? `🔥 ${selectedImprovement.pct}% improvement. That's actual progress.`
@@ -687,23 +694,23 @@ export default function Progress({ session, profile }) {
           <div style={{ display: 'flex', gap: 6, padding: '0 20px', marginBottom: 14 }}>
             {[{ id: 'calories', label: '📊 Calories' }, { id: 'volume', label: '💪 Volume' }, { id: 'weight', label: '⚖️ Weight' }].map(c => (
               <button key={c.id} onClick={() => setActiveChart(c.id)}
-                style={{ flexShrink: 0, padding: '6px 14px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: '1px solid', background: activeChart === c.id ? '#FF5A1F' : 'transparent', borderColor: activeChart === c.id ? '#FF5A1F' : '#1e1e1e', color: activeChart === c.id ? '#fff' : '#555' }}>
+                style={{ flexShrink: 0, padding: '6px 14px', borderRadius: 20, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: '1px solid', background: activeChart === c.id ? '#FF5A1F' : 'transparent', borderColor: activeChart === c.id ? '#FF5A1F' : '#1e1e1e', color: activeChart === c.id ? 'var(--text)' : 'var(--muted)' }}>
                 {c.label}
               </button>
             ))}
           </div>
 
           {activeChart === 'calories' && (
-            <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
+            <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div><p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Calories (7 days)</p><p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>Daily intake</p></div>
-                <div style={{ textAlign: 'right' }}><p style={{ fontSize: 18, fontWeight: 700, color: '#FF5A1F' }}>{avgCalories}</p><p style={{ fontSize: 11, color: '#444' }}>avg/day</p></div>
+                <div><p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>Calories (7 days)</p><p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Daily intake</p></div>
+                <div style={{ textAlign: 'right' }}><p style={{ fontSize: 18, fontWeight: 700, color: '#FF5A1F' }}>{avgCalories}</p><p style={{ fontSize: 11, color: 'var(--muted)' }}>avg/day</p></div>
               </div>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={caloriesByDay} barSize={24}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#111" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} width={35} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} width={35} />
                   <Tooltip content={<CustomTooltip unit=" kcal" />} />
                   <Bar dataKey="calories" fill="#FF5A1F" radius={[6, 6, 0, 0]} opacity={0.9} />
                 </BarChart>
@@ -712,16 +719,16 @@ export default function Progress({ session, profile }) {
           )}
 
           {activeChart === 'volume' && (
-            <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
+            <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 14 }}>
-                <div><p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Weekly Sessions</p><p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>Last 8 weeks</p></div>
-                <div style={{ textAlign: 'right' }}><p style={{ fontSize: 18, fontWeight: 700, color: '#A855F7' }}>{sessions.length}</p><p style={{ fontSize: 11, color: '#444' }}>total</p></div>
+                <div><p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>Weekly Sessions</p><p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>Last 8 weeks</p></div>
+                <div style={{ textAlign: 'right' }}><p style={{ fontSize: 18, fontWeight: 700, color: '#A855F7' }}>{sessions.length}</p><p style={{ fontSize: 11, color: 'var(--muted)' }}>total</p></div>
               </div>
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={weeklyVolume} barSize={24}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#111" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} width={20} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} width={20} />
                   <Tooltip content={<CustomTooltip unit=" sessions" />} />
                   <Bar dataKey="sessions" fill="#A855F7" radius={[6, 6, 0, 0]} />
                 </BarChart>
@@ -730,29 +737,29 @@ export default function Progress({ session, profile }) {
           )}
 
           {activeChart === 'weight' && (
-            <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
+            <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-                <div><p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Weight Trend</p><p style={{ fontSize: 11, color: '#444', marginTop: 2 }}>{weightLogs.length} entries</p></div>
+                <div><p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>Weight Trend</p><p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>{weightLogs.length} entries</p></div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   <input type="number" placeholder="kg" value={newWeight} onChange={e => setNewWeight(e.target.value)}
-                    style={{ width: 60, background: '#111', border: '1px solid #222', borderRadius: 9, padding: '6px 8px', color: '#fff', fontSize: 13, outline: 'none', textAlign: 'center' }} />
+                    style={{ width: 60, background: 'var(--card2)', border: '1px solid #222', borderRadius: 9, padding: '6px 8px', color: 'var(--text)', fontSize: 13, outline: 'none', textAlign: 'center' }} />
                   <button onClick={logWeight}
-                    style={{ background: '#FF5A1F', border: 'none', borderRadius: 9, padding: '0 12px', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Log</button>
+                    style={{ background: '#FF5A1F', border: 'none', borderRadius: 9, padding: '0 12px', color: 'var(--text)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Log</button>
                 </div>
               </div>
               {weightData.length > 0 ? (
                 <ResponsiveContainer width="100%" height={180}>
                   <LineChart data={weightData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#111" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} width={35} domain={['dataMin - 2', 'dataMax + 2']} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                    <XAxis dataKey="date" tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} width={35} domain={['dataMin - 2', 'dataMax + 2']} />
                     <Tooltip content={<CustomTooltip unit="kg" />} />
                     <Line type="monotone" dataKey="weight" stroke="#22C55E" strokeWidth={2.5} dot={{ fill: '#22C55E', r: 4 }} activeDot={{ r: 6 }} />
                   </LineChart>
                 </ResponsiveContainer>
               ) : (
                 <div style={{ height: 120, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <p style={{ color: '#2a2a2a', fontSize: 13 }}>Log your weight to see the trend</p>
+                  <p style={{ color: 'var(--border2)', fontSize: 13 }}>Log your weight to see the trend</p>
                 </div>
               )}
             </div>
@@ -763,26 +770,26 @@ export default function Progress({ session, profile }) {
       {/* ── BODY TAB ── */}
       {activeTab === 'body' && (
         <>
-          <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
+          <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
-              <p style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Weight Journey</p>
+              <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>Weight Journey</p>
               <div style={{ display: 'flex', gap: 8 }}>
                 <input type="number" placeholder="kg" value={newWeight} onChange={e => setNewWeight(e.target.value)}
-                  style={{ width: 60, background: '#111', border: '1px solid #222', borderRadius: 9, padding: '6px 8px', color: '#fff', fontSize: 13, outline: 'none', textAlign: 'center' }} />
+                  style={{ width: 60, background: 'var(--card2)', border: '1px solid #222', borderRadius: 9, padding: '6px 8px', color: 'var(--text)', fontSize: 13, outline: 'none', textAlign: 'center' }} />
                 <button onClick={logWeight}
-                  style={{ background: '#FF5A1F', border: 'none', borderRadius: 9, padding: '0 12px', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Log</button>
+                  style={{ background: '#FF5A1F', border: 'none', borderRadius: 9, padding: '0 12px', color: 'var(--text)', fontSize: 12, fontWeight: 700, cursor: 'pointer' }}>Log</button>
               </div>
             </div>
 
             {profile?.weight && (
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                 {[
-                  { label: 'Start', val: `${profile.weight}kg`, color: '#444' },
+                  { label: 'Start', val: `${profile.weight}kg`, color: 'var(--muted)' },
                   { label: 'Now', val: `${currentWeight || profile.weight}kg`, color: '#FF5A1F' },
-                  { label: 'Goal', val: profile.goal_weight ? `${profile.goal_weight}kg` : '—', color: '#444' },
+                  { label: 'Goal', val: profile.goal_weight ? `${profile.goal_weight}kg` : '—', color: 'var(--muted)' },
                 ].map(({ label, val, color }) => (
                   <div key={label} style={{ textAlign: 'center' }}>
-                    <p style={{ fontSize: 11, color: '#333', marginBottom: 3 }}>{label}</p>
+                    <p style={{ fontSize: 11, color: 'var(--subtle)', marginBottom: 3 }}>{label}</p>
                     <p style={{ fontSize: 17, fontWeight: 700, color }}>{val}</p>
                   </div>
                 ))}
@@ -791,10 +798,10 @@ export default function Progress({ session, profile }) {
 
             {profile?.weight && profile?.goal_weight && (
               <>
-                <div style={{ height: 6, background: '#111', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
+                <div style={{ height: 6, background: 'var(--card2)', borderRadius: 3, overflow: 'hidden', marginBottom: 6 }}>
                   <div style={{ height: '100%', background: '#FF5A1F', borderRadius: 3, width: `${Math.min(Math.max(((profile.weight - (currentWeight || profile.weight)) / (profile.weight - profile.goal_weight)) * 100, 0), 100)}%`, transition: '.3s' }} />
                 </div>
-                <p style={{ fontSize: 11, color: '#333' }}>
+                <p style={{ fontSize: 11, color: 'var(--subtle)' }}>
                   {currentWeight && currentWeight < profile.weight
                     ? `${(profile.weight - currentWeight).toFixed(1)}kg lost so far`
                     : 'Start logging weight to track progress'}
@@ -804,13 +811,13 @@ export default function Progress({ session, profile }) {
           </div>
 
           {weightData.length > 0 && (
-            <div style={{ margin: '0 20px 14px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 18, padding: 16 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 14 }}>Weight trend</p>
+            <div style={{ margin: '0 20px 14px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', marginBottom: 14 }}>Weight trend</p>
               <ResponsiveContainer width="100%" height={160}>
                 <LineChart data={weightData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#111" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fill: '#333', fontSize: 10 }} axisLine={false} tickLine={false} width={35} domain={['dataMin - 2', 'dataMax + 2']} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
+                  <XAxis dataKey="date" tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fill: 'var(--subtle)', fontSize: 10 }} axisLine={false} tickLine={false} width={35} domain={['dataMin - 2', 'dataMax + 2']} />
                   <Tooltip content={<CustomTooltip unit="kg" />} />
                   <Line type="monotone" dataKey="weight" stroke="#22C55E" strokeWidth={2.5} dot={{ fill: '#22C55E', r: 4 }} activeDot={{ r: 6 }} />
                 </LineChart>
@@ -825,10 +832,10 @@ export default function Progress({ session, profile }) {
               { label: 'Avg calories', val: `${avgCalories} kcal`, color: '#EF4444', icon: '🔥' },
               { label: 'Avg protein', val: `${avgProtein}g`, color: '#A855F7', icon: '🥩' },
             ].map(({ label, val, color, icon }) => (
-              <div key={label} style={{ background: '#0a0a0a', border: '1px solid #141414', borderRadius: 16, padding: '14px 16px' }}>
+              <div key={label} style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 16, padding: '14px 16px' }}>
                 <p style={{ fontSize: 22, marginBottom: 8 }}>{icon}</p>
                 <p style={{ fontSize: 20, fontWeight: 700, color }}>{val}</p>
-                <p style={{ fontSize: 11, color: '#333', marginTop: 3 }}>{label}</p>
+                <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 3 }}>{label}</p>
               </div>
             ))}
           </div>
