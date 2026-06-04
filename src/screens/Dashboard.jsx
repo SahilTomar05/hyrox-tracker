@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
+import { Droplets, Moon, Footprints } from 'lucide-react'
+
+function todayDate() { return new Date().toISOString().split('T')[0] }
+function todayKey() { return new Date().toDateString() }
 
 function getGreeting() {
   const h = new Date().getHours()
@@ -14,8 +18,62 @@ function getDaysToRace(raceDate) {
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
 }
 
-function todayDate() { return new Date().toISOString().split('T')[0] }
-function todayKey() { return new Date().toDateString() }
+// Calories burned calculation
+function calcCaloriesBurned(sessions, profile) {
+  const weight = Number(profile?.weight) || 70
+  const today = new Date().toDateString()
+  const todaySessions = sessions.filter(s =>
+    new Date(s.date).toDateString() === today
+  )
+  let burned = 0
+  // BMR base (rough estimate for the day)
+  const age = Number(profile?.age) || 25
+  const height = Number(profile?.height) || 175
+  const gender = profile?.gender || 'Male'
+  let bmr = gender === 'Female'
+    ? 10 * weight + 6.25 * height - 5 * age - 161
+    : 10 * weight + 6.25 * height - 5 * age + 5
+  // TDEE base (sedentary = 1.2)
+  burned += Math.round(bmr * 1.2 / 24 * 14) // 14 waking hours base
+  // Add workout calories
+  todaySessions.forEach(s => {
+    const dur = Number(s.duration) || 45
+    const rpe = Number(s.rpe) || 6
+    // MET based on session type and RPE
+    const met = s.type === 'Strength' ? 3.5 + rpe * 0.3
+      : s.type === 'Conditioning' ? 6 + rpe * 0.5
+      : s.type === 'Skills' ? 4 + rpe * 0.2
+      : s.type === 'Mobility' ? 2.5
+      : 4 + rpe * 0.3
+    burned += Math.round(met * weight * (dur / 60))
+  })
+  return burned
+}
+
+// Daily rating (1-5)
+function calcDailyRating(data) {
+  const { calories, calorieGoal, protein, proteinGoal, water, waterGoal, steps, stepGoal, sleep, sessions } = data
+  let score = 0; let max = 0
+  // Nutrition (0-2 points)
+  max += 2
+  if (calories > 0) score += Math.min(calories / calorieGoal, 1.2) > 0.8 ? 1 : 0.5
+  if (protein > 0) score += (protein / proteinGoal) > 0.8 ? 1 : 0.5
+  // Workout (0-1 point)
+  max += 1
+  if (sessions > 0) score += 1
+  // Steps (0-1 point)
+  max += 1
+  if (steps > 0) score += Math.min(steps / stepGoal, 1)
+  // Water (0-0.5 point)
+  max += 0.5
+  if (water > 0) score += Math.min(water / waterGoal, 1) * 0.5
+  // Sleep (0-0.5 point)
+  max += 0.5
+  if (sleep >= 7) score += 0.5
+  else if (sleep >= 6) score += 0.3
+  const rating = Math.round((score / max) * 5)
+  return Math.max(1, Math.min(5, rating))
+}
 
 const SPORT_CONFIG = {
   marathon: { icon: '🏃', name: 'Marathon', color: '#3B82F6' },
@@ -32,21 +90,15 @@ const SPORT_CONFIG = {
   custom: { icon: '🏄', name: 'Custom', color: '#A855F7' },
 }
 
-function getSarcasticMsg(calories, calorieGoal, steps, water, waterGoal) {
-  if (calories < calorieGoal * 0.1)
-    return `${calories} kcal logged. Your muscles are running on hopes and air. Feed them.`
-  if (calories > calorieGoal * 1.3)
-    return `${Math.round(calories - calorieGoal)} kcal over your goal. Impressive. Your stomach won today.`
-  if (steps < 2000 && steps > 0)
-    return `${steps.toLocaleString()} steps. Did you walk to the fridge and back and count that? Get up.`
-  if (steps < 5000 && steps > 0)
-    return `${steps.toLocaleString()} steps. A grandma with a walker is lapping you. Move.`
-  if (water < waterGoal * 0.3)
-    return `${water}L water today. You're basically a raisin at this point. Drink something.`
+function getSarcasticMsg(burned, burnGoal, steps, water, waterGoal) {
+  if (burned < burnGoal * 0.2) return "You've barely moved today. The couch called — apparently you answered."
+  if (steps < 2000 && steps > 0) return `${steps.toLocaleString()} steps. Did you walk to the fridge and count it?`
+  if (water < waterGoal * 0.3) return `${water}L water. You're basically a raisin at this point. Drink something.`
+  if (burned > burnGoal * 1.2) return `${burned} kcal burned. Now that's what we're talking about. Don't ruin it at dinner.`
   const defaults = [
     "Log your meals so I can roast you properly.",
-    "Still waiting for you to do something worth commenting on.",
-    "Mediocrity logged successfully. Keep it up, I guess.",
+    "Average effort. Acceptable. But we both know you can do better.",
+    "Still waiting for something worth commenting on.",
   ]
   return defaults[new Date().getDate() % defaults.length]
 }
@@ -54,11 +106,11 @@ function getSarcasticMsg(calories, calorieGoal, steps, water, waterGoal) {
 function Ring({ pct, size = 110, stroke = 11, color = '#FF5A1F', children }) {
   const r = (size - stroke) / 2
   const circ = 2 * Math.PI * r
-  const dash = Math.max((pct / 100) * circ, 0)
+  const dash = Math.max((Math.min(pct, 100) / 100) * circ, 0)
   return (
     <div style={{ position: 'relative', width: size, height: size, flexShrink: 0 }}>
       <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
-        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="#1a1a1a" strokeWidth={stroke} />
+        <circle cx={size/2} cy={size/2} r={r} fill="none" stroke="var(--border)" strokeWidth={stroke} />
         <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color}
           strokeWidth={stroke} strokeDasharray={`${dash} ${circ}`} strokeLinecap="round" />
       </svg>
@@ -79,8 +131,7 @@ function SleepCard({ userId }) {
   useEffect(() => { fetchSleep() }, [])
 
   async function fetchSleep() {
-    const { data } = await supabase
-      .from('sleep_logs').select('*')
+    const { data } = await supabase.from('sleep_logs').select('*')
       .eq('user_id', userId).eq('date', todayDate()).single()
     if (data) setSleepLog(data)
   }
@@ -89,72 +140,61 @@ function SleepCard({ userId }) {
     if (!hours) return
     setSaving(true)
     const { data } = await supabase.from('sleep_logs')
-      .upsert(
-        { user_id: userId, date: todayDate(), hours: Number(hours), quality },
-        { onConflict: 'user_id,date' }
-      ).select().single()
+      .upsert({ user_id: userId, date: todayDate(), hours: Number(hours), quality }, { onConflict: 'user_id,date' })
+      .select().single()
     if (data) setSleepLog(data)
-    setSaving(false)
-    setShowForm(false)
-    setHours('')
+    setSaving(false); setShowForm(false); setHours('')
   }
 
-  const qColors = { 1: '#EF4444', 2: '#FF6B35', 3: '#A855F7', 4: '#3B82F6', 5: '#22C55E' }
+  const qColors = { 1: '#EF4444', 2: '#FF8C42', 3: '#A855F7', 4: '#3B82F6', 5: '#22C55E' }
   const qLabels = { 1: 'Terrible 😵', 2: 'Poor 😴', 3: 'OK 😐', 4: 'Good 😊', 5: 'Great 🔥' }
 
   return (
-    <div style={{ margin: '0 16px 12px', background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 16 }}>
+    <div style={{ margin: '0 16px 12px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: sleepLog && !showForm ? 12 : 0 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 40, height: 40, borderRadius: 12, background: 'linear-gradient(135deg,#120820,#1e0f35)', border: '1px solid #A855F730', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🌙</div>
+          <div style={{ width: 40, height: 40, borderRadius: 12, background: '#12082030', border: '1px solid #A855F730', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>🌙</div>
           <div>
-            <p style={{ color: '#fff', fontWeight: 600, fontSize: 14 }}>Sleep</p>
-            {sleepLog && !showForm && <p style={{ color: '#555', fontSize: 11 }}>Last night</p>}
+            <p style={{ color: 'var(--text)', fontWeight: 600, fontSize: 14 }}>Sleep</p>
+            {sleepLog && !showForm && <p style={{ color: 'var(--muted)', fontSize: 11 }}>Last night</p>}
           </div>
         </div>
         <button onClick={() => setShowForm(s => !s)}
-          style={{ fontSize: 12, color: '#A855F7', border: '1px solid #A855F740', borderRadius: 8, padding: '5px 12px', background: '#12082020', cursor: 'pointer' }}>
+          style={{ fontSize: 12, color: '#A855F7', border: '1px solid #A855F740', borderRadius: 8, padding: '5px 12px', background: '#12082015', cursor: 'pointer' }}>
           {showForm ? 'Cancel' : sleepLog ? 'Update' : 'Log sleep'}
         </button>
       </div>
-
       {sleepLog && !showForm && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <div>
             <p style={{ fontSize: 26, fontWeight: 700, color: '#A855F7', lineHeight: 1 }}>{sleepLog.hours}h</p>
-            <p style={{ fontSize: 11, color: '#555', marginTop: 2 }}>hours slept</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>hours slept</p>
           </div>
           <div style={{ flex: 1 }}>
             <p style={{ fontSize: 13, fontWeight: 600, color: qColors[sleepLog.quality] }}>{qLabels[sleepLog.quality]}</p>
-            <div style={{ height: 4, background: '#1a1a1a', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
+            <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, marginTop: 8, overflow: 'hidden' }}>
               <div style={{ height: '100%', width: `${(sleepLog.hours / 9) * 100}%`, background: qColors[sleepLog.quality], borderRadius: 2 }} />
             </div>
-            <p style={{ fontSize: 11, color: '#555', marginTop: 4 }}>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 4 }}>
               {sleepLog.hours >= 7 ? '✓ Well rested' : sleepLog.hours >= 6 ? 'Could be better' : '⚠ Need more sleep'}
             </p>
           </div>
         </div>
       )}
-
-      {!sleepLog && !showForm && (
-        <p style={{ color: '#444', fontSize: 13, marginTop: 8 }}>No sleep logged yet</p>
-      )}
-
+      {!sleepLog && !showForm && <p style={{ color: 'var(--subtle)', fontSize: 13, marginTop: 8 }}>No sleep logged yet</p>}
       {showForm && (
         <div style={{ marginTop: 14, display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div>
-            <p style={{ color: '#666', fontSize: 12, marginBottom: 6 }}>Hours slept</p>
-            <input type="number" placeholder="7.5" value={hours}
-              onChange={e => setHours(e.target.value)}
-              step="0.5" min="1" max="12"
-              style={{ width: '100%', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 12, padding: '10px 14px', color: '#fff', fontSize: 14, outline: 'none' }} />
+            <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 6 }}>Hours slept</p>
+            <input type="number" placeholder="7.5" value={hours} onChange={e => setHours(e.target.value)} step="0.5" min="1" max="12"
+              style={{ width: '100%', background: 'var(--input-bg)', border: '1px solid var(--border2)', borderRadius: 12, padding: '10px 14px', color: 'var(--text)', fontSize: 14, outline: 'none' }} />
           </div>
           <div>
-            <p style={{ color: '#666', fontSize: 12, marginBottom: 8 }}>Sleep quality</p>
+            <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 8 }}>Sleep quality</p>
             <div style={{ display: 'flex', gap: 8 }}>
               {[1,2,3,4,5].map(q => (
                 <button key={q} onClick={() => setQuality(q)}
-                  style={{ flex: 1, padding: '8px 4px', borderRadius: 10, fontSize: 12, fontWeight: quality === q ? 600 : 400, cursor: 'pointer', background: quality === q ? qColors[q] + '20' : '#1a1a1a', border: `1px solid ${quality === q ? qColors[q] : '#2a2a2a'}`, color: quality === q ? qColors[q] : '#555' }}>
+                  style={{ flex: 1, padding: '8px 4px', borderRadius: 10, fontSize: 12, fontWeight: quality === q ? 600 : 400, cursor: 'pointer', background: quality === q ? qColors[q] + '20' : 'var(--card2)', border: `1px solid ${quality === q ? qColors[q] : 'var(--border)'}`, color: quality === q ? qColors[q] : 'var(--muted)' }}>
                   {q}★
                 </button>
               ))}
@@ -176,41 +216,46 @@ export default function Dashboard({ profile, session }) {
   const [stepsInput, setStepsInput] = useState('')
   const [showStepsInput, setShowStepsInput] = useState(false)
   const [sessions, setSessions] = useState([])
-  const [todaySession, setTodaySession] = useState(null)
+  const [sleepHours, setSleepHours] = useState(0)
 
   const sport = profile?.sport || 'general'
   const config = SPORT_CONFIG[sport] || SPORT_CONFIG.general
   const goals = profile?.goals || {}
   const calorieGoal = goals.calories || 2800
+  const proteinGoal = goals.protein || 180
   const waterGoal = goals.water || 3.0
   const stepGoal = profile?.step_goal || 10000
 
-  const daysLeft = profile?.has_race && profile?.race_date
-    ? getDaysToRace(profile.race_date) : null
-  const weeksLeft = daysLeft ? Math.ceil(daysLeft / 7) : null
+  const daysLeft = profile?.has_race && profile?.race_date ? getDaysToRace(profile.race_date) : null
   const startDate = profile?.created_at ? new Date(profile.created_at) : new Date()
-  const totalDays = daysLeft
-    ? Math.ceil((new Date(profile.race_date) - startDate) / (1000 * 60 * 60 * 24))
-    : 100
-  const progressPct = daysLeft
-    ? Math.max(0, Math.round(((totalDays - daysLeft) / totalDays) * 100))
-    : 0
+  const totalDays = daysLeft ? Math.ceil((new Date(profile.race_date) - startDate) / (1000*60*60*24)) : 100
+  const progressPct = daysLeft ? Math.max(0, Math.round(((totalDays - daysLeft) / totalDays) * 100)) : 0
 
-  const calPct = Math.min((nutrition.calories / calorieGoal) * 100, 100)
+  const caloriesBurned = calcCaloriesBurned(sessions, profile)
+  const burnGoal = calorieGoal * 1.2 // burn target slightly above intake goal
+  const burnPct = Math.min((caloriesBurned / burnGoal) * 100, 100)
   const waterPct = Math.min((nutrition.water / waterGoal) * 100, 100)
-  const sessionToday = sessions.filter(s =>
-    new Date(s.date).toDateString() === new Date().toDateString()
-  ).length
-  const workoutPct = Math.min(sessionToday * 50, 100)
-  const overallPct = Math.round((calPct + waterPct + workoutPct) / 3)
   const stepPct = Math.min(Math.round((steps / stepGoal) * 100), 100)
-  const sarcasticMsg = getSarcasticMsg(
-    nutrition.calories, calorieGoal, steps, nutrition.water, waterGoal
-  )
+  const sessionToday = sessions.filter(s => new Date(s.date).toDateString() === new Date().toDateString()).length
+  const workoutPct = Math.min(sessionToday * 50, 100)
+  const overallPct = Math.round((burnPct + waterPct + workoutPct) / 3)
+
+  const dailyRating = calcDailyRating({
+    calories: nutrition.calories, calorieGoal,
+    protein: nutrition.protein, proteinGoal,
+    water: nutrition.water, waterGoal,
+    steps, stepGoal,
+    sleep: sleepHours,
+    sessions: sessionToday,
+  })
+
+  const sarcasticMsg = getSarcasticMsg(caloriesBurned, burnGoal, steps, nutrition.water, waterGoal)
+  const todaySession = sessions.find(s => new Date(s.date).toDateString() === new Date().toDateString())
 
   useEffect(() => {
     fetchNutrition()
     fetchSessions()
+    fetchSleep()
     const saved = localStorage.getItem('steps_' + todayKey())
     if (saved) setSteps(Number(saved))
     const interval = setInterval(fetchNutrition, 30000)
@@ -233,22 +278,13 @@ export default function Dashboard({ profile, session }) {
   async function fetchSessions() {
     const { data } = await supabase.from('sessions').select('*')
       .eq('user_id', session.user.id).order('date', { ascending: false })
-    if (data) {
-      setSessions(data)
-      const today = data.find(s =>
-        new Date(s.date).toDateString() === new Date().toDateString()
-      )
-      setTodaySession(today || null)
-    }
+    if (data) setSessions(data)
   }
 
-  async function updateWater(amount) {
-    const newWater = Math.max(0, Math.round((nutrition.water + amount) * 10) / 10)
-    setNutrition(n => ({ ...n, water: newWater }))
-    await supabase.from('nutrition_logs').upsert(
-      { user_id: session.user.id, date: todayDate(), water: newWater, meals: [] },
-      { onConflict: 'user_id,date' }
-    )
+  async function fetchSleep() {
+    const { data } = await supabase.from('sleep_logs').select('hours')
+      .eq('user_id', session.user.id).eq('date', todayDate()).single()
+    if (data) setSleepHours(data.hours || 0)
   }
 
   function saveSteps() {
@@ -263,90 +299,75 @@ export default function Dashboard({ profile, session }) {
     setShowStepsInput(false)
   }
 
-  const card = {
-    margin: '0 16px 12px',
-    background: '#131313',
-    border: '1px solid #222',
-    borderRadius: 18,
-    padding: 16,
-  }
-  const label = {
-    fontSize: 10,
-    color: '#555',
-    textTransform: 'uppercase',
-    letterSpacing: '.06em',
-    fontWeight: 600,
-    marginBottom: 6,
-  }
+  const card = { margin: '0 16px 12px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }
+  const label = { fontSize: 10, color: 'var(--muted)', textTransform: 'uppercase', letterSpacing: '.06em', fontWeight: 600 }
 
   return (
-    <div style={{ paddingTop: 52 }}>
+    <div style={{ paddingTop: 52, paddingBottom: 24, background: 'var(--bg)', minHeight: '100vh' }}>
 
       {/* Header */}
       <div style={{ padding: '0 16px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <p style={{ fontSize: 13, color: '#666' }}>{getGreeting()},</p>
-          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.3px' }}>
+          <p style={{ fontSize: 13, color: 'var(--muted)' }}>{getGreeting()},</p>
+          <h1 style={{ fontSize: 22, fontWeight: 700, letterSpacing: '-.3px', color: 'var(--text)' }}>
             {profile?.name || 'Athlete'} 👋
           </h1>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 11, fontWeight: 600, padding: '4px 10px', borderRadius: 8, marginTop: 4, border: '1px solid', color: config.color, borderColor: config.color + '40', background: config.color + '15' }}>
             {config.icon} {config.name}
-            {profile?.event_name && (
-              <span style={{ color: '#555', fontWeight: 400 }}>· {profile.event_name}</span>
-            )}
+            {profile?.event_name && <span style={{ color: 'var(--muted)', fontWeight: 400 }}>· {profile.event_name}</span>}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg,#1a0800,#2d1200)', border: '1px solid #FF5A1F40', borderRadius: 12, padding: '7px 12px', fontSize: 13, fontWeight: 700, color: '#FF5A1F' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#1a080015', border: '1px solid #FF5A1F40', borderRadius: 12, padding: '7px 12px', fontSize: 13, fontWeight: 700, color: '#FF5A1F' }}>
           🔥 {sessions.length}
-          <span style={{ fontSize: 10, fontWeight: 400, color: '#888' }}>sessions</span>
+          <span style={{ fontSize: 10, fontWeight: 400, color: 'var(--muted)' }}>sessions</span>
         </div>
       </div>
 
-      {/* Progress Ring Card */}
+      {/* Progress Ring */}
       <div style={{ ...card, display: 'flex', alignItems: 'center', gap: 18 }}>
         <Ring pct={overallPct} color="#FF5A1F">
-          <span style={{ fontWeight: 700, fontSize: 26, color: '#fff', lineHeight: 1 }}>{overallPct}%</span>
-          <span style={{ fontSize: 10, color: '#555', marginTop: 2 }}>Today</span>
+          <span style={{ fontWeight: 700, fontSize: 26, color: 'var(--text)', lineHeight: 1 }}>{overallPct}%</span>
+          <span style={{ fontSize: 10, color: 'var(--muted)', marginTop: 2 }}>Today</span>
         </Ring>
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
-          {/* Calories row */}
+          {/* Calories BURNED */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <div style={{ width: 30, height: 30, borderRadius: 9, background: '#1a0800', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>🔥</div>
+            <div style={{ width: 30, height: 30, borderRadius: 9, background: '#1a080015', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>🔥</div>
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#FF5A1F' }}>
-                {nutrition.calories} <span style={{ fontSize: 12, fontWeight: 400, color: '#555' }}>/ {calorieGoal} kcal</span>
+                {caloriesBurned} <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>kcal burned</span>
               </p>
-              <p style={{ fontSize: 10, color: '#555' }}>Calories consumed</p>
-              <div style={{ height: 3, background: '#1a1a1a', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${calPct}%`, background: '#FF5A1F', borderRadius: 2 }} />
+              <p style={{ fontSize: 10, color: 'var(--muted)' }}>Calories burned today</p>
+              <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${burnPct}%`, background: '#FF5A1F', borderRadius: 2 }} />
               </div>
             </div>
           </div>
-          {/* Water row */}
+          {/* Water */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 30, height: 30, borderRadius: 9, background: '#001020', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>💧</div>
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#3B82F6' }}>
-                {nutrition.water}L <span style={{ fontSize: 12, fontWeight: 400, color: '#555' }}>/ {waterGoal}L</span>
+                {nutrition.water}L <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>/ {waterGoal}L</span>
               </p>
-              <p style={{ fontSize: 10, color: '#555' }}>Water intake</p>
-              <div style={{ height: 3, background: '#1a1a1a', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
+              <p style={{ fontSize: 10, color: 'var(--muted)' }}>Water intake</p>
+              <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${waterPct}%`, background: '#3B82F6', borderRadius: 2 }} />
               </div>
             </div>
           </div>
-          {/* Workout row */}
+          {/* Workout */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div style={{ width: 30, height: 30, borderRadius: 9, background: '#001a08', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, flexShrink: 0 }}>💪</div>
             <div style={{ flex: 1 }}>
               <p style={{ fontSize: 14, fontWeight: 600, color: '#22C55E' }}>
                 {todaySession ? todaySession.type : 'Rest day'}
-                <span style={{ fontSize: 12, fontWeight: 400, color: '#555' }}>
+                <span style={{ fontSize: 12, fontWeight: 400, color: 'var(--muted)' }}>
                   {todaySession ? ` · RPE ${todaySession.rpe || '--'}/10` : ''}
                 </span>
               </p>
-              <p style={{ fontSize: 10, color: '#555' }}>Today's session</p>
-              <div style={{ height: 3, background: '#1a1a1a', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
+              <p style={{ fontSize: 10, color: 'var(--muted)' }}>Today's session</p>
+              <div style={{ height: 3, background: 'var(--border)', borderRadius: 2, marginTop: 4, overflow: 'hidden' }}>
                 <div style={{ height: '100%', width: `${workoutPct}%`, background: '#22C55E', borderRadius: 2 }} />
               </div>
             </div>
@@ -354,26 +375,41 @@ export default function Dashboard({ profile, session }) {
         </div>
       </div>
 
-      {/* Sarcastic AI — right after ring */}
-      <div style={{ ...card, background: '#0a0500', borderColor: '#FF5A1F20' }}>
-        <p style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: '#FF8C42', marginBottom: 5 }}>
-          🤖 Pace4 says
-        </p>
-        <p style={{ fontSize: 13, color: '#bbb', lineHeight: 1.5 }}>{sarcasticMsg}</p>
+      {/* Sarcastic + Daily Rating */}
+      <div style={{ ...card, background: '#0a050015', borderColor: '#FF5A1F20' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+          <div style={{ flex: 1 }}>
+            <p style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: '#FF8C42', marginBottom: 5 }}>
+              🤖 Pace4 says
+            </p>
+            <p style={{ fontSize: 13, color: 'var(--text2)', lineHeight: 1.5 }}>{sarcasticMsg}</p>
+          </div>
+          {/* Daily rating */}
+          <div style={{ textAlign: 'center', flexShrink: 0 }}>
+            <div style={{ fontSize: 28, fontWeight: 700, color: dailyRating >= 4 ? '#22C55E' : dailyRating >= 3 ? '#FF5A1F' : '#EF4444', lineHeight: 1 }}>
+              {dailyRating}
+            </div>
+            <div style={{ display: 'flex', gap: 2, marginTop: 4, justifyContent: 'center' }}>
+              {[1,2,3,4,5].map(i => (
+                <span key={i} style={{ fontSize: 10, opacity: i <= dailyRating ? 1 : 0.2 }}>⭐</span>
+              ))}
+            </div>
+            <p style={{ fontSize: 9, color: 'var(--muted)', marginTop: 3, textTransform: 'uppercase', letterSpacing: '.05em' }}>Daily rating</p>
+          </div>
+        </div>
       </div>
 
-      {/* Nutrition + Water side by side */}
+      {/* Nutrition + Water */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, padding: '0 16px', marginBottom: 12 }}>
-
-        {/* Nutrition card */}
-        <div style={{ background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 14 }}>
-          <p style={label}>Nutrition</p>
+        {/* Nutrition */}
+        <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 14 }}>
+          <p style={{ ...label, marginBottom: 10 }}>Nutrition</p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <Ring pct={calPct} size={62} stroke={8} color="#FF5A1F">
-              <span style={{ fontSize: 11, fontWeight: 700, color: '#fff' }}>{nutrition.calories}</span>
+            <Ring pct={Math.min((nutrition.calories / calorieGoal) * 100, 100)} size={62} stroke={8} color="#FF5A1F">
+              <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--text)' }}>{nutrition.calories}</span>
             </Ring>
             <div>
-              <p style={{ fontSize: 10, color: '#555' }}>/ {calorieGoal}</p>
+              <p style={{ fontSize: 10, color: 'var(--muted)' }}>/ {calorieGoal}</p>
               <p style={{ fontSize: 11, color: '#FF5A1F', fontWeight: 600, marginTop: 2 }}>
                 {Math.max(0, calorieGoal - nutrition.calories)} left
               </p>
@@ -381,35 +417,43 @@ export default function Dashboard({ profile, session }) {
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             {[
-              { label: 'Protein', val: nutrition.protein, goal: goals.protein || 180, color: '#22C55E' },
-              { label: 'Carbs', val: 0, goal: goals.carbs || 300, color: '#3B82F6' },
-              { label: 'Fats', val: 0, goal: goals.fat || 80, color: '#FF8C42' },
-            ].map(({ label: l, val, goal, color }) => (
+              { l: 'Protein', v: nutrition.protein, g: proteinGoal, c: '#22C55E' },
+              { l: 'Carbs', v: 0, g: goals.carbs || 300, c: '#3B82F6' },
+              { l: 'Fats', v: 0, g: goals.fat || 80, c: '#FF8C42' },
+            ].map(({ l, v, g, c }) => (
               <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 10 }}>
-                <div style={{ width: 7, height: 7, borderRadius: '50%', background: color, flexShrink: 0 }} />
-                <span style={{ color: '#555', flex: 1 }}>{l}</span>
-                <span style={{ color: '#888' }}>{val}/{goal}g</span>
+                <div style={{ width: 7, height: 7, borderRadius: '50%', background: c, flexShrink: 0 }} />
+                <span style={{ color: 'var(--muted)', flex: 1 }}>{l}</span>
+                <span style={{ color: 'var(--text2)' }}>{v}/{g}g</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Water card */}
-        <div style={{ background: '#131313', border: '1px solid #222', borderRadius: 18, padding: 14, display: 'flex', flexDirection: 'column' }}>
-          <p style={label}>Water 💧</p>
+        {/* Water */}
+        <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 14, display: 'flex', flexDirection: 'column' }}>
+          <p style={{ ...label, marginBottom: 6 }}>Water 💧</p>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <Ring pct={waterPct} size={76} stroke={9} color="#3B82F6">
               <span style={{ fontSize: 17, fontWeight: 700, color: '#3B82F6', lineHeight: 1 }}>{nutrition.water}</span>
-              <span style={{ fontSize: 9, color: '#555' }}>/ {waterGoal}L</span>
+              <span style={{ fontSize: 9, color: 'var(--muted)' }}>/ {waterGoal}L</span>
             </Ring>
           </div>
-          <p style={{ fontSize: 10, color: '#555', textAlign: 'center', margin: '6px 0 10px' }}>
+          <p style={{ fontSize: 10, color: 'var(--muted)', textAlign: 'center', margin: '6px 0 10px' }}>
             {waterPct >= 100 ? '✓ Goal reached!' : `${Math.round((waterGoal - nutrition.water) * 10) / 10}L to go`}
           </p>
           <div style={{ display: 'flex', gap: 8 }}>
-            <button onClick={() => updateWater(-0.25)}
-              style={{ flex: 1, height: 36, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, color: '#fff', fontSize: 22, cursor: 'pointer', fontWeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
-            <button onClick={() => updateWater(0.25)}
+            <button onClick={async () => {
+              const nw = Math.max(0, Math.round((nutrition.water - 0.25) * 10) / 10)
+              setNutrition(n => ({ ...n, water: nw }))
+              await supabase.from('nutrition_logs').upsert({ user_id: session.user.id, date: todayDate(), water: nw, meals: [] }, { onConflict: 'user_id,date' })
+            }}
+              style={{ flex: 1, height: 36, background: 'var(--card2)', border: '1px solid var(--border)', borderRadius: 10, color: 'var(--text)', fontSize: 22, cursor: 'pointer', fontWeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>−</button>
+            <button onClick={async () => {
+              const nw = Math.round((nutrition.water + 0.25) * 10) / 10
+              setNutrition(n => ({ ...n, water: nw }))
+              await supabase.from('nutrition_logs').upsert({ user_id: session.user.id, date: todayDate(), water: nw, meals: [] }, { onConflict: 'user_id,date' })
+            }}
               style={{ flex: 1, height: 36, background: '#3B82F6', border: 'none', borderRadius: 10, color: '#fff', fontSize: 22, cursor: 'pointer', fontWeight: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>+</button>
           </div>
         </div>
@@ -419,12 +463,8 @@ export default function Dashboard({ profile, session }) {
       <div style={card}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
           <div>
-            <p style={{ fontSize: 32, fontWeight: 700, color: '#22C55E', lineHeight: 1 }}>
-              {steps.toLocaleString()}
-            </p>
-            <p style={{ fontSize: 11, color: '#555', marginTop: 2 }}>
-              steps · goal {stepGoal.toLocaleString()}
-            </p>
+            <p style={{ fontSize: 32, fontWeight: 700, color: '#22C55E', lineHeight: 1 }}>{steps.toLocaleString()}</p>
+            <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 2 }}>steps · goal {stepGoal.toLocaleString()}</p>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
             <span style={{ fontSize: 28 }}>🏃</span>
@@ -434,17 +474,14 @@ export default function Dashboard({ profile, session }) {
             </button>
           </div>
         </div>
-        <div style={{ height: 8, background: '#1a1a1a', borderRadius: 4, overflow: 'hidden', marginBottom: 6 }}>
+        <div style={{ height: 8, background: 'var(--border)', borderRadius: 4, overflow: 'hidden', marginBottom: 6 }}>
           <div style={{ height: '100%', width: `${stepPct}%`, background: 'linear-gradient(90deg,#22C55E,#4ADE80)', borderRadius: 4, transition: '.3s' }} />
         </div>
-        <p style={{ fontSize: 11, color: '#555' }}>
-          {stepPct}% · {Math.max(0, stepGoal - steps).toLocaleString()} to go
-        </p>
+        <p style={{ fontSize: 11, color: 'var(--muted)' }}>{stepPct}% · {Math.max(0, stepGoal - steps).toLocaleString()} to go</p>
         {showStepsInput && (
           <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-            <input type="number" placeholder="e.g. 8500" value={stepsInput}
-              onChange={e => setStepsInput(e.target.value)}
-              style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 12, padding: '10px 14px', color: '#fff', fontSize: 14, outline: 'none' }} />
+            <input type="number" placeholder="e.g. 8500" value={stepsInput} onChange={e => setStepsInput(e.target.value)}
+              style={{ flex: 1, background: 'var(--input-bg)', border: '1px solid var(--border2)', borderRadius: 12, padding: '10px 14px', color: 'var(--text)', fontSize: 14, outline: 'none' }} />
             <button onClick={saveSteps}
               style={{ background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '10px 18px', color: '#fff', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
               Save
@@ -458,42 +495,41 @@ export default function Dashboard({ profile, session }) {
 
       {/* Race countdown */}
       {daysLeft !== null && daysLeft > 0 && (
-        <div style={{ ...card, background: '#0a0d00', borderColor: config.color + '25' }}>
+        <div style={{ ...card, background: config.color + '08', borderColor: config.color + '25' }}>
           <p style={{ fontSize: 10, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', color: config.color, marginBottom: 6 }}>
             {config.icon} {profile?.event_name || 'Race'} · Countdown
           </p>
           <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginBottom: 10 }}>
             <span style={{ fontSize: 52, fontWeight: 700, color: config.color, lineHeight: 1 }}>{daysLeft}</span>
-            <span style={{ color: '#444', fontSize: 14 }}>
+            <span style={{ color: 'var(--subtle)', fontSize: 14 }}>
               days · {new Date(profile.race_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
             </span>
           </div>
-          <div style={{ height: 4, background: '#1a1a1a', borderRadius: 2, overflow: 'hidden' }}>
+          <div style={{ height: 4, background: 'var(--border)', borderRadius: 2, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: `${progressPct}%`, background: config.color, borderRadius: 2 }} />
           </div>
-          <p style={{ fontSize: 11, color: '#444', marginTop: 5 }}>{progressPct}% of prep complete</p>
+          <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 5 }}>{progressPct}% of prep complete</p>
         </div>
       )}
 
       {/* Weight progress */}
-      {profile?.goal_weight && profile?.weight &&
-        Number(profile.weight) !== Number(profile.goal_weight) && (
+      {profile?.goal_weight && profile?.weight && Number(profile.weight) !== Number(profile.goal_weight) && (
         <div style={{ ...card, marginBottom: 14 }}>
-          <p style={label}>Weight progress</p>
+          <p style={{ ...label, marginBottom: 10 }}>Weight progress</p>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ color: '#555', fontSize: 11 }}>Start</p>
-              <p style={{ color: '#fff', fontWeight: 700 }}>{profile.weight}kg</p>
+              <p style={{ color: 'var(--muted)', fontSize: 11 }}>Start</p>
+              <p style={{ color: 'var(--text)', fontWeight: 700 }}>{profile.weight}kg</p>
             </div>
             <div style={{ textAlign: 'center' }}>
-              <p style={{ color: '#555', fontSize: 11 }}>Goal</p>
-              <p style={{ color: '#fff', fontWeight: 700 }}>{profile.goal_weight}kg</p>
+              <p style={{ color: 'var(--muted)', fontSize: 11 }}>Goal</p>
+              <p style={{ color: 'var(--text)', fontWeight: 700 }}>{profile.goal_weight}kg</p>
             </div>
           </div>
-          <div style={{ height: 6, background: '#1a1a1a', borderRadius: 3, overflow: 'hidden' }}>
+          <div style={{ height: 6, background: 'var(--border)', borderRadius: 3, overflow: 'hidden' }}>
             <div style={{ height: '100%', width: '8%', background: '#FF5A1F', borderRadius: 3 }} />
           </div>
-          <p style={{ fontSize: 11, color: '#555', marginTop: 5 }}>
+          <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 5 }}>
             {Math.abs(Number(profile.weight) - Number(profile.goal_weight)).toFixed(1)}kg to goal
           </p>
         </div>
