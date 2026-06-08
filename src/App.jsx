@@ -8,7 +8,11 @@ import Progress from './screens/Progress'
 import Onboarding from './components/Onboarding'
 import Profile from './screens/Profile'
 import Settings from './screens/Settings'
-import { Home, BarChart2, User, Settings as SettingsIcon, Plus } from 'lucide-react'
+import CoachDashboard from './screens/coach/CoachDashboard'
+import CoachClients from './screens/coach/CoachClients'
+import CoachClientDetail from './screens/coach/CoachClientDetail'
+import CoachProfile from './screens/coach/CoachProfile'
+import { Home, BarChart2, User, Settings as SettingsIcon, Plus, Users } from 'lucide-react'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -16,6 +20,8 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showQuickLog, setShowQuickLog] = useState(false)
+  const [coachMode, setCoachMode] = useState(false)
+  const [selectedClient, setSelectedClient] = useState(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -31,20 +37,34 @@ export default function App() {
     return () => subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search)
+  const coachCode = params.get('coach')
+  if (coachCode) {
+    localStorage.setItem('pending_coach_code', coachCode)
+  }
+  }, [])
+
   async function fetchProfile(userId) {
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
+    console.log('Profile loaded:', data)
+    console.log('Role:', data?.role)
     setProfile(data)
+    if (data?.role?.toLowerCase() === 'coach') setCoachMode(true)
     setLoading(false)
   }
 
   async function handleOnboardingComplete(profileData) {
     const { data: { user } } = await supabase.auth.getUser()
-    const { data } = await supabase.from('profiles').upsert({ id: user.id, ...profileData }).select().single()
+    const { data } = await supabase.from('profiles')
+      .upsert({ id: user.id, ...profileData }).select().single()
     setProfile(data)
+    if (data?.role?.toLowerCase() === 'coach') setCoachMode(true)
   }
 
   async function handleProfileUpdate(updated) {
-    const { data } = await supabase.from('profiles').upsert({ id: session.user.id, ...updated }).select().single()
+    const { data } = await supabase.from('profiles')
+      .upsert({ id: session.user.id, ...updated }).select().single()
     if (data) setProfile(data)
   }
 
@@ -52,6 +72,13 @@ export default function App() {
     await supabase.auth.signOut()
     setProfile(null)
     setSession(null)
+    setCoachMode(false)
+  }
+
+  function toggleMode() {
+    setCoachMode(p => !p)
+    setActiveTab('dashboard')
+    setSelectedClient(null)
   }
 
   if (loading) return (
@@ -69,6 +96,38 @@ export default function App() {
   if (!session) return <Auth />
   if (!profile?.name) return <Onboarding onComplete={handleOnboardingComplete} />
 
+  // ── COACH MODE ──────────────────────────────────────────────
+  if (coachMode && profile?.role === 'coach') {
+    return (
+      <div style={{ maxWidth: 420, margin: '0 auto', minHeight: '100vh', background: 'var(--bg)', position: 'relative' }}>
+        <div style={{ paddingBottom: 90 }}>
+          {activeTab === 'dashboard' && <CoachDashboard profile={profile} session={session} onSelectClient={c => { setSelectedClient(c); setActiveTab('client') }} />}
+          {activeTab === 'clients' && <CoachClients profile={profile} session={session} onSelectClient={c => { setSelectedClient(c); setActiveTab('client') }} />}
+          {activeTab === 'client' && selectedClient && <CoachClientDetail profile={profile} session={session} client={selectedClient} onBack={() => setActiveTab('clients')} />}
+          {activeTab === 'coachprofile' && <CoachProfile profile={profile} session={session} onToggleMode={toggleMode} onReset={handleReset} onUpdate={handleProfileUpdate} />}
+          {activeTab === 'coachsettings' && <Settings profile={profile} onUpdate={handleProfileUpdate} onReset={handleReset} onToggleCoach={toggleMode} />}
+        </div>
+
+        {/* Coach Bottom Nav */}
+        <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 420, background: 'var(--card)', borderTop: '1px solid var(--border)', backdropFilter: 'blur(20px)', zIndex: 40 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '10px 0 24px' }}>
+            <NavBtn icon={<Home size={21}/>} label="Home" active={activeTab==='dashboard'} onClick={() => setActiveTab('dashboard')} />
+            <NavBtn icon={<Users size={21}/>} label="Clients" active={activeTab==='clients'} onClick={() => setActiveTab('clients')} />
+            <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+              <button onClick={() => setActiveTab('clients')}
+                style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: -22, boxShadow: '0 4px 20px rgba(255,90,31,.5)', cursor: 'pointer' }}>
+                <Plus size={24} color="#fff" strokeWidth={2.5} />
+              </button>
+            </div>
+            <NavBtn icon={<User size={21}/>} label="Profile" active={activeTab==='coachprofile'} onClick={() => setActiveTab('coachprofile')} />
+            <NavBtn icon={<SettingsIcon size={21}/>} label="Settings" active={activeTab==='coachsettings'} onClick={() => setActiveTab('coachsettings')} />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  // ── ATHLETE MODE ─────────────────────────────────────────────
   return (
     <div style={{ maxWidth: 420, margin: '0 auto', minHeight: '100vh', background: 'var(--bg)', position: 'relative' }}>
       <div style={{ paddingBottom: 90 }}>
@@ -77,7 +136,7 @@ export default function App() {
         {activeTab === 'nutrition' && <Nutrition profile={profile} session={session} />}
         {activeTab === 'progress' && <Progress profile={profile} session={session} />}
         {activeTab === 'profile' && <Profile profile={profile} onUpdate={handleProfileUpdate} session={session} />}
-        {activeTab === 'settings' && <Settings profile={profile} onUpdate={handleProfileUpdate} onReset={handleReset} />}
+        {activeTab === 'settings' && <Settings profile={profile} onUpdate={handleProfileUpdate} onReset={handleReset} onToggleCoach={profile?.role?.toLowerCase() === 'coach' ? toggleMode : null} />}
       </div>
 
       {/* Quick Log Modal */}
@@ -110,25 +169,19 @@ export default function App() {
         </div>
       )}
 
-      {/* Bottom Nav — 5 tabs */}
+      {/* Athlete Bottom Nav */}
       <div style={{ position: 'fixed', bottom: 0, left: '50%', transform: 'translateX(-50%)', width: '100%', maxWidth: 420, background: 'var(--card)', borderTop: '1px solid var(--border)', backdropFilter: 'blur(20px)', zIndex: 40 }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-around', padding: '10px 0 24px' }}>
-
           <NavBtn icon={<Home size={21}/>} label="Home" active={activeTab==='dashboard'} onClick={() => setActiveTab('dashboard')} />
           <NavBtn icon={<BarChart2 size={21}/>} label="Progress" active={activeTab==='progress'} onClick={() => setActiveTab('progress')} />
-
-          {/* FAB */}
-          <button onClick={() => setShowQuickLog(true)}
-            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, background: 'none', border: 'none', cursor: 'pointer', flex: 1 }}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 4px 20px rgba(255,90,31,.5)', marginTop: -22 }}>
+          <div style={{ flex: 1, display: 'flex', justifyContent: 'center' }}>
+            <button onClick={() => setShowQuickLog(true)}
+              style={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', marginTop: -22, boxShadow: '0 4px 20px rgba(255,90,31,.5)', cursor: 'pointer' }}>
               <Plus size={24} color="#fff" strokeWidth={2.5} />
-            </div>
-            <span style={{ fontSize: 10, fontWeight: 600, color: 'var(--muted)' }}>Log</span>
-          </button>
-
+            </button>
+          </div>
           <NavBtn icon={<User size={21}/>} label="Profile" active={activeTab==='profile'} onClick={() => setActiveTab('profile')} />
           <NavBtn icon={<SettingsIcon size={21}/>} label="Settings" active={activeTab==='settings'} onClick={() => setActiveTab('settings')} />
-
         </div>
       </div>
     </div>

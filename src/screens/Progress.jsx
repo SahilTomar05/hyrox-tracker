@@ -76,61 +76,69 @@ function ShareModal({ profile, stats, sessions, onClose }) {
     new Date(s.date).toDateString() === new Date().toDateString()
   )
 
-  const todayLifts = todaySession
-    ? (todaySession.exercises || [])
-        .filter(e => e.fieldType === 'strength')
-        .map(ex => ({ name: ex.name, best: Math.max(...(ex.sets || []).map(s => Number(s.weight || 0))) }))
-        .filter(e => e.best > 0).slice(0, 3)
-    : []
-
-  const scoreColor = stats.consistencyScore >= 80 ? '#22C55E'
-    : stats.consistencyScore >= 60 ? '#FF5A1F' : '#EF4444'
-
-  const ratingEmoji = stats.dailyRating >= 5 ? '🔥' : stats.dailyRating >= 4 ? '💪' : stats.dailyRating >= 3 ? '😐' : stats.dailyRating >= 2 ? '😬' : '💀'
+  const ratingEmoji = stats.dailyRating >= 5 ? '🔥' : stats.dailyRating >= 4 ? '💪' : stats.dailyRating >= 3 ? '😐' : '😬'
+  const ratingLabel = stats.dailyRating >= 5 ? 'Perfect day' : stats.dailyRating >= 4 ? 'Great effort' : stats.dailyRating >= 3 ? 'On track' : 'Keep pushing'
 
   async function saveImage() {
-    const card = document.getElementById('pace4-share-card')
-    if (!card) return
-    try {
-      const canvas = await html2canvas(card, {
-        backgroundColor: 'var(--card)',
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-      })
-      canvas.toBlob(blob => {
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `pace4-${new Date().toISOString().split('T')[0]}.png`
-        a.click()
-        URL.revokeObjectURL(url)
-      }, 'image/png')
-    } catch (e) {
-      alert('Screenshot failed. Please screenshot manually!')
-    }
-  }
+  const card = document.getElementById('pace4-share-card')
+  if (!card) return
 
-  async function handleShare() {
-    const card = document.getElementById('pace4-share-card')
-    if (navigator.share && card) {
-      try {
-        const canvas = await html2canvas(card, { backgroundColor: 'var(--card)', scale: 2, useCORS: true })
-        canvas.toBlob(async blob => {
-          const file = new File([blob], 'pace4-progress.png', { type: 'image/png' })
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            await navigator.share({ files: [file], title: 'My Pace4 Progress', text: `${profile?.name} — Daily Rating ${stats.dailyRating}/5 ⭐ #Pace4` })
-          } else {
-            await navigator.share({ title: 'My Pace4 Progress', text: `${profile?.name} — Daily Rating ${stats.dailyRating}/5 ⭐ #Pace4`, url: 'https://www.pace4.in' })
-          }
-        })
-      } catch (e) {
-        saveImage()
+  try {
+    // Try html2canvas first
+    const html2canvas = (await import('html2canvas')).default
+    const canvas = await html2canvas(card, {
+      backgroundColor: '#0a0a0a',
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      foreignObjectRendering: false,
+      logging: false,
+      imageTimeout: 0,
+      removeContainer: true,
+    })
+
+    // Try native share with image first (works on PWA)
+    canvas.toBlob(async blob => {
+      const file = new File([blob], 'pace4-progress.png', { type: 'image/png' })
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'My Pace4 Progress' })
+          return
+        } catch (e) {
+          // Fall through to download
+        }
       }
-    } else {
-      saveImage()
-    }
+      // Fallback — download
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `pace4-${new Date().toISOString().split('T')[0]}.png`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+    }, 'image/png')
+
+  } catch (e) {
+    // html2canvas failed — show instructions
+    alert('📸 To save: Take a screenshot of this card!\n\niOS: Side button + Volume Up\nAndroid: Power + Volume Down')
   }
+}
+
+async function handleShare() {
+  // On PWA just use text share — more reliable
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: 'My Pace4 Progress',
+        text: `Daily Rating ${stats.dailyRating}/5 ⭐ | ${stats.caloriesBurned || 0} kcal burned | ${stats.todaySteps || 0} steps | ${stats.todayWater || 0}L water\n#P4Athlete #Pace4`,
+        url: 'https://www.pace4.in',
+      })
+      return
+    } catch (e) { /* fall through */ }
+  }
+  saveImage()
+}
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}
@@ -138,122 +146,92 @@ function ShareModal({ profile, stats, sessions, onClose }) {
       <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 12 }}
         onClick={e => e.stopPropagation()}>
 
-        {/* The actual share card */}
-        <div id="pace4-share-card" style={{ background: 'linear-gradient(160deg,#0a0a0a,#141414)', border: '1px solid #FF5A1F25', borderRadius: 24, padding: 20 }}>
+        {/* Share card */}
+        <div id="pace4-share-card"
+          style={{ background: 'linear-gradient(160deg,#080808,#121212)', border: '1px solid #FF5A1F20', borderRadius: 24, padding: 20, position: 'relative', overflow: 'hidden' }}>
+
+          {/* Glow */}
+          <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: '#FF5A1F08', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src="/icon-512.png" alt="Pace4"
-              style={{ width: 40, height: 40, borderRadius: 11, boxShadow: '0 2px 12px rgba(255,90,31,.4)' }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img 
+              src="/icon-512.png" 
+              alt="P4"
+              style={{ width: 40, height: 40, borderRadius: 11, boxShadow: '0 2px 12px rgba(255,90,31,.4)' }}
+            />
             <div>
               <p style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Pace4</p>
-              <p style={{ fontSize: 10, color: '#FF5A1F', letterSpacing: '.04em' }}>
-                #P4Athlete · pace4.in
-              </p>
-            </div>
-          </div>
-            <div style={{ textAlign: 'right' }}>
-              <p style={{ fontSize: 11, color: 'var(--muted)' }}>{today}</p>
-              {daysLeft && daysLeft > 0 && (
-                <p style={{ fontSize: 11, color: '#FF5A1F', fontWeight: 600, marginTop: 2 }}>🏁 {daysLeft}d to race</p>
-              )}
+              <p style={{ fontSize: 10, color: '#FF5A1F', letterSpacing: '.04em' }}>#P4Athlete · pace4.in</p>
             </div>
           </div>
 
-          {/* Athlete */}
-          <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text)', marginBottom: 2 }}>{profile?.name}</p>
-          <p style={{ fontSize: 12, color: '#FF5A1F', marginBottom: 16 }}>{profile?.event_name || 'Athlete'}</p>
+          {/* Athlete name */}
+          <p style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{profile?.name}</p>
+          <p style={{ fontSize: 11, color: '#FF5A1F', marginBottom: 16 }}>{profile?.event_name || 'Athlete'}</p>
 
-          {/* Daily rating hero */}
+          {/* Daily rating — hero */}
           <div style={{ background: '#ffffff08', borderRadius: 16, padding: '14px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 14 }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ fontSize: 40 }}>{ratingEmoji}</div>
-              <p style={{ fontSize: 28, fontWeight: 700, color: stats.dailyRating >= 4 ? '#22C55E' : stats.dailyRating >= 3 ? '#FF5A1F' : '#EF4444', lineHeight: 1 }}>
-                {stats.dailyRating}/5
+            <div style={{ textAlign: 'center', flexShrink: 0 }}>
+              <div style={{ fontSize: 36, lineHeight: 1 }}>{ratingEmoji}</div>
+              <p style={{ fontSize: 26, fontWeight: 700, color: stats.dailyRating >= 4 ? '#22C55E' : stats.dailyRating >= 3 ? '#FF5A1F' : '#EF4444', lineHeight: 1, marginTop: 4 }}>
+                {stats.dailyRating}<span style={{ fontSize: 13, color: '#444', fontWeight: 400 }}>/5</span>
               </p>
-              <div style={{ display: 'flex', gap: 2, justifyContent: 'center', marginTop: 4 }}>
-                {[1,2,3,4,5].map(i => (
-                  <span key={i} style={{ fontSize: 12, opacity: i <= stats.dailyRating ? 1 : 0.2 }}>⭐</span>
-                ))}
+              <div style={{ display: 'flex', gap: 1, justifyContent: 'center', marginTop: 4 }}>
+                {[1,2,3,4,5].map(i => <span key={i} style={{ fontSize: 10, opacity: i <= stats.dailyRating ? 1 : 0.15 }}>⭐</span>)}
               </div>
-              <p style={{ fontSize: 10, color: 'var(--muted)', marginTop: 3 }}>Daily Rating</p>
+              <p style={{ fontSize: 9, color: '#555', marginTop: 3, textTransform: 'uppercase', letterSpacing: '.05em' }}>Daily rating</p>
             </div>
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {/* Today's workout */}
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{ratingLabel}</p>
               {todaySession && (
-                <div style={{ background: '#ffffff08', borderRadius: 10, padding: '8px 10px' }}>
-                  <p style={{ fontSize: 12, fontWeight: 700, color: 'var(--text)' }}>{todaySession.type}</p>
-                  <p style={{ fontSize: 10, color: 'var(--muted)' }}>
-                    {todaySession.duration ? `${todaySession.duration}min` : ''} {todaySession.rpe ? `· RPE ${todaySession.rpe}` : ''}
+                <div style={{ background: '#ffffff06', borderRadius: 10, padding: '8px 10px' }}>
+                  <p style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>{todaySession.type}</p>
+                  <p style={{ fontSize: 10, color: '#555' }}>
+                    {todaySession.duration ? `${todaySession.duration}min` : ''}
+                    {todaySession.rpe ? ` · RPE ${todaySession.rpe}/10` : ''}
                   </p>
-                  {todayLifts.length > 0 && (
-                    <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
-                      {todayLifts.map(ex => (
-                        <span key={ex.name} style={{ fontSize: 9, color: '#FF5A1F', background: '#FF5A1F15', padding: '2px 6px', borderRadius: 4 }}>
-                          {ex.name} {ex.best}kg
-                        </span>
-                      ))}
-                    </div>
-                  )}
                 </div>
               )}
             </div>
           </div>
 
-          {/* Stats grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+          {/* 4 stats — calories burned, water, steps, protein */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
             {[
-              { label: 'Calories Burned', val: `${stats.caloriesBurned || 0}`, unit: 'kcal', color: '#FF5A1F', icon: '🔥' },
-              { label: 'Water Intake', val: `${stats.todayWater || 0}`, unit: 'L', color: '#3B82F6', icon: '💧' },
-              { label: 'Steps', val: (stats.todaySteps || 0).toLocaleString(), unit: '', color: '#22C55E', icon: '👟' },
-            ].map(({ label, val, unit, color, icon }) => (
+              { icon: '🔥', label: 'Calories Burned', val: stats.caloriesBurned || 0, unit: 'kcal', color: '#FF5A1F' },
+              { icon: '💧', label: 'Water', val: `${stats.todayWater || 0}`, unit: 'L', color: '#3B82F6' },
+              { icon: '👟', label: 'Steps', val: (stats.todaySteps || 0).toLocaleString(), unit: '', color: '#22C55E' },
+            ].map(({ icon, label, val, unit, color }) => (
               <div key={label} style={{ background: '#ffffff06', borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 18, fontWeight: 700, color, lineHeight: 1 }}>{val}<span style={{ fontSize: 11, fontWeight: 400, color: 'var(--muted)' }}>{unit}</span></p>
-                <p style={{ fontSize: 11, color: 'var(--muted)', marginTop: 3 }}>{icon} {label}</p>
+                <p style={{ fontSize: 16, fontWeight: 700, color, lineHeight: 1 }}>
+                  {val}<span style={{ fontSize: 10, fontWeight: 400, color: '#444' }}>{unit}</span>
+                </p>
+                <p style={{ fontSize: 10, color: '#444', marginTop: 3 }}>{icon} {label}</p>
               </div>
             ))}
           </div>
 
-          {/* Consistency + top lift */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#ffffff06', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
-            <div>
-              <p style={{ fontSize: 11, color: 'var(--muted)', marginBottom: 2 }}>Weekly Consistency</p>
-              <p style={{ fontSize: 28, fontWeight: 700, color: scoreColor, lineHeight: 1 }}>
-                {stats.consistencyScore}<span style={{ fontSize: 14, fontWeight: 400, color: 'var(--muted)' }}>/100</span>
-              </p>
-            </div>
-            {stats.topImprovement && (
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ fontSize: 10, color: 'var(--muted)', marginBottom: 2 }}>🏆 Top lift</p>
-                <p style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>{stats.topImprovement.exercise}</p>
-                <p style={{ fontSize: 12, color: '#22C55E', fontWeight: 700 }}>+{stats.topImprovement.pct}%</p>
-              </div>
-            )}
-          </div>
-
           {/* Footer */}
-          <div style={{ borderTop: '1px solid #ffffff10', paddingTop: 10, marginTop: 4 }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-              <img src="/icon-512.png" alt="P4" style={{ width: 18, height: 18, borderRadius: 5 }} />
-              <p style={{ fontSize: 10, color: '#444' }}>pace4.in</p>
+          <div style={{ borderTop: '1px solid #ffffff08', paddingTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+              <div style={{ width: 16, height: 16, borderRadius: 4, background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: '#fff', fontWeight: 900, fontSize: 8 }}>P4</span>
+              </div>
+              <p style={{ fontSize: 9, color: '#333' }}>pace4.in</p>
             </div>
-            <p style={{ fontSize: 10, color: '#555', letterSpacing: '.02em' }}>
-              #P4Athlete #Pace4 #IndianAthlete
-            </p>
+            <p style={{ fontSize: 9, color: '#333' }}>#P4Athlete #Pace4 #IndianAthlete</p>
           </div>
         </div>
-        </div>
 
-        {/* Action buttons */}
+        {/* Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <button onClick={saveImage}
             style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 14, padding: 14, color: 'var(--text)', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-            💾 Save Image
+            💾 Save
           </button>
           <button onClick={handleShare}
-            style={{ background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 14, color: 'var(--text)', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
+            style={{ background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 14, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             📤 Share
           </button>
         </div>
@@ -262,7 +240,7 @@ function ShareModal({ profile, stats, sessions, onClose }) {
           Close
         </button>
         <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--subtle)' }}>
-          "Save Image" downloads to your gallery · "Share" opens WhatsApp/Instagram
+          Tip: Screenshot this card directly to share on Instagram Stories
         </p>
       </div>
     </div>

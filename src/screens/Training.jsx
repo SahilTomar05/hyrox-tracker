@@ -108,7 +108,9 @@ export default function Training({ session, profile }) {
   const allEx = [
     ...ALL_EXERCISES,
     ...customExercises.map(e => ({ name: e.name, cat: e.category || 'Custom', sub: 'Custom', isCustom: true }))
-  ]
+  ].filter((ex, index, self) => 
+    index === self.findIndex(e => e.name === ex.name)
+  )
 
   const filtered = (() => {
     let list = allEx
@@ -201,34 +203,34 @@ export default function Training({ session, profile }) {
   const typeMeta = detectedType ? CAT_META[detectedType] || CAT_META['Mixed'] : null
 
   const inp = {
-    background: '#0f0f0f', border: '1px solid #252525', borderRadius: 10,
-    padding: '10px 12px', color: '#fff', fontSize: 14, outline: 'none', fontFamily: 'inherit',
+    background: 'var(--input-bg)', border: '1px solid #252525', borderRadius: 10,
+    padding: '10px 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit',
   }
 
   return (
-    <div style={{ paddingTop: 52, paddingBottom: 24, background: '#080808', minHeight: '100vh' }}>
+    <div style={{ paddingTop: 52, paddingBottom: 24, background: 'var(--bg)', minHeight: '100vh' }}>
 
       {/* ── SETS PICKER MODAL ── */}
       {setsPicker && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
           onClick={() => setSetsPicker(null)}>
-          <div style={{ background: '#0d0d0d', border: '1px solid #222', borderRadius: 28, padding: 28, width: '100%', maxWidth: 290, textAlign: 'center' }}
+          <div style={{ background: 'var(--bg2)', border: '1px solid #222', borderRadius: 28, padding: 28, width: '100%', maxWidth: 290, textAlign: 'center' }}
             onClick={e => e.stopPropagation()}>
-            <p style={{ fontSize: 12, color: '#444', marginBottom: 6 }}>Adding</p>
-            <p style={{ fontSize: 18, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{setsPicker.name}</p>
-            <p style={{ fontSize: 12, color: '#333', marginBottom: 24 }}>How many sets?</p>
+            <p style={{ fontSize: 12, color: 'var(--muted)', marginBottom: 6 }}>Adding</p>
+            <p style={{ fontSize: 18, fontWeight: 700, color: 'var(--text)', marginBottom: 4 }}>{setsPicker.name}</p>
+            <p style={{ fontSize: 12, color: 'var(--subtle)', marginBottom: 24 }}>How many sets?</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 10, marginBottom: 20 }}>
               {[1, 2, 3, 4, 5, 6].map(n => (
                 <button key={n} onClick={() => addWithSets(setsPicker, n)}
-                  style={{ height: 56, borderRadius: 16, background: '#141414', border: '1px solid #222', color: '#fff', fontSize: 22, fontWeight: 700, cursor: 'pointer', transition: '.15s' }}
+                  style={{ height: 56, borderRadius: 16, background: 'var(--card)', border: '1px solid #222', color: 'var(--text)', fontSize: 22, fontWeight: 700, cursor: 'pointer', transition: '.15s' }}
                   onMouseEnter={e => { e.currentTarget.style.background = '#FF5A1F'; e.currentTarget.style.borderColor = '#FF5A1F' }}
-                  onMouseLeave={e => { e.currentTarget.style.background = '#141414'; e.currentTarget.style.borderColor = '#222' }}>
+                  onMouseLeave={e => { e.currentTarget.style.background = 'var(--card)'; e.currentTarget.style.borderColor = '#222' }}>
                   {n}
                 </button>
               ))}
             </div>
             <button onClick={() => setSetsPicker(null)}
-              style={{ fontSize: 13, color: '#333', background: 'none', border: 'none', cursor: 'pointer' }}>
+              style={{ fontSize: 13, color: 'var(--subtle)', background: 'none', border: 'none', cursor: 'pointer' }}>
               Cancel
             </button>
           </div>
@@ -239,11 +241,11 @@ export default function Training({ session, profile }) {
       {existingModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
           onClick={() => setExistingModal(null)}>
-          <div style={{ background: '#0d0d0d', border: '1px solid #222', borderRadius: 24, padding: 24, width: '100%', maxWidth: 320, textAlign: 'center' }}
+          <div style={{ background: 'var(--bg2)', border: '1px solid #222', borderRadius: 24, padding: 24, width: '100%', maxWidth: 320, textAlign: 'center' }}
             onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: 40, marginBottom: 12 }}>💪</div>
-            <p style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 6 }}>Session already logged</p>
-            <p style={{ fontSize: 13, color: '#555', marginBottom: 20 }}>
+            <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)', marginBottom: 6 }}>Session already logged</p>
+            <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 20 }}>
               You have a {existingModal.type} session today with {(existingModal.exercises || []).length} exercises.
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -254,7 +256,7 @@ export default function Training({ session, profile }) {
                 setExistingModal(null)
                 setTimeout(() => searchRef.current?.focus(), 150)
               }}
-                style={{ background: '#FF5A1F', border: 'none', borderRadius: 12, padding: 13, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
+                style={{ background: '#FF5A1F', border: 'none', borderRadius: 12, padding: 13, color: 'var(--text)', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>
                 Add to existing session
               </button>
               <button onClick={() => {
@@ -266,7 +268,7 @@ export default function Training({ session, profile }) {
                 Log new separate session
               </button>
               <button onClick={() => setExistingModal(null)}
-                style={{ background: 'none', border: 'none', color: '#444', fontSize: 13, cursor: 'pointer', padding: 8 }}>
+                style={{ background: 'none', border: 'none', color: 'var(--muted)', fontSize: 13, cursor: 'pointer', padding: 8 }}>
                 Cancel
               </button>
             </div>
@@ -278,7 +280,7 @@ export default function Training({ session, profile }) {
       {scoreModal && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.94)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 24 }}
           onClick={() => setScoreModal(null)}>
-          <div style={{ background: '#0a0a0a', border: `1px solid ${scoreModal.color}25`, borderRadius: 28, padding: 32, width: '100%', maxWidth: 310, textAlign: 'center' }}
+          <div style={{ background: 'var(--card)', border: `1px solid ${scoreModal.color}25`, borderRadius: 28, padding: 32, width: '100%', maxWidth: 310, textAlign: 'center' }}
             onClick={e => e.stopPropagation()}>
             <div style={{ fontSize: 64, marginBottom: 12 }}>{scoreModal.emoji}</div>
             {scoreModal.isRecovery ? (
@@ -289,14 +291,14 @@ export default function Training({ session, profile }) {
             ) : (
               <>
                 <div style={{ fontSize: 76, fontWeight: 700, color: scoreModal.color, lineHeight: 1, marginBottom: 6 }}>{scoreModal.score}</div>
-                <p style={{ fontSize: 11, color: '#333', textTransform: 'uppercase', letterSpacing: '.12em', fontWeight: 600, marginBottom: 20 }}>Training Score</p>
-                <div style={{ background: '#111', borderRadius: 14, padding: '14px 18px', marginBottom: 24 }}>
+                <p style={{ fontSize: 11, color: 'var(--subtle)', textTransform: 'uppercase', letterSpacing: '.12em', fontWeight: 600, marginBottom: 20 }}>Training Score</p>
+                <div style={{ background: 'var(--card2)', borderRadius: 14, padding: '14px 18px', marginBottom: 24 }}>
                   <p style={{ fontSize: 14, color: '#999', lineHeight: 1.7 }}>{scoreModal.msg}</p>
                 </div>
               </>
             )}
             <button onClick={() => setScoreModal(null)}
-              style={{ width: '100%', background: '#FF5A1F', border: 'none', borderRadius: 14, padding: 15, color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
+              style={{ width: '100%', background: '#FF5A1F', border: 'none', borderRadius: 14, padding: 15, color: 'var(--text)', fontSize: 15, fontWeight: 700, cursor: 'pointer' }}>
               {scoreModal.isRecovery ? 'Rest well 🙏' : 'Got it 💪'}
             </button>
           </div>
@@ -305,8 +307,8 @@ export default function Training({ session, profile }) {
 
       {/* ── PAGE HEADER ── */}
       <div style={{ padding: '0 20px 16px' }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-.5px', color: '#fff' }}>Training</h1>
-        <p style={{ fontSize: 13, color: '#444', marginTop: 3 }}>Log your sessions</p>
+        <h1 style={{ fontSize: 26, fontWeight: 700, letterSpacing: '-.5px', color: 'var(--text)' }}>Training</h1>
+        <p style={{ fontSize: 13, color: 'var(--muted)', marginTop: 3 }}>Log your sessions</p>
       </div>
 
       {/* ── WEEK STRIP ── */}
@@ -318,7 +320,7 @@ export default function Training({ session, profile }) {
           const dn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][date.getDay()]
           return (
             <button key={i} onClick={() => setSelectedDay(date)}
-              style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 12px', borderRadius: 16, cursor: 'pointer', minWidth: 46, border: '1px solid', transition: '.2s', background: isSel ? '#FF5A1F' : isT ? '#150800' : '#0d0d0d', borderColor: isSel ? '#FF5A1F' : isT ? '#FF5A1F40' : '#1a1a1a' }}>
+              style={{ flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '10px 12px', borderRadius: 16, cursor: 'pointer', minWidth: 46, border: '1px solid', transition: '.2s', background: isSel ? '#FF5A1F' : isT ? '#150800' : 'var(--bg2)', borderColor: isSel ? '#FF5A1F' : isT ? '#FF5A1F40' : 'var(--border)' }}>
               <span style={{ fontSize: 10, fontWeight: 600, color: isSel ? 'rgba(255,255,255,.6)' : '#333', marginBottom: 4 }}>{dn}</span>
               <span style={{ fontSize: 17, fontWeight: 700, color: isSel ? '#fff' : isT ? '#FF5A1F' : '#fff' }}>{date.getDate()}</span>
               <div style={{ width: 4, height: 4, borderRadius: '50%', marginTop: 5, background: has ? (isSel ? '#fff' : '#FF5A1F') : 'transparent' }} />
@@ -329,11 +331,11 @@ export default function Training({ session, profile }) {
 
       {/* ── DAY ROW ── */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', marginBottom: 14 }}>
-        <p style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>
+        <p style={{ fontSize: 16, fontWeight: 600, color: 'var(--text)' }}>
           {isSameDay(selectedDay, today) ? 'Today' : new Date(selectedDay).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'short' })}
         </p>
         <button onClick={openForm}
-          style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '9px 18px', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
+          style={{ display: 'flex', alignItems: 'center', gap: 6, background: '#FF5A1F', border: 'none', borderRadius: 12, padding: '9px 18px', color: 'var(--text)', fontSize: 13, fontWeight: 700, cursor: 'pointer' }}>
           <Plus size={14} strokeWidth={3} /> Add session
         </button>
       </div>
@@ -348,9 +350,9 @@ export default function Training({ session, profile }) {
 
       {/* ── EMPTY STATE ── */}
       {!loading && daySessions.length === 0 && !showForm && (
-        <div style={{ margin: '0 20px', background: '#0a0a0a', border: '1px solid #141414', borderRadius: 20, padding: '36px 20px', textAlign: 'center' }}>
+        <div style={{ margin: '0 20px', background: 'var(--card)', border: '1px solid #141414', borderRadius: 20, padding: '36px 20px', textAlign: 'center' }}>
           <div style={{ fontSize: 40, marginBottom: 10 }}>🛌</div>
-          <p style={{ color: '#333', fontSize: 14, fontWeight: 500 }}>No sessions logged</p>
+          <p style={{ color: 'var(--subtle)', fontSize: 14, fontWeight: 500 }}>No sessions logged</p>
           <p style={{ color: '#222', fontSize: 12, marginTop: 4 }}>Tap + Add session to get started</p>
         </div>
       )}
@@ -360,7 +362,7 @@ export default function Training({ session, profile }) {
         const meta = CAT_META[s.type] || CAT_META['Mixed']
         const isExp = expandedId === s.id
         return (
-          <div key={s.id} style={{ margin: '0 20px 10px', background: '#0a0a0a', border: `1px solid ${isExp ? meta.color + '30' : '#141414'}`, borderRadius: 18, overflow: 'hidden', transition: '.2s border-color' }}>
+          <div key={s.id} style={{ margin: '0 20px 10px', background: 'var(--card)', border: `1px solid ${isExp ? meta.color + '30' : 'var(--card)'}`, borderRadius: 18, overflow: 'hidden', transition: '.2s border-color' }}>
             <div style={{ padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }}
               onClick={() => setExpandedId(isExp ? null : s.id)}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -368,11 +370,11 @@ export default function Training({ session, profile }) {
                   {meta.icon}
                 </div>
                 <div>
-                  <p style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>{s.type}</p>
+                  <p style={{ fontSize: 15, fontWeight: 700, color: 'var(--text)' }}>{s.type}</p>
                   <div style={{ display: 'flex', gap: 10, marginTop: 3 }}>
-                    {s.duration && <span style={{ fontSize: 11, color: '#444' }}>⏱ {s.duration}m</span>}
-                    {s.rpe && <span style={{ fontSize: 11, color: '#444' }}>RPE {s.rpe}/10</span>}
-                    <span style={{ fontSize: 11, color: '#444' }}>{(s.exercises || []).length} exercises</span>
+                    {s.duration && <span style={{ fontSize: 11, color: 'var(--muted)' }}>⏱ {s.duration}m</span>}
+                    {s.rpe && <span style={{ fontSize: 11, color: 'var(--muted)' }}>RPE {s.rpe}/10</span>}
+                    <span style={{ fontSize: 11, color: 'var(--muted)' }}>{(s.exercises || []).length} exercises</span>
                   </div>
                 </div>
               </div>
@@ -381,22 +383,22 @@ export default function Training({ session, profile }) {
                   style={{ width: 32, height: 32, borderRadius: 9, background: '#150000', border: '1px solid #EF444415', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
                   <X size={13} color="#EF4444" />
                 </button>
-                <div style={{ color: '#2a2a2a' }}>
+                <div style={{ color: 'var(--border2)' }}>
                   {isExp ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </div>
               </div>
             </div>
             {isExp && (
               <div style={{ borderTop: '1px solid #111', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {s.notes && <p style={{ fontSize: 13, color: '#555', fontStyle: 'italic', paddingBottom: 8, borderBottom: '1px solid #111' }}>"{s.notes}"</p>}
+                {s.notes && <p style={{ fontSize: 13, color: 'var(--muted)', fontStyle: 'italic', paddingBottom: 8, borderBottom: '1px solid #111' }}>"{s.notes}"</p>}
                 {(s.exercises || []).map((ex, i) => (
-                  <div key={i} style={{ background: '#0d0d0d', borderRadius: 12, padding: '10px 14px' }}>
+                  <div key={i} style={{ background: 'var(--bg2)', borderRadius: 12, padding: '10px 14px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
                       <p style={{ fontSize: 13, fontWeight: 600, color: '#e0e0e0' }}>{ex.name}</p>
-                      <span style={{ fontSize: 10, color: '#333', background: '#141414', padding: '2px 8px', borderRadius: 6 }}>{ex.sub || ex.cat}</span>
+                      <span style={{ fontSize: 10, color: 'var(--subtle)', background: 'var(--card)', padding: '2px 8px', borderRadius: 6 }}>{ex.sub || ex.cat}</span>
                     </div>
                     {ex.fieldType === 'strength' && (ex.sets || []).map((set, si) => (
-                      <p key={si} style={{ fontSize: 12, color: '#555', marginTop: 2 }}>
+                      <p key={si} style={{ fontSize: 12, color: 'var(--muted)', marginTop: 2 }}>
                         Set {si + 1} · {set.reps || '—'} reps {set.weight ? `@ ${set.weight}kg` : ''}
                       </p>
                     ))}
@@ -420,21 +422,21 @@ export default function Training({ session, profile }) {
 
       {/* ── ADD SESSION FORM ── */}
       {showForm && (
-        <div style={{ margin: '0 20px 16px', background: '#0a0a0a', border: '1px solid #1a1a1a', borderRadius: 22, overflow: 'hidden' }}>
+        <div style={{ margin: '0 20px 16px', background: 'var(--card)', border: '1px solid #1a1a1a', borderRadius: 22, overflow: 'hidden' }}>
 
           {/* Sticky header */}
-          <div style={{ padding: '14px 16px', background: '#0a0a0a', borderBottom: '1px solid #111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 20 }}>
+          <div style={{ padding: '14px 16px', background: 'var(--card)', borderBottom: '1px solid #111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 20 }}>
             <div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: '#fff' }}>
+              <p style={{ fontSize: 16, fontWeight: 700, color: 'var(--text)' }}>
                 {step === 'search' ? 'Add Exercises' : 'Log Your Sets'}
               </p>
               {detectedType
                 ? <p style={{ fontSize: 11, color: typeMeta?.color, marginTop: 2 }}>{typeMeta?.icon} {detectedType} · {exercises.length} exercise{exercises.length !== 1 ? 's' : ''}</p>
-                : <p style={{ fontSize: 11, color: '#2a2a2a', marginTop: 2 }}>Search or pick a category</p>
+                : <p style={{ fontSize: 11, color: 'var(--border2)', marginTop: 2 }}>Search or pick a category</p>
               }
             </div>
             <button onClick={() => { setShowForm(false); reset() }}
-              style={{ width: 32, height: 32, borderRadius: 10, background: '#111', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+              style={{ width: 32, height: 32, borderRadius: 10, background: 'var(--card2)', border: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
               <X size={15} color="#444" />
             </button>
           </div>
@@ -486,7 +488,7 @@ export default function Training({ session, profile }) {
                 {!query && !activeCat && (
                   <div style={{ textAlign: 'center', padding: '24px 0' }}>
                     <div style={{ fontSize: 36, marginBottom: 10 }}>🔍</div>
-                    <p style={{ color: '#333', fontSize: 14 }}>Type to search exercises</p>
+                    <p style={{ color: 'var(--subtle)', fontSize: 14 }}>Type to search exercises</p>
                     <p style={{ color: '#222', fontSize: 12, marginTop: 4 }}>or tap a category above</p>
                   </div>
                 )}
@@ -496,7 +498,7 @@ export default function Training({ session, profile }) {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {filtered.length === 0 ? (
                       <div style={{ padding: '12px 0' }}>
-                        <p style={{ color: '#333', fontSize: 13, marginBottom: 10 }}>No results — add "{query}" as custom</p>
+                        <p style={{ color: 'var(--subtle)', fontSize: 13, marginBottom: 10 }}>No results — add "{query}" as custom</p>
                         {!showCustomInput && (
                           <button onClick={() => { setCustomName(query); setShowCustomInput(true) }}
                             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '9px 14px', borderRadius: 12, border: '1px dashed #FF5A1F40', background: 'transparent', color: '#FF5A1F', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
@@ -509,12 +511,12 @@ export default function Training({ session, profile }) {
                       const m = CAT_META[ex.cat] || CAT_META['Custom']
                       return (
                         <button key={ex.name} onClick={() => tapExercise(ex)}
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 12, border: `1px solid ${isAdded ? m.color + '30' : '#141414'}`, background: isAdded ? m.color + '10' : '#0d0d0d', cursor: 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box' }}>
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 14px', borderRadius: 12, border: `1px solid ${isAdded ? m.color + '30' : 'var(--card)'}`, background: isAdded ? m.color + '10' : 'var(--bg2)', cursor: 'pointer', textAlign: 'left', width: '100%', boxSizing: 'border-box' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                             <span style={{ fontSize: 18, flexShrink: 0 }}>{m.icon}</span>
                             <div style={{ minWidth: 0 }}>
                               <p style={{ fontSize: 14, fontWeight: isAdded ? 600 : 500, color: isAdded ? m.color : '#ddd', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{ex.name}</p>
-                              <p style={{ fontSize: 11, color: '#333', marginTop: 1 }}>{ex.sub} · {ex.cat}</p>
+                              <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 1 }}>{ex.sub} · {ex.cat}</p>
                             </div>
                           </div>
                           <div style={{ flexShrink: 0, marginLeft: 8 }}>
@@ -534,18 +536,18 @@ export default function Training({ session, profile }) {
 
                 {/* Custom input */}
                 {showCustomInput && (
-                  <div style={{ display: 'flex', gap: 8, padding: 12, background: '#0d0d0d', borderRadius: 14, border: '1px solid #FF5A1F20' }}>
+                  <div style={{ display: 'flex', gap: 8, padding: 12, background: 'var(--bg2)', borderRadius: 14, border: '1px solid #FF5A1F20' }}>
                     <input placeholder="Custom exercise name..." value={customName}
                       onChange={e => setCustomName(e.target.value)}
                       onKeyDown={e => e.key === 'Enter' && saveCustom()}
                       autoFocus
                       style={{ ...inp, flex: 1 }} />
                     <button onClick={saveCustom} disabled={!customName.trim()}
-                      style={{ background: '#FF5A1F', border: 'none', borderRadius: 10, padding: '0 16px', color: '#fff', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: !customName.trim() ? 0.4 : 1 }}>
+                      style={{ background: '#FF5A1F', border: 'none', borderRadius: 10, padding: '0 16px', color: 'var(--text)', fontSize: 13, fontWeight: 700, cursor: 'pointer', opacity: !customName.trim() ? 0.4 : 1 }}>
                       Add
                     </button>
                     <button onClick={() => { setShowCustomInput(false); setCustomName('') }}
-                      style={{ background: '#141414', border: '1px solid #1e1e1e', borderRadius: 10, padding: '0 10px', color: '#444', cursor: 'pointer' }}>
+                      style={{ background: 'var(--card)', border: '1px solid #1e1e1e', borderRadius: 10, padding: '0 10px', color: 'var(--muted)', cursor: 'pointer' }}>
                       <X size={14} />
                     </button>
                   </div>
@@ -553,7 +555,7 @@ export default function Training({ session, profile }) {
               </div>
 
               {/* STICKY BOTTOM — always visible */}
-              <div style={{ padding: '12px 16px', borderTop: '1px solid #111', background: '#0a0a0a' }}>
+              <div style={{ padding: '12px 16px', borderTop: '1px solid #111', background: 'var(--card)' }}>
 
                 {/* Added chips */}
                 {exercises.length > 0 && (
@@ -606,7 +608,7 @@ export default function Training({ session, profile }) {
 
               {/* Back button */}
               <button onClick={() => setStep('search')}
-                style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: '#555', fontSize: 13, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
+                style={{ display: 'flex', alignItems: 'center', gap: 6, background: 'transparent', border: 'none', color: 'var(--muted)', fontSize: 13, cursor: 'pointer', padding: 0, fontFamily: 'inherit' }}>
                 <ArrowLeft size={14} /> Add more exercises
               </button>
 
@@ -614,13 +616,13 @@ export default function Training({ session, profile }) {
               {exercises.map(ex => {
                 const m = CAT_META[ex.cat] || CAT_META['Custom']
                 return (
-                  <div key={ex.id} style={{ background: '#0d0d0d', border: `1px solid ${m.color}15`, borderRadius: 16, padding: 14 }}>
+                  <div key={ex.id} style={{ background: 'var(--bg2)', border: `1px solid ${m.color}15`, borderRadius: 16, padding: 14 }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ fontSize: 20 }}>{m.icon}</span>
                         <div>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>{ex.name}</p>
-                          <p style={{ fontSize: 11, color: '#333', marginTop: 1 }}>{ex.sub} · {ex.cat}</p>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</p>
+                          <p style={{ fontSize: 11, color: 'var(--subtle)', marginTop: 1 }}>{ex.sub} · {ex.cat}</p>
                         </div>
                       </div>
                       <button onClick={() => setExercises(p => p.filter(e => e.id !== ex.id))}
@@ -776,13 +778,13 @@ export default function Training({ session, profile }) {
               {/* Session meta */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                 <div>
-                  <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration (min)</p>
+                  <p style={{ fontSize: 9, color: 'var(--border2)', fontWeight: 700, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' }}>Duration (min)</p>
                   <input type="number" placeholder="60" value={duration}
                     onChange={e => setDuration(e.target.value)}
                     style={{ ...inp, width: '100%', boxSizing: 'border-box' }} />
                 </div>
                 <div>
-                  <p style={{ fontSize: 9, color: '#2a2a2a', fontWeight: 700, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' }}>Effort · {rpe}/10</p>
+                  <p style={{ fontSize: 9, color: 'var(--border2)', fontWeight: 700, marginBottom: 6, textTransform: 'uppercase', letterSpacing: '.06em' }}>Effort · {rpe}/10</p>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 10 }}>
                     <input type="range" min="1" max="10" value={rpe}
                       onChange={e => setRpe(Number(e.target.value))}
@@ -798,7 +800,7 @@ export default function Training({ session, profile }) {
 
               {/* Save Session button */}
               <button onClick={save} disabled={saving}
-                style={{ width: '100%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 16, color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,90,31,.3)', letterSpacing: '.02em' }}>
+                style={{ width: '100%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 16, color: 'var(--text)', fontSize: 15, fontWeight: 700, cursor: 'pointer', boxShadow: '0 4px 20px rgba(255,90,31,.3)', letterSpacing: '.02em' }}>
                 {saving ? 'Saving...' : `Save Session · ${exercises.length} exercise${exercises.length > 1 ? 's' : ''}`}
               </button>
 

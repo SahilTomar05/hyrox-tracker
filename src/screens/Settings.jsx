@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 import { useTheme } from '../context/ThemeContext'
 import { Moon, Sun, LogOut, Trash2, Bell, Shield, Info } from 'lucide-react'
 
-export default function Settings({ profile, onReset }) {
+export default function Settings({ profile, onReset, onToggleCoach }) {
   const { isDark, toggleTheme } = useTheme()
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
@@ -146,6 +146,22 @@ export default function Settings({ profile, onReset }) {
             <p style={c.sub}>v1.0.0 · pace4.in</p>
           </div>
         </div>
+        {/* Switch to coach mode */}
+        {onToggleCoach && (
+          <div style={c.row}>
+            <div style={{ ...c.icon, background: '#FF5A1F15' }}>
+              <span style={{ fontSize: 18 }}>🏅</span>
+            </div>
+            <div style={{ flex: 1 }}>
+              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>Switch to Coach Mode</p>
+              <p style={c.sub}>Manage your athletes</p>
+            </div>
+            <button onClick={onToggleCoach}
+              style={{ background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 10, padding: '7px 14px', color: '#fff', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+              Switch
+            </button>
+          </div>
+        )}
         <div style={c.row}>
           <div style={{ ...c.icon, background: '#150000' }}><LogOut size={18} color="#EF4444" /></div>
           <button onClick={onReset}

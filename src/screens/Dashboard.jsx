@@ -25,21 +25,14 @@ function calcCaloriesBurned(sessions, profile) {
   const todaySessions = sessions.filter(s =>
     new Date(s.date).toDateString() === today
   )
+
+  // Only count calories if there are actual logged sessions today
+  if (todaySessions.length === 0) return 0
+
   let burned = 0
-  // BMR base (rough estimate for the day)
-  const age = Number(profile?.age) || 25
-  const height = Number(profile?.height) || 175
-  const gender = profile?.gender || 'Male'
-  let bmr = gender === 'Female'
-    ? 10 * weight + 6.25 * height - 5 * age - 161
-    : 10 * weight + 6.25 * height - 5 * age + 5
-  // TDEE base (sedentary = 1.2)
-  burned += Math.round(bmr * 1.2 / 24 * 14) // 14 waking hours base
-  // Add workout calories
   todaySessions.forEach(s => {
     const dur = Number(s.duration) || 45
     const rpe = Number(s.rpe) || 6
-    // MET based on session type and RPE
     const met = s.type === 'Strength' ? 3.5 + rpe * 0.3
       : s.type === 'Conditioning' ? 6 + rpe * 0.5
       : s.type === 'Skills' ? 4 + rpe * 0.2
@@ -47,6 +40,7 @@ function calcCaloriesBurned(sessions, profile) {
       : 4 + rpe * 0.3
     burned += Math.round(met * weight * (dur / 60))
   })
+
   return burned
 }
 

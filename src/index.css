@@ -25,17 +25,23 @@
 }
 
 :root.light {
-  --bg: #F2F2F7;
-  --bg2: #E5E5EA;
+  --bg: #ffffff;
+  --bg2: #E8E8ED;
   --card: #FFFFFF;
-  --card2: #F2F2F7;
-  --border: #E0E0E0;
-  --border2: #CCCCCC;
+  --card2: #F0F0F5;
+  --border: #D8D8DD;
+  --border2: #C8C8CD;
   --text: #0A0A0A;
-  --text2: #333333;
-  --muted: #888888;
-  --subtle: #BBBBBB;
-  --input-bg: #F2F2F7;
+  --text2: #1A1A1A;
+  --muted: #444444;
+  --subtle: #666666;
+  --input-bg: #F5F5FA;
+  --orange: #FF5A1F;
+  --orange2: #FF8C42;
+  --green: #22C55E;
+  --blue: #3B82F6;
+  --purple: #A855F7;
+  --red: #EF4444;
 }
 
 body {

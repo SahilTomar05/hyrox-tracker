@@ -1,6 +1,76 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
-import { ChevronRight, Scale, Target, Trophy, RotateCcw } from 'lucide-react'
+import { ChevronRight, RotateCcw } from 'lucide-react'
+
+export default function Profile({ profile, onUpdate, session }) {
+const [coachCodeInput, setCoachCodeInput] = useState(() => {
+  return localStorage.getItem('pending_coach_code') || ''
+})
+const [connectingCoach, setConnectingCoach] = useState(false)
+const [coachMsg, setCoachMsg] = useState('')
+const [coachConnected, setCoachConnected] = useState(false)
+
+// Check if already connected to a coach
+useEffect(() => {
+  checkCoachConnection()
+}, [])
+
+async function checkCoachConnection() {
+  const { data } = await supabase
+    .from('coach_clients')
+    .select('*')
+    .eq('client_id', session.user.id)
+    .single()
+  if (data) setCoachConnected(true)
+}
+
+async function connectToCoach() {
+  setConnectingCoach(true)
+  setCoachMsg('')
+
+  try {
+    // Use maybeSingle() instead of single() to avoid 406
+    const { data: coaches, error: searchError } = await supabase
+      .from('profiles')
+      .select('id, name, coach_code')
+      .ilike('coach_code', coachCodeInput.trim())
+      .limit(1)
+
+    console.log('Coach search result:', coaches, searchError)
+
+    if (searchError || !coaches || coaches.length === 0) {
+      setCoachMsg('❌ Coach not found. Check the code.')
+      setConnectingCoach(false)
+      return
+    }
+
+    const coachProfile = coaches[0]
+
+    const { error } = await supabase.from('coach_clients').insert({
+      coach_id: coachProfile.id,
+      client_id: session.user.id,
+    })
+
+    if (error) {
+      setCoachMsg(error.code === '23505' ? '⚠️ Already connected to this coach.' : '❌ Failed to connect.')
+    } else {
+      setCoachMsg(`✅ Connected to ${coachProfile.name}!`)
+      setCoachConnected(true)
+      localStorage.removeItem('pending_coach_code')
+    }
+  } catch (e) {
+    console.error(e)
+    setCoachMsg('❌ Something went wrong. Try again.')
+  }
+
+  setConnectingCoach(false)
+}
+
+async function disconnectCoach() {
+  await supabase.from('coach_clients').delete().eq('client_id', session.user.id)
+  setCoachConnected(false)
+  setCoachMsg('')
+}
 
 const SPORTS = [
   { id: 'hyrox', icon: '⚡', label: 'Hyrox' },
@@ -17,7 +87,6 @@ const SPORTS = [
   { id: 'custom', icon: '🏄', label: 'Custom' },
 ]
 
-export default function Profile({ profile, onUpdate, session }) {
   const [activeSection, setActiveSection] = useState(null)
   const [form, setForm] = useState({
     name: profile?.name || '',
@@ -255,6 +324,51 @@ export default function Profile({ profile, onUpdate, session }) {
           {saving ? 'Saving...' : saved ? '✓ Saved!' : 'Save changes'}
         </button>
       </div>
+
+      {/* Connect to coach */}
+      {profile?.role !== 'coach' && (
+        <div style={{ padding: '0 16px 12px' }}>
+          <div style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, overflow: 'hidden' }}>
+            <button onClick={() => setActiveSection(activeSection === 'coach' ? null : 'coach')}
+              style={{ width: '100%', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: 12, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+              <span style={{ fontSize: 20 }}>🏅</span>
+              <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: 'var(--text)' }}>Connect to Coach</span>
+              <ChevronRight size={16} color="var(--muted)" style={{ transform: activeSection === 'coach' ? 'rotate(90deg)' : 'none', transition: '.2s' }} />
+            </button>
+            {activeSection === 'coach' && (
+              <div style={{ borderTop: '1px solid var(--border)', padding: 16 }}>
+                {coachConnected ? (
+                  <div style={{ textAlign: 'center', padding: '8px 0' }}>
+                    <p style={{ fontSize: 14, color: '#22C55E', fontWeight: 600 }}>✅ Connected to your coach</p>
+                    <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>Your coach can view your progress and assign workouts</p>
+                    <button onClick={disconnectCoach}
+                      style={{ marginTop: 12, background: 'transparent', border: '1px solid #EF444430', borderRadius: 10, padding: '8px 16px', color: '#EF4444', fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                      Disconnect coach
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <p style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 10, lineHeight: 1.6 }}>
+                      Enter your coach's code to connect. They can then view your progress and assign workouts.
+                    </p>
+                    <input
+                      placeholder="Enter coach code (e.g. RAHUL-123)"
+                      value={coachCodeInput}
+                      onChange={e => setCoachCodeInput(e.target.value.toUpperCase())}
+                      style={{ ...c.inp, marginBottom: 8, letterSpacing: '.08em', fontWeight: 600 }}
+                    />
+                    {coachMsg && <p style={{ fontSize: 13, color: coachMsg.includes('✅') ? '#22C55E' : '#EF4444', marginBottom: 8 }}>{coachMsg}</p>}
+                    <button onClick={connectToCoach} disabled={connectingCoach || !coachCodeInput.trim()}
+                      style={{ width: '100%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 12, padding: 12, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', opacity: connectingCoach || !coachCodeInput.trim() ? 0.6 : 1 }}>
+                      {connectingCoach ? 'Connecting...' : 'Connect to Coach'}
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Reset data */}
       <div style={{ padding: '0 16px' }}>
