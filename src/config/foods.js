@@ -1,1250 +1,7787 @@
-// ─── PACE4 FOOD DATABASE ─────────────────────────────────────────
-// Edit this file to add, remove or update foods
-// Format: { name, cal, protein, carbs, fat }
-// All values are per standard serving
-
+// PACE4 FOOD DATABASE
 export const FOOD_DB = [
-  { name: 'Aloo Sabzi (1 bowl)', cal: 150, protein: 3, carbs: 28, fat: 5 },
-  { name: 'Bhindi Sabzi (1 bowl)', cal: 120, protein: 3, carbs: 10, fat: 7 },
-  { name: 'Baingan Bharta (1 bowl)', cal: 180, protein: 4, carbs: 12, fat: 12 },
-  { name: 'Cabbage Sabzi (1 bowl)', cal: 100, protein: 3, carbs: 12, fat: 4 },
-  { name: 'Gobi Sabzi (1 bowl)', cal: 130, protein: 4, carbs: 14, fat: 6 },
-  { name: 'Tinda Sabzi (1 bowl)', cal: 110, protein: 2, carbs: 10, fat: 5 },
-  { name: 'Lauki Sabzi (1 bowl)', cal: 90, protein: 2, carbs: 9, fat: 3 },
-  { name: 'Karela Sabzi (1 bowl)', cal: 95, protein: 3, carbs: 8, fat: 4 },
-  { name: 'Spinach Sabzi (1 bowl)', cal: 80, protein: 4, carbs: 7, fat: 2 },
-  { name: 'Methi Sabzi (1 bowl)', cal: 100, protein: 3, carbs: 9, fat: 3 },
-  { name: 'Mixed Vegetable Curry (1 bowl)', cal: 160, protein: 5, carbs: 18, fat: 6 },
-  { name: 'Green Beans Sabzi (1 bowl)', cal: 110, protein: 3, carbs: 12, fat: 4 },
-  { name: 'Carrot Sabzi (1 bowl)', cal: 120, protein: 2, carbs: 14, fat: 5 },
-  { name: 'Peas Curry (1 bowl)', cal: 140, protein: 5, carbs: 18, fat: 4 },
-  { name: 'Corn Curry (1 bowl)', cal: 150, protein: 4, carbs: 20, fat: 5 },
-  { name: 'Drumstick Curry (1 bowl)', cal: 130, protein: 4, carbs: 12, fat: 5 },
-  { name: 'Pumpkin Sabzi (1 bowl)', cal: 100, protein: 2, carbs: 10, fat: 3 },
-  { name: 'Arbi Sabzi (1 bowl)', cal: 160, protein: 3, carbs: 20, fat: 6 },
-  { name: 'Matar Paneer (1 bowl)', cal: 280, protein: 12, carbs: 18, fat: 18 },
-  { name: 'Chana Dal (1 bowl)', cal: 180, protein: 10, carbs: 25, fat: 4 },
-  { name: 'Moong Dal (1 bowl)', cal: 160, protein: 12, carbs: 22, fat: 2 },
-  { name: 'Masoor Dal (1 bowl)', cal: 170, protein: 11, carbs: 24, fat: 3 },
-  { name: 'Urad Dal (1 bowl)', cal: 190, protein: 12, carbs: 26, fat: 4 },
-  { name: 'Tur Dal (1 bowl)', cal: 180, protein: 11, carbs: 25, fat: 3 },
-  { name: 'Rajma Curry (1 bowl)', cal: 220, protein: 14, carbs: 38, fat: 2 },
-  { name: 'Kala Chana Curry (1 bowl)', cal: 200, protein: 12, carbs: 30, fat: 3 },
-  { name: 'Kabuli Chana Curry (1 bowl)', cal: 210, protein: 11, carbs: 35, fat: 4 },
-  { name: 'Soybean Curry (1 bowl)', cal: 240, protein: 18, carbs: 20, fat: 8 },
-  { name: 'Whole Wheat Flour (100g)', cal: 364, protein: 12, carbs: 76, fat: 2 },
-  { name: 'Rice Raw (100g)', cal: 360, protein: 7, carbs: 80, fat: 1 },
-  { name: 'Basmati Rice (100g)', cal: 365, protein: 8, carbs: 78, fat: 1 },
-  { name: 'Maida (100g)', cal: 364, protein: 10, carbs: 76, fat: 1 },
-  { name: 'Ragi Flour (100g)', cal: 336, protein: 7, carbs: 72, fat: 2 },
-  { name: 'Jowar Flour (100g)', cal: 349, protein: 10, carbs: 72, fat: 3 },
-  { name: 'Bajra Flour (100g)', cal: 361, protein: 11, carbs: 73, fat: 5 },
-  { name: 'Besan (100g)', cal: 387, protein: 22, carbs: 58, fat: 6 },
-  { name: 'Mustard Oil (1 tbsp)', cal: 120, protein: 0, carbs: 0, fat: 14 },
-  { name: 'Sunflower Oil (1 tbsp)', cal: 120, protein: 0, carbs: 0, fat: 14 },
-  { name: 'Groundnut Oil (1 tbsp)', cal: 120, protein: 0, carbs: 0, fat: 14 },
-  { name: 'Ghee (1 tbsp)', cal: 120, protein: 0, carbs: 0, fat: 14 },
-  { name: 'Butter (1 tbsp)', cal: 100, protein: 0, carbs: 0, fat: 11 },
-  { name: 'Salt (1 tsp)', cal: 0, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Sugar (1 tsp)', cal: 16, protein: 0, carbs: 4, fat: 0 },
-  { name: 'Jaggery (20g)', cal: 80, protein: 0, carbs: 20, fat: 0 },
-  { name: 'Pickle (1 tbsp)', cal: 40, protein: 1, carbs: 3, fat: 3 },
-  { name: 'Papad (1 piece)', cal: 60, protein: 2, carbs: 8, fat: 2 },
-  { name: 'Onion (1 medium)', cal: 45, protein: 1, carbs: 11, fat: 0 },
-  { name: 'Tomato (1 medium)', cal: 25, protein: 1, carbs: 5, fat: 0 },
-  { name: 'Potato (1 medium)', cal: 110, protein: 2, carbs: 26, fat: 0 },
-  { name: 'Carrot (1 medium)', cal: 40, protein: 1, carbs: 10, fat: 0 },
-  { name: 'Cucumber (1 medium)', cal: 15, protein: 1, carbs: 3, fat: 0 },
-  { name: 'Radish (1 medium)', cal: 20, protein: 1, carbs: 4, fat: 0 },
-  { name: 'Spinach (100g raw)', cal: 23, protein: 3, carbs: 4, fat: 0 },
-  { name: 'Fenugreek Leaves (100g raw)', cal: 49, protein: 4, carbs: 6, fat: 1 },
-  { name: 'Coriander Leaves (100g raw)', cal: 30, protein: 3, carbs: 6, fat: 1 },
-  { name: 'Mint Leaves (100g raw)', cal: 44, protein: 4, carbs: 8, fat: 1 },
-  { name: 'Green Chillies (100g)', cal: 40, protein: 2, carbs: 9, fat: 0 },
-  { name: 'Garlic (10g)', cal: 15, protein: 1, carbs: 3, fat: 0 },
-  { name: 'Ginger (10g)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Curry Leaves (10g)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Turmeric Powder (1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Red Chilli Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Cumin Seeds (1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Black Pepper (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Cloves (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Cardamom (1 pod)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Cinnamon (1 stick)', cal: 6, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Bay Leaf (1 leaf)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Mustard Seeds (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Fenugreek Seeds (1 tsp)', cal: 12, protein: 1, carbs: 2, fat: 0 },
-  { name: 'Sesame Seeds (1 tbsp)', cal: 52, protein: 2, carbs: 2, fat: 4 },
-  { name: 'Nigella Seeds (1 tsp)', cal: 10, protein: 0, carbs: 1, fat: 1 },
-  { name: 'Coconut (100g grated)', cal: 354, protein: 3, carbs: 15, fat: 33 },
-  { name: 'Dry Coconut (50g)', cal: 200, protein: 2, carbs: 8, fat: 18 },
-  { name: 'Coconut Oil (1 tbsp)', cal: 120, protein: 0, carbs: 0, fat: 14 },
-  { name: 'Tamarind (20g pulp)', cal: 50, protein: 1, carbs: 12, fat: 0 },
-  { name: 'Green Gram Sprouts (1 bowl)', cal: 100, protein: 7, carbs: 18, fat: 1 },
-  { name: 'Chana Sprouts (1 bowl)', cal: 120, protein: 8, carbs: 20, fat: 2 },
-  { name: 'Soybean Sprouts (1 bowl)', cal: 140, protein: 10, carbs: 18, fat: 3 },
-  { name: 'Methi Seeds (1 tsp)', cal: 12, protein: 1, carbs: 2, fat: 0 },
-  { name: 'Dry Red Chillies (2 pieces)', cal: 16, protein: 0, carbs: 3, fat: 0 },
-  { name: 'Green Peas (100g raw)', cal: 81, protein: 5, carbs: 14, fat: 0 },
-  { name: 'Cauliflower (100g raw)', cal: 25, protein: 2, carbs: 5, fat: 0 },
-  { name: 'Cabbage (100g raw)', cal: 25, protein: 1, carbs: 6, fat: 0 },
-  { name: 'Bottle Gourd (100g raw)', cal: 14, protein: 1, carbs: 3, fat: 0 },
-  { name: 'Bitter Gourd (100g raw)', cal: 17, protein: 1, carbs: 3, fat: 0 },
-  { name: 'Okra (100g raw)', cal: 33, protein: 2, carbs: 7, fat: 0 },
-  { name: 'Brinjal (100g raw)', cal: 25, protein: 1, carbs: 6, fat: 0 },
-  { name: 'Pumpkin (100g raw)', cal: 26, protein: 1, carbs: 7, fat: 0 },
-  { name: 'Radish Leaves (100g raw)', cal: 20, protein: 2, carbs: 4, fat: 0 },
-  { name: 'Turnip (100g raw)', cal: 28, protein: 1, carbs: 6, fat: 0 },
-  { name: 'Beetroot (100g raw)', cal: 43, protein: 2, carbs: 10, fat: 0 },
-  { name: 'Sweet Potato (100g raw)', cal: 86, protein: 2, carbs: 20, fat: 0 },
-  { name: 'Yam (100g raw)', cal: 118, protein: 2, carbs: 27, fat: 0 },
-  { name: 'Green Capsicum (100g raw)', cal: 20, protein: 1, carbs: 4, fat: 0 },
-  { name: 'Red Capsicum (100g raw)', cal: 31, protein: 1, carbs: 6, fat: 0 },
-  { name: 'Mushroom (100g raw)', cal: 22, protein: 3, carbs: 3, fat: 0 },
-  { name: 'Spring Onion (100g raw)', cal: 32, protein: 2, carbs: 7, fat: 0 },
-  { name: 'Coriander Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Cumin Powder (1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Garam Masala (1 tsp)', cal: 10, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Sambar Powder (1 tsp)', cal: 12, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Rasam Powder (1 tsp)', cal: 12, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Chaat Masala (1 tsp)', cal: 10, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Pav Bhaji Masala (1 tsp)', cal: 12, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Tea Leaves (1 tsp)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Coffee Powder (1 tsp)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Dry Fruits Mix (30g)', cal: 150, protein: 5, carbs: 12, fat: 10 },
-  { name: 'Raisins (30g)', cal: 90, protein: 1, carbs: 22, fat: 0 },
-  { name: 'Dates (30g)', cal: 80, protein: 1, carbs: 20, fat: 0 },
-  { name: 'Walnuts (30g)', cal: 200, protein: 5, carbs: 5, fat: 18 },
-  { name: 'Pistachios (30g)', cal: 160, protein: 6, carbs: 8, fat: 13 },
-  { name: 'Hazelnuts (30g)', cal: 180, protein: 5, carbs: 6, fat: 15 },
-  { name: 'Fox Nuts / Makhana (30g)', cal: 100, protein: 4, carbs: 18, fat: 1 },
-  { name: 'Dry Coconut Chutney (1 tbsp)', cal: 40, protein: 1, carbs: 2, fat: 3 },
-  { name: 'Green Chutney (1 tbsp)', cal: 20, protein: 0, carbs: 2, fat: 1 },
-  { name: 'Tamarind Chutney (1 tbsp)', cal: 30, protein: 0, carbs: 6, fat: 0 },
-  { name: 'Coconut Chutney (1 tbsp)', cal: 50, protein: 1, carbs: 2, fat: 4 },
-  { name: 'Peanut Chutney (1 tbsp)', cal: 60, protein: 2, carbs: 2, fat: 5 },
-  { name: 'Sesame Chutney (1 tbsp)', cal: 55, protein: 2, carbs: 2, fat: 4 },
-  { name: 'Tomato Chutney (1 tbsp)', cal: 25, protein: 1, carbs: 3, fat: 1 },
-  { name: 'Onion Chutney (1 tbsp)', cal: 25, protein: 1, carbs: 3, fat: 1 },
-  { name: 'Garlic Chutney (1 tbsp)', cal: 30, protein: 1, carbs: 2, fat: 2 },
-  { name: 'Pickled Lemon (1 piece)', cal: 20, protein: 0, carbs: 4, fat: 0 },
-  { name: 'Pickled Mango (1 piece)', cal: 25, protein: 0, carbs: 5, fat: 0 },
-  { name: 'Pickled Chilli (1 piece)', cal: 15, protein: 0, carbs: 3, fat: 0 },
-  { name: 'Pickled Garlic (1 piece)', cal: 10, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Mango Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Asafoetida / Hing (1 pinch)', cal: 1, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Rock Salt (1 tsp)', cal: 0, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Black Salt (1 tsp)', cal: 0, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Paneer Cubes (50g)', cal: 130, protein: 9, carbs: 2, fat: 10 },
-  { name: 'Tofu Cubes (50g)', cal: 40, protein: 5, carbs: 1, fat: 2 },
-  { name: 'Curd (100g)', cal: 60, protein: 4, carbs: 5, fat: 3 },
-  { name: 'Buttermilk (1 glass)', cal: 40, protein: 2, carbs: 5, fat: 1 },
-  { name: 'Milk (1 glass)', cal: 120, protein: 6, carbs: 12, fat: 6 },
-  { name: 'Paneer Bhurji (1 bowl)', cal: 280, protein: 18, carbs: 8, fat: 20 },
-  { name: 'Vegetable Khichdi (1 bowl)', cal: 200, protein: 8, carbs: 35, fat: 4 },
-  { name: 'Plain Khichdi (1 bowl)', cal: 180, protein: 7, carbs: 32, fat: 3 },
-  { name: 'Curd Rice (1 bowl)', cal: 220, protein: 7, carbs: 35, fat: 6 },
-  { name: 'Lemon Rice (1 bowl)', cal: 230, protein: 6, carbs: 38, fat: 7 },
-  { name: 'Tamarind Rice (1 bowl)', cal: 240, protein: 6, carbs: 40, fat: 7 },
-  { name: 'Vegetable Pulao (1 bowl)', cal: 250, protein: 8, carbs: 42, fat: 6 },
-  { name: 'Plain Pulao (1 bowl)', cal: 230, protein: 7, carbs: 40, fat: 5 },
-  { name: 'Jeera Rice (1 bowl)', cal: 220, protein: 6, carbs: 38, fat: 5 },
-  { name: 'Steamed Rice (1 bowl)', cal: 200, protein: 4, carbs: 44, fat: 0 },
-  { name: 'Brown Rice (1 bowl)', cal: 215, protein: 5, carbs: 45, fat: 1 },
-  { name: 'Broken Wheat / Dalia (1 bowl)', cal: 180, protein: 6, carbs: 35, fat: 2 },
-  { name: 'Vegetable Upma (1 bowl)', cal: 220, protein: 5, carbs: 38, fat: 6 },
-  { name: 'Vegetable Poha (1 bowl)', cal: 250, protein: 5, carbs: 48, fat: 5 },
-  { name: 'Vegetable Idli (2 pieces)', cal: 140, protein: 5, carbs: 28, fat: 1 },
-  { name: 'Vegetable Dosa (1 piece)', cal: 180, protein: 5, carbs: 32, fat: 5 },
-  { name: 'Vegetable Uttapam (1 piece)', cal: 200, protein: 6, carbs: 34, fat: 6 },
-  { name: 'Vegetable Vada (2 pieces)', cal: 250, protein: 7, carbs: 28, fat: 12 },
-  { name: 'Vegetable Sambar (1 bowl)', cal: 110, protein: 5, carbs: 18, fat: 2 },
-  { name: 'Vegetable Rasam (1 bowl)', cal: 90, protein: 3, carbs: 15, fat: 2 },
-  { name: 'Vegetable Curry (1 bowl)', cal: 160, protein: 5, carbs: 18, fat: 6 },
-  { name: 'Vegetable Stew (1 bowl)', cal: 150, protein: 4, carbs: 16, fat: 6 },
-  { name: 'Vegetable Soup (1 bowl)', cal: 100, protein: 3, carbs: 12, fat: 3 },
-  { name: 'Tomato Soup (1 bowl)', cal: 90, protein: 2, carbs: 14, fat: 2 },
-  { name: 'Sweet Corn Soup (1 bowl)', cal: 120, protein: 3, carbs: 20, fat: 3 },
-  { name: 'Hot & Sour Soup (1 bowl)', cal: 110, protein: 4, carbs: 15, fat: 3 },
-  { name: 'Mushroom Soup (1 bowl)', cal: 100, protein: 4, carbs: 12, fat: 3 },
-  { name: 'Spinach Soup (1 bowl)', cal: 90, protein: 3, carbs: 10, fat: 2 },
-  { name: 'Dal Soup (1 bowl)', cal: 120, protein: 6, carbs: 18, fat: 3 },
-  { name: 'Vegetable Salad (1 bowl)', cal: 80, protein: 3, carbs: 12, fat: 2 },
-  { name: 'Cucumber Salad (1 bowl)', cal: 60, protein: 2, carbs: 10, fat: 1 },
-  { name: 'Tomato Salad (1 bowl)', cal: 50, protein: 1, carbs: 9, fat: 1 },
-  { name: 'Onion Salad (1 bowl)', cal: 45, protein: 1, carbs: 8, fat: 0 },
-  { name: 'Mixed Fruit Salad (1 bowl)', cal: 120, protein: 2, carbs: 28, fat: 1 },
-  { name: 'Sprout Salad (1 bowl)', cal: 140, protein: 8, carbs: 20, fat: 3 },
-  { name: 'Chana Chaat (1 bowl)', cal: 150, protein: 8, carbs: 22, fat: 3 },
-  { name: 'Moong Chaat (1 bowl)', cal: 140, protein: 9, carbs: 20, fat: 2 },
-  { name: 'Corn Chaat (1 bowl)', cal: 160, protein: 5, carbs: 25, fat: 3 },
-  { name: 'Fruit Chaat (1 bowl)', cal: 130, protein: 2, carbs: 30, fat: 1 },
-  { name: 'Vegetable Sandwich (2 slices)', cal: 200, protein: 6, carbs: 32, fat: 6 },
-  { name: 'Paneer Sandwich (2 slices)', cal: 250, protein: 10, carbs: 30, fat: 10 },
-  { name: 'Cheese Sandwich (2 slices)', cal: 260, protein: 9, carbs: 28, fat: 12 },
-  { name: 'Egg Sandwich (2 slices)', cal: 240, protein: 12, carbs: 28, fat: 9 },
-  { name: 'Chicken Sandwich (2 slices)', cal: 280, protein: 15, carbs: 30, fat: 10 },
-  { name: 'Vegetable Roll (1)', cal: 220, protein: 6, carbs: 32, fat: 8 },
-  { name: 'Paneer Roll (1)', cal: 250, protein: 10, carbs: 30, fat: 10 },
-  { name: 'Egg Roll (1)', cal: 240, protein: 12, carbs: 28, fat: 9 },
-  { name: 'Chicken Roll (1)', cal: 280, protein: 15, carbs: 30, fat: 10 },
-  { name: 'Vegetable Frankie (1)', cal: 230, protein: 7, carbs: 32, fat: 9 },
-  { name: 'Paneer Frankie (1)', cal: 260, protein: 11, carbs: 30, fat: 11 },
-  { name: 'Egg Frankie (1)', cal: 250, protein: 13, carbs: 28, fat: 10 },
-  { name: 'Chicken Frankie (1)', cal: 290, protein: 16, carbs: 30, fat: 11 },
-  { name: 'Pickled Onion (1 piece)', cal: 15, protein: 0, carbs: 3, fat: 0 },
-  { name: 'Pickled Carrot (1 piece)', cal: 20, protein: 0, carbs: 4, fat: 0 },
-  { name: 'Pickled Radish (1 piece)', cal: 18, protein: 0, carbs: 4, fat: 0 },
-  { name: 'Pickled Cucumber (1 piece)', cal: 10, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Coconut Powder (1 tbsp)', cal: 35, protein: 0, carbs: 1, fat: 3 },
-  { name: 'Groundnut Chikki (1 piece)', cal: 120, protein: 3, carbs: 15, fat: 6 },
-  { name: 'Sesame Chikki (1 piece)', cal: 110, protein: 3, carbs: 14, fat: 5 },
-  { name: 'Jaggery Chikki (1 piece)', cal: 100, protein: 2, carbs: 20, fat: 2 },
-  { name: 'Rice Flour (100g)', cal: 366, protein: 6, carbs: 80, fat: 1 },
-  { name: 'Corn Flour (100g)', cal: 361, protein: 7, carbs: 79, fat: 1 },
-  { name: 'Sooji / Rava (100g)', cal: 360, protein: 11, carbs: 73, fat: 1 },
-  { name: 'Poha Raw (100g)', cal: 350, protein: 7, carbs: 77, fat: 1 },
-  { name: 'Flattened Rice (100g)', cal: 350, protein: 7, carbs: 77, fat: 1 },
-  { name: 'Sabudana (100g)', cal: 350, protein: 1, carbs: 87, fat: 0 },
-  { name: 'Vermicelli (100g)', cal: 360, protein: 8, carbs: 78, fat: 1 },
-  { name: 'Dry Ginger Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Garlic Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Onion Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Tomato Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Mint Powder (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Coriander Powder (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Curry Leaves Powder (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Fenugreek Leaves (Kasuri Methi, 1 tsp)', cal: 4, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Red Chilli Flakes (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Basil Leaves (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Oregano (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Thyme (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Rosemary (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Parsley (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Dill Leaves (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Bay Leaf Powder (1 tsp)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Curry Powder (1 tsp)', cal: 10, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Turmeric Powder (1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Mustard Powder (1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Fenugreek Powder (1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Cumin Powder (1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Coriander Seeds (1 tsp)', cal: 6, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Dry Fennel Seeds (1 tsp)', cal: 7, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Carom Seeds (Ajwain, 1 tsp)', cal: 8, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Dry Nigella Seeds (1 tsp)', cal: 10, protein: 0, carbs: 1, fat: 1 },
-  { name: 'Dry Sesame Seeds (1 tsp)', cal: 26, protein: 1, carbs: 1, fat: 2 },
-  { name: 'Dry Poppy Seeds (1 tsp)', cal: 30, protein: 1, carbs: 1, fat: 2 },
-  { name: 'Dry Flax Seeds (1 tsp)', cal: 26, protein: 1, carbs: 1, fat: 2 },
-  { name: 'Dry Chia Seeds (1 tsp)', cal: 25, protein: 1, carbs: 1, fat: 2 },
-  { name: 'Dry Pumpkin Seeds (1 tbsp)', cal: 50, protein: 2, carbs: 2, fat: 4 },
-  { name: 'Dry Sunflower Seeds (1 tbsp)', cal: 50, protein: 2, carbs: 2, fat: 4 },
-  { name: 'Dry Watermelon Seeds (1 tbsp)', cal: 50, protein: 2, carbs: 2, fat: 4 },
-  { name: 'Dry Muskmelon Seeds (1 tbsp)', cal: 50, protein: 2, carbs: 2, fat: 4 },
-  { name: 'Dry Hemp Seeds (1 tbsp)', cal: 55, protein: 3, carbs: 2, fat: 4 },
-  { name: 'Dry Quinoa (100g)', cal: 368, protein: 14, carbs: 64, fat: 6 },
-  { name: 'Dry Amaranth (100g)', cal: 371, protein: 13, carbs: 65, fat: 7 },
-  { name: 'Dry Buckwheat (100g)', cal: 343, protein: 13, carbs: 71, fat: 3 },
-  { name: 'Dry Barley (100g)', cal: 354, protein: 12, carbs: 73, fat: 2 },
-  { name: 'Dry Oats (100g)', cal: 389, protein: 17, carbs: 66, fat: 7 },
-  { name: 'Dry Millet (100g)', cal: 378, protein: 11, carbs: 72, fat: 4 },
-  { name: 'Dry Sorghum (100g)', cal: 349, protein: 10, carbs: 72, fat: 3 },
-  { name: 'Dry Finger Millet (100g)', cal: 336, protein: 7, carbs: 72, fat: 2 },
-  { name: 'Dry Pearl Millet (100g)', cal: 361, protein: 11, carbs: 73, fat: 5 },
-  { name: 'Dry Foxtail Millet (100g)', cal: 351, protein: 12, carbs: 72, fat: 4 },
-  { name: 'Dry Little Millet (100g)', cal: 350, protein: 11, carbs: 72, fat: 4 },
-  { name: 'Dry Barnyard Millet (100g)', cal: 350, protein: 11, carbs: 72, fat: 4 },
-  { name: 'Dry Kodo Millet (100g)', cal: 350, protein: 11, carbs: 72, fat: 4 },
-  { name: 'Plain Roti (1 piece)', cal: 80, protein: 3, carbs: 15, fat: 1 },
-  { name: 'Chapati (1 piece)', cal: 70, protein: 2, carbs: 13, fat: 1 },
-  { name: 'Phulka (1 piece)', cal: 65, protein: 2, carbs: 12, fat: 1 },
-  { name: 'Tandoori Roti (1 piece)', cal: 120, protein: 4, carbs: 22, fat: 2 },
-  { name: 'Butter Roti (1 piece)', cal: 100, protein: 3, carbs: 15, fat: 4 },
-  { name: 'Naan (1 piece)', cal: 200, protein: 6, carbs: 35, fat: 6 },
-  { name: 'Butter Naan (1 piece)', cal: 220, protein: 6, carbs: 35, fat: 8 },
-  { name: 'Garlic Naan (1 piece)', cal: 230, protein: 6, carbs: 36, fat: 9 },
-  { name: 'Kulcha (1 piece)', cal: 180, protein: 5, carbs: 32, fat: 5 },
-  { name: 'Stuffed Kulcha (1 piece)', cal: 220, protein: 6, carbs: 35, fat: 7 },
-  { name: 'Paratha (1 piece)', cal: 200, protein: 4, carbs: 30, fat: 8 },
-  { name: 'Aloo Paratha (1 piece)', cal: 250, protein: 5, carbs: 38, fat: 9 },
-  { name: 'Paneer Paratha (1 piece)', cal: 260, protein: 8, carbs: 35, fat: 10 },
-  { name: 'Methi Paratha (1 piece)', cal: 220, protein: 6, carbs: 32, fat: 8 },
-  { name: 'Gobhi Paratha (1 piece)', cal: 240, protein: 6, carbs: 34, fat: 9 },
-  { name: 'Missi Roti (1 piece)', cal: 150, protein: 5, carbs: 20, fat: 4 },
-  { name: 'Makki Ki Roti (1 piece)', cal: 180, protein: 4, carbs: 30, fat: 3 },
-  { name: 'Jowar Bhakri (1 piece)', cal: 160, protein: 5, carbs: 28, fat: 2 },
-  { name: 'Bajra Bhakri (1 piece)', cal: 170, protein: 6, carbs: 30, fat: 3 },
-  { name: 'Rice Bhakri (1 piece)', cal: 150, protein: 3, carbs: 28, fat: 1 },
-  { name: 'Thalipeeth (1 piece)', cal: 200, protein: 6, carbs: 30, fat: 6 },
-  { name: 'Puran Poli (1 piece)', cal: 250, protein: 6, carbs: 40, fat: 8 },
-  { name: 'Bhakri with Ghee (1 piece)', cal: 190, protein: 5, carbs: 28, fat: 6 },
-  { name: 'Dal Fry (1 bowl)', cal: 220, protein: 12, carbs: 30, fat: 8 },
-  { name: 'Dal Tadka (1 bowl)', cal: 200, protein: 12, carbs: 30, fat: 5 },
-  { name: 'Dal Makhani (1 bowl)', cal: 300, protein: 14, carbs: 40, fat: 10 },
-  { name: 'Vegetable Curry (1 bowl)', cal: 160, protein: 5, carbs: 18, fat: 6 },
-  { name: 'Paneer Curry (1 bowl)', cal: 280, protein: 14, carbs: 15, fat: 18 },
-  { name: 'Chicken Curry (1 bowl)', cal: 350, protein: 28, carbs: 10, fat: 22 },
-  { name: 'Mutton Curry (1 bowl)', cal: 380, protein: 26, carbs: 8, fat: 28 },
-  { name: 'Fish Curry (1 bowl)', cal: 280, protein: 24, carbs: 8, fat: 16 },
-  { name: 'Egg Curry (1 bowl)', cal: 250, protein: 14, carbs: 10, fat: 16 },
-  { name: 'Vegetable Kurma (1 bowl)', cal: 220, protein: 6, carbs: 20, fat: 10 },
-  { name: 'Chole Masala (1 bowl)', cal: 210, protein: 11, carbs: 35, fat: 4 },
-  { name: 'Rajma Masala (1 bowl)', cal: 220, protein: 14, carbs: 38, fat: 2 },
-  { name: 'Kadhi Pakora (1 bowl)', cal: 250, protein: 10, carbs: 20, fat: 14 },
-  { name: 'Vegetable Korma (1 bowl)', cal: 230, protein: 7, carbs: 22, fat: 10 },
-  { name: 'Bhindi Fry (1 bowl)', cal: 150, protein: 3, carbs: 10, fat: 9 },
-  { name: 'Aloo Gobi (1 bowl)', cal: 180, protein: 4, carbs: 20, fat: 8 },
-  { name: 'Baingan Masala (1 bowl)', cal: 170, protein: 4, carbs: 12, fat: 10 },
-  { name: 'Cabbage Curry (1 bowl)', cal: 140, protein: 3, carbs: 14, fat: 6 },
-  { name: 'Methi Aloo (1 bowl)', cal: 160, protein: 4, carbs: 18, fat: 7 },
-  { name: 'Palak Paneer (1 bowl)', cal: 280, protein: 15, carbs: 10, fat: 20 },
-  { name: 'Shahi Paneer (1 bowl)', cal: 360, protein: 14, carbs: 18, fat: 28 },
-  { name: 'Kadai Paneer (1 bowl)', cal: 320, protein: 16, carbs: 12, fat: 24 },
-  { name: 'Paneer Butter Masala (1 bowl)', cal: 350, protein: 18, carbs: 15, fat: 25 },
-  { name: 'Vegetable Biryani (1 plate)', cal: 400, protein: 10, carbs: 70, fat: 10 },
-  { name: 'Chicken Biryani (1 plate)', cal: 500, protein: 30, carbs: 65, fat: 12 },
-  { name: 'Mutton Biryani (1 plate)', cal: 550, protein: 32, carbs: 65, fat: 15 },
-  { name: 'Egg Biryani (1 plate)', cal: 450, protein: 20, carbs: 60, fat: 12 },
-  { name: 'Curd Rice (1 bowl)', cal: 220, protein: 7, carbs: 35, fat: 6 },
-  { name: 'Lemon Rice (1 bowl)', cal: 230, protein: 6, carbs: 38, fat: 7 },
-  { name: 'Tamarind Rice (1 bowl)', cal: 240, protein: 6, carbs: 40, fat: 7 },
-  { name: 'Vegetable Pulao (1 bowl)', cal: 250, protein: 8, carbs: 42, fat: 6 },
-  { name: 'Jeera Rice (1 bowl)', cal: 220, protein: 6, carbs: 38, fat: 5 },
-  { name: 'Vegetable Khichdi (1 bowl)', cal: 200, protein: 8, carbs: 35, fat: 4 },
-  { name: 'Plain Khichdi (1 bowl)', cal: 180, protein: 7, carbs: 32, fat: 3 },
-  { name: 'Vegetable Upma (1 bowl)', cal: 220, protein: 5, carbs: 38, fat: 6 },
-  { name: 'Vegetable Poha (1 bowl)', cal: 250, protein: 5, carbs: 48, fat: 5 },
-  { name: 'Vegetable Idli (2 pieces)', cal: 140, protein: 5, carbs: 28, fat: 1 },
-  { name: 'Vegetable Dosa (1 piece)', cal: 180, protein: 5, carbs: 32, fat: 5 },
-  { name: 'Vegetable Uttapam (1 piece)', cal: 200, protein: 6, carbs: 34, fat: 6 },
-  { name: 'Onion Uttapam (1 piece)', cal: 210, protein: 6, carbs: 35, fat: 7 },
-  { name: 'Tomato Uttapam (1 piece)', cal: 210, protein: 6, carbs: 35, fat: 7 },
-  { name: 'Rava Dosa (1 piece)', cal: 190, protein: 5, carbs: 32, fat: 6 },
-  { name: 'Set Dosa (2 pieces)', cal: 220, protein: 6, carbs: 36, fat: 6 },
-  { name: 'Neer Dosa (2 pieces)', cal: 150, protein: 4, carbs: 28, fat: 2 },
-  { name: 'Appam (1 piece)', cal: 160, protein: 4, carbs: 30, fat: 3 },
-  { name: 'Pesarattu (1 piece)', cal: 180, protein: 7, carbs: 28, fat: 5 },
-  { name: 'Adai (1 piece)', cal: 200, protein: 8, carbs: 30, fat: 6 },
-  { name: 'Poori (1 piece)', cal: 110, protein: 2, carbs: 14, fat: 6 },
-  { name: 'Bhatura (1 piece)', cal: 250, protein: 6, carbs: 35, fat: 10 },
-  { name: 'Laccha Paratha (1 piece)', cal: 220, protein: 5, carbs: 32, fat: 9 },
-  { name: 'Stuffed Paratha (1 piece)', cal: 240, protein: 6, carbs: 34, fat: 9 },
-  { name: 'Paneer Bhakri (1 piece)', cal: 200, protein: 8, carbs: 28, fat: 8 },
-  { name: 'Methi Bhakri (1 piece)', cal: 180, protein: 6, carbs: 26, fat: 6 },
-  { name: 'Onion Bhakri (1 piece)', cal: 190, protein: 6, carbs: 28, fat: 7 },
-  { name: 'Garlic Bhakri (1 piece)', cal: 190, protein: 6, carbs: 28, fat: 7 },
-  { name: 'Stuffed Bhakri (1 piece)', cal: 210, protein: 7, carbs: 30, fat: 8 },
-  { name: 'Vegetable Bhakri (1 piece)', cal: 200, protein: 7, carbs: 29, fat: 7 },
-  { name: 'Dal Khichdi (1 bowl)', cal: 200, protein: 8, carbs: 35, fat: 4 },
-  { name: 'Vegetable Kurma (1 bowl)', cal: 230, protein: 7, carbs: 22, fat: 10 },
-  { name: 'Paneer Tikka Masala (1 bowl)', cal: 340, protein: 18, carbs: 15, fat: 24 },
-  { name: 'Chicken Tikka Masala (1 bowl)', cal: 380, protein: 28, carbs: 12, fat: 26 },
-  { name: 'Mutton Rogan Josh (1 bowl)', cal: 400, protein: 30, carbs: 10, fat: 28 },
-  { name: 'Fish Fry (2 pieces)', cal: 280, protein: 24, carbs: 8, fat: 16 },
-  { name: 'Egg Bhurji (1 bowl)', cal: 200, protein: 13, carbs: 5, fat: 14 },
-  { name: 'Paneer Bhurji (1 bowl)', cal: 300, protein: 20, carbs: 8, fat: 22 },
-  { name: 'Vegetable Pakora (4 pieces)', cal: 250, protein: 6, carbs: 28, fat: 12 },
-  { name: 'Onion Pakora (4 pieces)', cal: 260, protein: 6, carbs: 30, fat: 12 },
-  { name: 'Paneer Pakora (4 pieces)', cal: 280, protein: 10, carbs: 28, fat: 14 },
-  { name: 'Bread Pakora (1 piece)', cal: 300, protein: 8, carbs: 35, fat: 15 },
-  { name: 'Aloo Tikki (2 pieces)', cal: 220, protein: 5, carbs: 30, fat: 8 },
-  { name: 'Vegetable Cutlet (2 pieces)', cal: 240, protein: 6, carbs: 32, fat: 9 },
-  { name: 'Paneer Cutlet (2 pieces)', cal: 260, protein: 10, carbs: 30, fat: 10 },
-  { name: 'Chicken Cutlet (2 pieces)', cal: 280, protein: 15, carbs: 28, fat: 10 },
-  { name: 'Mutton Cutlet (2 pieces)', cal: 300, protein: 16, carbs: 28, fat: 12 },
-  { name: 'Vegetable Kofta Curry (1 bowl)', cal: 280, protein: 10, carbs: 20, fat: 18 },
-  { name: 'Malai Kofta (1 bowl)', cal: 320, protein: 12, carbs: 22, fat: 20 },
-  { name: 'Lauki Kofta (1 bowl)', cal: 260, protein: 9, carbs: 18, fat: 16 },
-  { name: 'Paneer Kofta (1 bowl)', cal: 300, protein: 14, carbs: 20, fat: 18 },
-  { name: 'Vegetable Handi (1 bowl)', cal: 250, protein: 9, carbs: 22, fat: 14 },
-  { name: 'Paneer Handi (1 bowl)', cal: 320, protein: 16, carbs: 18, fat: 20 },
-  { name: 'Chicken Handi (1 bowl)', cal: 360, protein: 28, carbs: 12, fat: 22 },
-  { name: 'Mutton Handi (1 bowl)', cal: 380, protein: 26, carbs: 10, fat: 24 },
-  { name: 'Fish Handi (1 bowl)', cal: 300, protein: 24, carbs: 10, fat: 18 },
-  { name: 'Egg Handi (1 bowl)', cal: 280, protein: 16, carbs: 10, fat: 18 },
-  { name: 'Vegetable Stew (1 bowl)', cal: 150, protein: 4, carbs: 16, fat: 6 },
-  { name: 'Vegetable Soup (1 bowl)', cal: 100, protein: 3, carbs: 12, fat: 3 },
-  { name: 'Tomato Soup (1 bowl)', cal: 90, protein: 2, carbs: 14, fat: 2 },
-  { name: 'Sweet Corn Soup (1 bowl)', cal: 120, protein: 3, carbs: 20, fat: 3 },
-  { name: 'Hot & Sour Soup (1 bowl)', cal: 110, protein: 4, carbs: 15, fat: 3 },
-  { name: 'Spinach Soup (1 bowl)', cal: 90, protein: 3, carbs: 10, fat: 2 },
-  { name: 'Dal Soup (1 bowl)', cal: 120, protein: 6, carbs: 18, fat: 3 },
-  { name: 'Vegetable Salad (1 bowl)', cal: 80, protein: 3, carbs: 12, fat: 2 },
-  { name: 'Sprout Salad (1 bowl)', cal: 140, protein: 8, carbs: 20, fat: 3 },
-  { name: 'Chana Chaat (1 bowl)', cal: 150, protein: 8, carbs: 22, fat: 3 },
-  { name: 'Moong Chaat (1 bowl)', cal: 140, protein: 9, carbs: 20, fat: 2 },
-  { name: 'Corn Chaat (1 bowl)', cal: 160, protein: 5, carbs: 25, fat: 3 },
-  { name: 'Fruit Chaat (1 bowl)', cal: 130, protein: 2, carbs: 30, fat: 1 },
-  { name: 'Pani Puri (6 pieces)', cal: 180, protein: 4, carbs: 30, fat: 6 },
-  { name: 'Sev Puri (1 plate)', cal: 220, protein: 5, carbs: 32, fat: 8 },
-  { name: 'Bhel Puri (1 plate)', cal: 200, protein: 5, carbs: 38, fat: 4 },
-  { name: 'Dahi Puri (6 pieces)', cal: 240, protein: 6, carbs: 35, fat: 8 },
-  { name: 'Ragda Pattice (1 plate)', cal: 280, protein: 10, carbs: 40, fat: 8 },
-  { name: 'Misal Pav (1 plate)', cal: 350, protein: 12, carbs: 45, fat: 12 },
-  { name: 'Vada Pav (1)', cal: 320, protein: 7, carbs: 48, fat: 12 },
-  { name: 'Pav Bhaji (1 plate)', cal: 450, protein: 10, carbs: 70, fat: 16 },
-  { name: 'Dabeli (1)', cal: 300, protein: 6, carbs: 45, fat: 10 },
-  { name: 'Kachori (1 piece)', cal: 250, protein: 6, carbs: 35, fat: 12 },
-  { name: 'Samosa (1 piece)', cal: 250, protein: 4, carbs: 32, fat: 13 },
-  { name: 'Onion Pakora (4 pieces)', cal: 260, protein: 6, carbs: 30, fat: 12 },
-  { name: 'Bread Pakora (1 piece)', cal: 300, protein: 8, carbs: 35, fat: 15 },
-  { name: 'Aloo Tikki (2 pieces)', cal: 220, protein: 5, carbs: 30, fat: 8 },
-  { name: 'Chole Bhature (1 plate)', cal: 500, protein: 15, carbs: 60, fat: 20 },
-  { name: 'Kathi Roll Veg (1)', cal: 280, protein: 8, carbs: 40, fat: 9 },
-  { name: 'Kathi Roll Chicken (1)', cal: 320, protein: 15, carbs: 35, fat: 12 },
-  { name: 'Egg Roll (1)', cal: 240, protein: 12, carbs: 28, fat: 9 },
-  { name: 'Paneer Roll (1)', cal: 300, protein: 12, carbs: 35, fat: 11 },
-  { name: 'Frankie Veg (1)', cal: 230, protein: 7, carbs: 32, fat: 9 },
-  { name: 'Frankie Paneer (1)', cal: 260, protein: 11, carbs: 30, fat: 11 },
-  { name: 'Frankie Chicken (1)', cal: 290, protein: 16, carbs: 30, fat: 11 },
-  { name: 'Egg Frankie (1)', cal: 250, protein: 13, carbs: 28, fat: 10 },
-  { name: 'Chowmein Veg (1 plate)', cal: 350, protein: 8, carbs: 55, fat: 12 },
-  { name: 'Chowmein Chicken (1 plate)', cal: 400, protein: 20, carbs: 50, fat: 14 },
-  { name: 'Hakka Noodles Veg (1 plate)', cal: 400, protein: 10, carbs: 60, fat: 14 },
-  { name: 'Hakka Noodles Chicken (1 plate)', cal: 420, protein: 22, carbs: 55, fat: 15 },
-  { name: 'Maggi Masala (1 plate)', cal: 350, protein: 7, carbs: 50, fat: 14 },
-  { name: 'Egg Maggi (1 plate)', cal: 380, protein: 12, carbs: 50, fat: 15 },
-  { name: 'Paneer Maggi (1 plate)', cal: 400, protein: 15, carbs: 52, fat: 16 },
-  { name: 'Chicken Maggi (1 plate)', cal: 420, protein: 20, carbs: 50, fat: 16 },
-  { name: 'Pakora Mix Veg (6 pieces)', cal: 280, protein: 7, carbs: 32, fat: 14 },
-  { name: 'Paneer Pakora (4 pieces)', cal: 280, protein: 10, carbs: 28, fat: 14 },
-  { name: 'Fish Pakora (4 pieces)', cal: 300, protein: 18, carbs: 20, fat: 14 },
-  { name: 'Chicken Pakora (4 pieces)', cal: 320, protein: 20, carbs: 20, fat: 15 },
-  { name: 'Mutton Kebab (4 pieces)', cal: 350, protein: 22, carbs: 15, fat: 18 },
-  { name: 'Seekh Kebab (2 pieces)', cal: 280, protein: 18, carbs: 12, fat: 14 },
-  { name: 'Shami Kebab (2 pieces)', cal: 300, protein: 20, carbs: 15, fat: 16 },
-  { name: 'Galouti Kebab (2 pieces)', cal: 320, protein: 22, carbs: 14, fat: 18 },
-  { name: 'Tandoori Chicken (1 leg)', cal: 300, protein: 28, carbs: 5, fat: 16 },
-  { name: 'Chicken Tikka (6 pieces)', cal: 280, protein: 35, carbs: 5, fat: 14 },
-  { name: 'Paneer Tikka (6 pieces)', cal: 260, protein: 18, carbs: 8, fat: 12 },
-  { name: 'Veg Momos (6 pieces)', cal: 220, protein: 6, carbs: 32, fat: 6 },
-  { name: 'Chicken Momos (6 pieces)', cal: 260, protein: 12, carbs: 30, fat: 8 },
-  { name: 'Paneer Momos (6 pieces)', cal: 240, protein: 10, carbs: 30, fat: 7 },
-  { name: 'Fried Momos Veg (6 pieces)', cal: 280, protein: 7, carbs: 32, fat: 12 },
-  { name: 'Fried Momos Chicken (6 pieces)', cal: 300, protein: 14, carbs: 30, fat: 14 },
-  { name: 'Spring Roll Veg (2 pieces)', cal: 260, protein: 6, carbs: 35, fat: 10 },
-  { name: 'Spring Roll Chicken (2 pieces)', cal: 280, protein: 12, carbs: 32, fat: 12 },
-  { name: 'Paneer Spring Roll (2 pieces)', cal: 270, protein: 10, carbs: 32, fat: 11 },
-  { name: 'Egg Spring Roll (2 pieces)', cal: 260, protein: 12, carbs: 30, fat: 10 },
-  { name: 'Chilli Paneer Dry (1 plate)', cal: 320, protein: 18, carbs: 20, fat: 16 },
-  { name: 'Chilli Chicken Dry (1 plate)', cal: 350, protein: 25, carbs: 18, fat: 18 },
-  { name: 'Chilli Potato (1 plate)', cal: 280, protein: 6, carbs: 40, fat: 12 },
-  { name: 'Chilli Mushroom (1 plate)', cal: 300, protein: 12, carbs: 25, fat: 14 },
-  { name: 'Egg Chowmein (1 plate)', cal: 380, protein: 14, carbs: 50, fat: 15 },
-  { name: 'Paneer Chowmein (1 plate)', cal: 400, protein: 16, carbs: 52, fat: 16 },
-  { name: 'Chicken Chowmein (1 plate)', cal: 420, protein: 20, carbs: 50, fat: 16 },
-  { name: 'Mutton Chowmein (1 plate)', cal: 450, protein: 22, carbs: 50, fat: 18 },
-  { name: 'Dhokla (2 pieces)', cal: 150, protein: 6, carbs: 20, fat: 5 },
-  { name: 'Khandvi (6 pieces)', cal: 180, protein: 8, carbs: 22, fat: 6 },
-  { name: 'Fafda (2 pieces)', cal: 200, protein: 7, carbs: 25, fat: 8 },
-  { name: 'Jalebi (100g)', cal: 400, protein: 5, carbs: 85, fat: 10 },
-  { name: 'Patra (4 slices)', cal: 220, protein: 7, carbs: 28, fat: 9 },
-  { name: 'Litti Chokha (2 pieces)', cal: 300, protein: 10, carbs: 40, fat: 12 },
-  { name: 'Ghugni (1 bowl)', cal: 200, protein: 9, carbs: 30, fat: 5 },
-  { name: 'Sattu Paratha (1 piece)', cal: 250, protein: 8, carbs: 35, fat: 9 },
-  { name: 'Thepla (2 pieces)', cal: 220, protein: 6, carbs: 30, fat: 8 },
-  { name: 'Handvo (1 slice)', cal: 180, protein: 7, carbs: 22, fat: 7 },
-  { name: 'Undhiyu (1 bowl)', cal: 250, protein: 8, carbs: 28, fat: 12 },
-  { name: 'Poha Jalebi (combo plate)', cal: 350, protein: 7, carbs: 55, fat: 10 },
-  { name: 'Kachori Chaat (1 plate)', cal: 320, protein: 9, carbs: 45, fat: 12 },
-  { name: 'Samosa Chaat (1 plate)', cal: 350, protein: 8, carbs: 50, fat: 14 },
-  { name: 'Aloo Chaat (1 plate)', cal: 280, protein: 6, carbs: 40, fat: 10 },
-  { name: 'Papdi Chaat (1 plate)', cal: 300, protein: 7, carbs: 45, fat: 12 },
-  { name: 'Raj Kachori (1 piece)', cal: 350, protein: 10, carbs: 48, fat: 14 },
-  { name: 'Chole Kulche (1 plate)', cal: 400, protein: 12, carbs: 55, fat: 14 },
-  { name: 'Bedmi Puri (2 pieces)', cal: 280, protein: 8, carbs: 35, fat: 10 },
-  { name: 'Aloo Puri (2 pieces)', cal: 260, protein: 7, carbs: 34, fat: 9 },
-  { name: 'Kathi Kabab Roll (1)', cal: 320, protein: 15, carbs: 35, fat: 12 },
-  { name: 'Keema Pav (1 plate)', cal: 380, protein: 20, carbs: 40, fat: 16 },
-  { name: 'Anda Pav (1)', cal: 280, protein: 12, carbs: 32, fat: 10 },
-  { name: 'Bhajiya Mix (6 pieces)', cal: 300, protein: 8, carbs: 35, fat: 14 },
-  { name: 'Mirchi Bhajiya (2 pieces)', cal: 220, protein: 5, carbs: 28, fat: 9 },
-  { name: 'Paneer Bhajiya (2 pieces)', cal: 240, protein: 9, carbs: 26, fat: 10 },
-  { name: 'Aloo Bhajiya (2 pieces)', cal: 230, protein: 6, carbs: 28, fat: 9 },
-  { name: 'Bread Bhajiya (2 pieces)', cal: 250, protein: 7, carbs: 30, fat: 10 },
-  { name: 'Sabudana Vada (2 pieces)', cal: 280, protein: 6, carbs: 35, fat: 12 },
-  { name: 'Batata Vada (2 pieces)', cal: 260, protein: 6, carbs: 32, fat: 10 },
-  { name: 'Kothimbir Vadi (4 pieces)', cal: 220, protein: 8, carbs: 25, fat: 8 },
-  { name: 'Moong Dal Pakora (6 pieces)', cal: 280, protein: 10, carbs: 30, fat: 12 },
-  { name: 'Chana Dal Pakora (6 pieces)', cal: 290, protein: 9, carbs: 32, fat: 12 },
-  { name: 'Paneer Tikka Roll (1)', cal: 300, protein: 14, carbs: 32, fat: 11 },
-  { name: 'Chicken Shawarma Roll (1)', cal: 350, protein: 20, carbs: 35, fat: 14 },
-  { name: 'Egg Shawarma Roll (1)', cal: 320, protein: 15, carbs: 32, fat: 12 },
-  { name: 'Veg Burger Street Style (1)', cal: 350, protein: 8, carbs: 45, fat: 14 },
-  { name: 'Paneer Burger Street Style (1)', cal: 380, protein: 12, carbs: 42, fat: 15 },
-  { name: 'Chicken Burger Street Style (1)', cal: 420, protein: 20, carbs: 40, fat: 16 },
-  { name: 'Veg Pizza Street Style (2 slices)', cal: 480, protein: 14, carbs: 60, fat: 18 },
-  { name: 'Paneer Pizza Street Style (2 slices)', cal: 500, protein: 18, carbs: 58, fat: 20 },
-  { name: 'Chicken Pizza Street Style (2 slices)', cal: 520, protein: 22, carbs: 55, fat: 22 },
-  { name: 'Egg Puff (1 piece)', cal: 250, protein: 8, carbs: 30, fat: 12 },
-  { name: 'Veg Puff (1 piece)', cal: 240, protein: 7, carbs: 28, fat: 11 },
-  { name: 'Paneer Puff (1 piece)', cal: 260, protein: 9, carbs: 28, fat: 12 },
-  { name: 'Chicken Puff (1 piece)', cal: 280, protein: 12, carbs: 28, fat: 13 },
-  { name: 'Veg Patties (1 piece)', cal: 230, protein: 6, carbs: 28, fat: 10 },
-  { name: 'Paneer Patties (1 piece)', cal: 250, protein: 9, carbs: 28, fat: 11 },
-  { name: 'Chicken Patties (1 piece)', cal: 270, protein: 12, carbs: 28, fat: 12 },
-  { name: 'Egg Patties (1 piece)', cal: 260, protein: 10, carbs: 28, fat: 11 },
-  { name: 'Veg Cutlet (2 pieces)', cal: 240, protein: 6, carbs: 32, fat: 9 },
-  { name: 'Paneer Cutlet 2 pieces)', cal: 260, protein: 10, carbs: 30, fat: 10 },
-  { name: 'Chicken Cutlet (2 pieces)', cal: 280, protein: 15, carbs: 28, fat: 10 },
-  { name: 'Mutton Cutlet (2 pieces)', cal: 300, protein: 16, carbs: 28, fat: 12 },
-  { name: 'Gulab Jamun (2 pieces)', cal: 300, protein: 5, carbs: 45, fat: 12 },
-  { name: 'Rasgulla (2 pieces)', cal: 220, protein: 6, carbs: 40, fat: 4 },
-  { name: 'Sandesh (2 pieces)', cal: 200, protein: 7, carbs: 35, fat: 5 },
-  { name: 'Mishti Doi (1 bowl)', cal: 250, protein: 8, carbs: 35, fat: 10 },
-  { name: 'Kheer (1 bowl)', cal: 250, protein: 7, carbs: 40, fat: 8 },
-  { name: 'Payasam (1 bowl)', cal: 260, protein: 8, carbs: 42, fat: 9 },
-  { name: 'Phirni (1 bowl)', cal: 240, protein: 7, carbs: 38, fat: 8 },
-  { name: 'Sheera / Halwa (1 bowl)', cal: 280, protein: 6, carbs: 45, fat: 10 },
-  { name: 'Sooji Halwa (1 bowl)', cal: 270, protein: 6, carbs: 44, fat: 9 },
-  { name: 'Besan Halwa (1 bowl)', cal: 300, protein: 8, carbs: 40, fat: 12 },
-  { name: 'Moong Dal Halwa (1 bowl)', cal: 320, protein: 10, carbs: 42, fat: 14 },
-  { name: 'Carrot Halwa (1 bowl)', cal: 280, protein: 6, carbs: 40, fat: 10 },
-  { name: 'Lauki Halwa (1 bowl)', cal: 260, protein: 6, carbs: 38, fat: 9 },
-  { name: 'Atta Halwa (1 bowl)', cal: 290, protein: 7, carbs: 42, fat: 11 },
-  { name: 'Badam Halwa (1 bowl)', cal: 350, protein: 10, carbs: 38, fat: 16 },
-  { name: 'Coconut Barfi (2 pieces)', cal: 280, protein: 6, carbs: 35, fat: 12 },
-  { name: 'Kaju Katli (2 pieces)', cal: 250, protein: 6, carbs: 30, fat: 10 },
-  { name: 'Badam Katli (2 pieces)', cal: 260, protein: 7, carbs: 32, fat: 11 },
-  { name: 'Pista Barfi (2 pieces)', cal: 270, protein: 7, carbs: 32, fat: 12 },
-  { name: 'Milk Barfi (2 pieces)', cal: 240, protein: 6, carbs: 30, fat: 9 },
-  { name: 'Kalakand (2 pieces)', cal: 260, protein: 8, carbs: 32, fat: 10 },
-  { name: 'Burfi Mix (2 pieces)', cal: 250, protein: 7, carbs: 30, fat: 10 },
-  { name: 'Laddoo Besan (2 pieces)', cal: 280, protein: 6, carbs: 30, fat: 14 },
-  { name: 'Laddoo Motichoor (2 pieces)', cal: 300, protein: 6, carbs: 35, fat: 15 },
-  { name: 'Laddoo Boondi (2 pieces)', cal: 290, protein: 6, carbs: 34, fat: 14 },
-  { name: 'Til Laddoo (2 pieces)', cal: 280, protein: 7, carbs: 28, fat: 15 },
-  { name: 'Dry Fruit Laddoo (2 pieces)', cal: 320, protein: 8, carbs: 30, fat: 16 },
-  { name: 'Churma Laddoo (2 pieces)', cal: 310, protein: 7, carbs: 32, fat: 15 },
-  { name: 'Peda (2 pieces)', cal: 240, protein: 6, carbs: 28, fat: 9 },
-  { name: 'Mathura Peda (2 pieces)', cal: 250, protein: 7, carbs: 30, fat: 10 },
-  { name: 'Malai Peda (2 pieces)', cal: 260, protein: 7, carbs: 30, fat: 11 },
-  { name: 'Shrikhand (1 bowl)', cal: 280, protein: 8, carbs: 35, fat: 12 },
-  { name: 'Amrakhand (1 bowl)', cal: 290, protein: 8, carbs: 38, fat: 12 },
-  { name: 'Rabri (1 bowl)', cal: 320, protein: 9, carbs: 40, fat: 14 },
-  { name: 'Kulfi (1 stick)', cal: 200, protein: 6, carbs: 28, fat: 8 },
-  { name: 'Falooda (1 glass)', cal: 350, protein: 8, carbs: 50, fat: 12 },
-  { name: 'Ice Cream Vanilla (1 scoop)', cal: 150, protein: 3, carbs: 20, fat: 7 },
-  { name: 'Ice Cream Chocolate (1 scoop)', cal: 160, protein: 3, carbs: 22, fat: 8 },
-  { name: 'Ice Cream Strawberry (1 scoop)', cal: 150, protein: 3, carbs: 21, fat: 7 },
-  { name: 'Kulfi Falooda (1 glass)', cal: 380, protein: 9, carbs: 52, fat: 14 },
-  { name: 'Rasgulla Sandesh Mix (2 pieces)', cal: 230, protein: 7, carbs: 38, fat: 5 },
-  { name: 'Chhena Murki (1 bowl)', cal: 250, protein: 8, carbs: 40, fat: 9 },
-  { name: 'Balushahi (2 pieces)', cal: 300, protein: 6, carbs: 35, fat: 14 },
-  { name: 'Imarti (2 pieces)', cal: 320, protein: 6, carbs: 38, fat: 15 },
-  { name: 'Malpua (2 pieces)', cal: 330, protein: 7, carbs: 40, fat: 15 },
-  { name: 'Kesari Bath (1 bowl)', cal: 280, protein: 6, carbs: 42, fat: 10 },
-  { name: 'Rava Kesari (1 bowl)', cal: 270, protein: 6, carbs: 40, fat: 9 },
-  { name: 'Puran Poli (1 piece)', cal: 250, protein: 6, carbs: 40, fat: 8 },
-  { name: 'Modak (2 pieces)', cal: 280, protein: 6, carbs: 35, fat: 12 },
-  { name: 'Ukadiche Modak (2 pieces)', cal: 290, protein: 6, carbs: 36, fat: 12 },
-  { name: 'Dry Fruit Modak (2 pieces)', cal: 320, protein: 8, carbs: 34, fat: 15 },
-  { name: 'Ghevar (1 piece)', cal: 320, protein: 6, carbs: 40, fat: 14 },
-  { name: 'Chhena Gaja (2 pieces)', cal: 280, protein: 8, carbs: 38, fat: 10 },
-  { name: 'Arisa (2 pieces)', cal: 300, protein: 7, carbs: 40, fat: 12 },
-  { name: 'Pitha (2 pieces)', cal: 260, protein: 6, carbs: 36, fat: 9 },
-  { name: 'Malpua with Rabri (2 pieces)', cal: 400, protein: 9, carbs: 50, fat: 16 },
-  { name: 'Balushahi (2 pieces)', cal: 300, protein: 6, carbs: 35, fat: 14 },
-  { name: 'Imarti (2 pieces)', cal: 320, protein: 6, carbs: 38, fat: 15 },
-  { name: 'Chhena Poda (1 slice)', cal: 280, protein: 9, carbs: 35, fat: 11 },
-  { name: 'Rasgulla Mix (2 pieces)', cal: 230, protein: 7, carbs: 38, fat: 5 },
-  { name: 'Rajbhog (2 pieces)', cal: 260, protein: 8, carbs: 40, fat: 8 },
-  { name: 'Cham Cham (2 pieces)', cal: 250, protein: 7, carbs: 38, fat: 7 },
-  { name: 'Kalojam (2 pieces)', cal: 280, protein: 7, carbs: 40, fat: 10 },
-  { name: 'Pantua (2 pieces)', cal: 290, protein: 7, carbs: 42, fat: 11 },
-  { name: 'Shondesh (2 pieces)', cal: 200, protein: 7, carbs: 35, fat: 5 },
-  { name: 'Rasgulla Sandesh Mix (2 pieces)', cal: 230, protein: 7, carbs: 38, fat: 5 },
-  { name: 'Chhena Murki (1 bowl)', cal: 250, protein: 8, carbs: 40, fat: 9 },
-  { name: 'Kesar Peda (2 pieces)', cal: 250, protein: 7, carbs: 30, fat: 10 },
-  { name: 'Mathura Peda (2 pieces)', cal: 250, protein: 7, carbs: 30, fat: 10 },
-  { name: 'Malai Peda (2 pieces)', cal: 260, protein: 7, carbs: 30, fat: 11 },
-  { name: 'Shrikhand (1 bowl)', cal: 280, protein: 8, carbs: 35, fat: 12 },
-  { name: 'Amrakhand (1 bowl)', cal: 290, protein: 8, carbs: 38, fat: 12 },
-  { name: 'Rabri (1 bowl)', cal: 320, protein: 9, carbs: 40, fat: 14 },
-  { name: 'Kulfi (1 stick)', cal: 200, protein: 6, carbs: 28, fat: 8 },
-  { name: 'Falooda (1 glass)', cal: 350, protein: 8, carbs: 50, fat: 12 },
-  { name: 'Kesari Bath (1 bowl)', cal: 280, protein: 6, carbs: 42, fat: 10 },
-  { name: 'Rava Kesari (1 bowl)', cal: 270, protein: 6, carbs: 40, fat: 9 },
-  { name: 'Ukadiche Modak (2 pieces)', cal: 290, protein: 6, carbs: 36, fat: 12 },
-  { name: 'Dry Fruit Modak (2 pieces)', cal: 320, protein: 8, carbs: 34, fat: 15 },
-  { name: 'Tilkut (2 pieces)', cal: 280, protein: 7, carbs: 30, fat: 14 },
-  { name: 'Anarsa (2 pieces)', cal: 300, protein: 7, carbs: 38, fat: 12 },
-  { name: 'Puran Poli (1 piece)', cal: 250, protein: 6, carbs: 40, fat: 8 },
-  { name: 'Churma Laddoo (2 pieces)', cal: 310, protein: 7, carbs: 32, fat: 15 },
-  { name: 'Dry Fruit Laddoo (2 pieces)', cal: 320, protein: 8, carbs: 30, fat: 16 },
-  { name: 'Til Laddoo (2 pieces)', cal: 280, protein: 7, carbs: 28, fat: 15 },
-  { name: 'Motichoor Laddoo (2 pieces)', cal: 300, protein: 6, carbs: 35, fat: 15 },
-  { name: 'Boondi Laddoo (2 pieces)', cal: 290, protein: 6, carbs: 34, fat: 14 },
-  { name: 'Besan Laddoo (2 pieces)', cal: 280, protein: 6, carbs: 30, fat: 14 },
-  { name: 'Kaju Katli (2 pieces)', cal: 250, protein: 6, carbs: 30, fat: 10 },
-  { name: 'Badam Katli (2 pieces)', cal: 260, protein: 7, carbs: 32, fat: 11 },
-  { name: 'Pista Barfi (2 pieces)', cal: 270, protein: 7, carbs: 32, fat: 12 },
-  { name: 'Milk Barfi (2 pieces)', cal: 240, protein: 6, carbs: 30, fat: 9 },
-  { name: 'Kalakand (2 pieces)', cal: 260, protein: 8, carbs: 32, fat: 10 },
-  { name: 'Sugarcane Juice (1 glass)', cal: 120, protein: 0, carbs: 30, fat: 0 },
-  { name: 'Jaljeera (1 glass)', cal: 40, protein: 1, carbs: 8, fat: 0 },
-  { name: 'Thandai (1 glass)', cal: 180, protein: 6, carbs: 25, fat: 8 },
-  { name: 'Kokum Sherbet (1 glass)', cal: 90, protein: 1, carbs: 22, fat: 0 },
-  { name: 'Aam Panna (1 glass)', cal: 100, protein: 1, carbs: 24, fat: 0 },
-  { name: 'Bel Sherbet (1 glass)', cal: 110, protein: 1, carbs: 26, fat: 0 },
-  { name: 'Rose Sherbet (1 glass)', cal: 120, protein: 0, carbs: 28, fat: 0 },
-  { name: 'Khus Sherbet (1 glass)', cal: 120, protein: 0, carbs: 28, fat: 0 },
-  { name: 'Lemon Sherbet (1 glass)', cal: 60, protein: 0, carbs: 15, fat: 0 },
-  { name: 'Nimbu Pani (1 glass)', cal: 50, protein: 0, carbs: 12, fat: 0 },
-  { name: 'Masala Chaas (1 glass)', cal: 40, protein: 2, carbs: 5, fat: 1 },
-  { name: 'Sweet Lassi (1 glass)', cal: 180, protein: 6, carbs: 28, fat: 5 },
-  { name: 'Salted Lassi (1 glass)', cal: 150, protein: 6, carbs: 20, fat: 5 },
-  { name: 'Dry Fruit Lassi (1 glass)', cal: 220, protein: 8, carbs: 28, fat: 8 },
-  { name: 'Mango Lassi (1 glass)', cal: 200, protein: 7, carbs: 30, fat: 6 },
-  { name: 'Banana Milkshake (1 glass)', cal: 220, protein: 6, carbs: 40, fat: 5 },
-  { name: 'Mango Milkshake (1 glass)', cal: 210, protein: 6, carbs: 38, fat: 5 },
-  { name: 'Chikoo Milkshake (1 glass)', cal: 230, protein: 6, carbs: 42, fat: 6 },
-  { name: 'Strawberry Milkshake (1 glass)', cal: 200, protein: 6, carbs: 36, fat: 5 },
-  { name: 'Rose Milkshake (1 glass)', cal: 210, protein: 6, carbs: 38, fat: 5 },
-  { name: 'Cold Coffee (1 glass)', cal: 180, protein: 5, carbs: 28, fat: 5 },
-  { name: 'Hot Coffee (1 cup)', cal: 60, protein: 2, carbs: 8, fat: 2 },
-  { name: 'Masala Tea (1 cup)', cal: 50, protein: 1, carbs: 8, fat: 1 },
-  { name: 'Green Tea (1 cup)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Black Tea (1 cup)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Herbal Tea (1 cup)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Tulsi Tea (1 cup)', cal: 5, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Ginger Tea (1 cup)', cal: 10, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Cardamom Tea (1 cup)', cal: 10, protein: 0, carbs: 2, fat: 0 },
-  { name: 'Kesar Milk (1 glass)', cal: 180, protein: 7, carbs: 20, fat: 8 },
-  { name: 'Badam Milk (1 glass)', cal: 200, protein: 8, carbs: 22, fat: 9 },
-  { name: 'Haldi Doodh (1 glass)', cal: 150, protein: 7, carbs: 18, fat: 6 },
-  { name: 'Ragi Malt (1 glass)', cal: 180, protein: 6, carbs: 30, fat: 4 },
-  { name: 'Sattu Drink (1 glass)', cal: 160, protein: 8, carbs: 25, fat: 3 },
-  { name: 'Kanji (1 glass)', cal: 80, protein: 2, carbs: 15, fat: 1 },
-  { name: 'Fermented Rice Water (1 glass)', cal: 70, protein: 2, carbs: 14, fat: 0 },
-  { name: 'Buttermilk Spiced (1 glass)', cal: 45, protein: 2, carbs: 6, fat: 1 },
-  { name: 'Solkadhi (1 glass)', cal: 90, protein: 2, carbs: 12, fat: 3 },
-  { name: 'Kokum Kadhi (1 glass)', cal: 100, protein: 2, carbs: 14, fat: 3 },
-  { name: 'Amla Juice (1 glass)', cal: 60, protein: 1, carbs: 14, fat: 0 },
-  { name: 'Tulsi Juice (1 glass)', cal: 50, protein: 1, carbs: 12, fat: 0 },
-  { name: 'Neem Juice (1 glass)', cal: 40, protein: 1, carbs: 10, fat: 0 },
-  { name: 'Giloy Juice (1 glass)', cal: 45, protein: 1, carbs: 11, fat: 0 },
-  { name: 'Wheatgrass Juice (1 glass)', cal: 50, protein: 2, carbs: 10, fat: 0 },
-  { name: 'Carrot Juice (1 glass)', cal: 80, protein: 2, carbs: 18, fat: 0 },
-  { name: 'Beetroot Juice (1 glass)', cal: 90, protein: 2, carbs: 20, fat: 0 },
-  { name: 'Cucumber Juice (1 glass)', cal: 40, protein: 1, carbs: 9, fat: 0 },
-  { name: 'Tomato Juice (1 glass)', cal: 50, protein: 2, carbs: 10, fat: 0 },
-  { name: 'Orange Juice (1 glass)', cal: 110, protein: 2, carbs: 25, fat: 0 },
-  { name: 'Apple Juice (1 glass)', cal: 120, protein: 1, carbs: 28, fat: 0 },
-  { name: 'Pineapple Juice (1 glass)', cal: 130, protein: 1, carbs: 30, fat: 0 },
-  { name: 'Watermelon Juice (1 glass)', cal: 80, protein: 1, carbs: 20, fat: 0 },
-  { name: 'Mango Juice (1 glass)', cal: 120, protein: 1, carbs: 28, fat: 0 },
-  { name: 'Banana Smoothie (1 glass)', cal: 220, protein: 6, carbs: 40, fat: 5 },
-  { name: 'Papaya Smoothie (1 glass)', cal: 200, protein: 6, carbs: 36, fat: 5 },
-  { name: 'Mixed Fruit Smoothie (1 glass)', cal: 230, protein: 7, carbs: 42, fat: 6 },
-  { name: 'Papad Fry (1 piece)', cal: 60, protein: 2, carbs: 8, fat: 2 },
-  { name: 'Masala Papad (1 piece)', cal: 80, protein: 2, carbs: 10, fat: 3 },
-  { name: 'Roasted Papad (1 piece)', cal: 40, protein: 2, carbs: 6, fat: 1 },
-  { name: 'Farsan Mix (1 bowl)', cal: 200, protein: 6, carbs: 28, fat: 8 },
-  { name: 'Chivda (1 bowl)', cal: 180, protein: 5, carbs: 30, fat: 6 },
-  { name: 'Poha Chivda (1 bowl)', cal: 170, protein: 5, carbs: 28, fat: 5 },
-  { name: 'Sev (30g)', cal: 150, protein: 4, carbs: 18, fat: 8 },
-  { name: 'Bhujia (30g)', cal: 160, protein: 5, carbs: 18, fat: 9 },
-  { name: 'Gathiya (30g)', cal: 170, protein: 5, carbs: 20, fat: 8 },
-  { name: 'Namak Para (30g)', cal: 140, protein: 3, carbs: 20, fat: 6 },
-  { name: 'Shakar Para (30g)', cal: 160, protein: 3, carbs: 22, fat: 7 },
-  { name: 'Mathri (2 pieces)', cal: 180, protein: 4, carbs: 20, fat: 8 },
-  { name: 'Khakhra (1 piece)', cal: 80, protein: 3, carbs: 12, fat: 3 },
-  { name: 'Methi Khakhra (1 piece)', cal: 90, protein: 3, carbs: 12, fat: 4 },
-  { name: 'Jeera Khakhra (1 piece)', cal: 90, protein: 3, carbs: 12, fat: 4 },
-  { name: 'Masala Khakhra (1 piece)', cal: 100, protein: 3, carbs: 12, fat: 5 },
-  { name: 'Pickle Mango (1 tbsp)', cal: 40, protein: 1, carbs: 3, fat: 3 },
-  { name: 'Pickle Lemon (1 tbsp)', cal: 30, protein: 0, carbs: 3, fat: 2 },
-  { name: 'Pickle Chilli (1 tbsp)', cal: 25, protein: 0, carbs: 2, fat: 2 },
-  { name: 'Pickle Garlic (1 tbsp)', cal: 30, protein: 1, carbs: 2, fat: 2 },
-  { name: 'Pickle Mixed Veg (1 tbsp)', cal: 35, protein: 1, carbs: 3, fat: 2 },
-  { name: 'Green Chutney (1 tbsp)', cal: 20, protein: 0, carbs: 2, fat: 1 },
-  { name: 'Tamarind Chutney (1 tbsp)', cal: 30, protein: 0, carbs: 6, fat: 0 },
-  { name: 'Coconut Chutney (1 tbsp)', cal: 50, protein: 1, carbs: 2, fat: 4 },
-  { name: 'Peanut Chutney (1 tbsp)', cal: 60, protein: 2, carbs: 2, fat: 5 },
-  { name: 'Sesame Chutney (1 tbsp)', cal: 55, protein: 2, carbs: 2, fat: 4 },
-  { name: 'Onion Chutney (1 tbsp)', cal: 25, protein: 1, carbs: 3, fat: 1 },
-  { name: 'Tomato Chutney (1 tbsp)', cal: 25, protein: 1, carbs: 3, fat: 1 },
-  { name: 'Garlic Chutney (1 tbsp)', cal: 30, protein: 1, carbs: 2, fat: 2 },
-  { name: 'Dry Coconut Chutney (1 tbsp)', cal: 40, protein: 1, carbs: 2, fat: 3 },
-  { name: 'Coriander Chutney (1 tbsp)', cal: 20, protein: 0, carbs: 2, fat: 1 },
-  { name: 'Mint Chutney (1 tbsp)', cal: 20, protein: 0, carbs: 2, fat: 1 },
-  { name: 'Imli Chutney (1 tbsp)', cal: 30, protein: 0, carbs: 6, fat: 0 },
-  { name: 'Raita Boondi (1 bowl)', cal: 120, protein: 4, carbs: 10, fat: 6 },
-  { name: 'Raita Cucumber (1 bowl)', cal: 100, protein: 4, carbs: 8, fat: 4 },
-  { name: 'Raita Onion (1 bowl)', cal: 100, protein: 4, carbs: 8, fat: 4 },
-  { name: 'Raita Tomato (1 bowl)', cal: 100, protein: 4, carbs: 8, fat: 4 },
-  { name: 'Raita Mixed Veg (1 bowl)', cal: 110, protein: 4, carbs: 9, fat: 4 },
-  { name: 'Farsan Jalebi Combo (plate)', cal: 400, protein: 8, carbs: 60, fat: 14 },
-  { name: 'Bhujia Sev Mix (1 bowl)', cal: 200, protein: 6, carbs: 28, fat: 8 },
-  { name: 'Chivda Mix (1 bowl)', cal: 190, protein: 6, carbs: 30, fat: 7 },
-  { name: 'Namkeen Mixture (1 bowl)', cal: 210, protein: 7, carbs: 32, fat: 8 },
-  { name: 'Murukku (2 pieces)', cal: 160, protein: 4, carbs: 20, fat: 7 },
-  { name: 'Thattai (2 pieces)', cal: 170, protein: 5, carbs: 22, fat: 7 },
-  { name: 'Ribbon Pakoda (2 pieces)', cal: 180, protein: 5, carbs: 24, fat: 8 },
-  { name: 'Kara Sev (30g)', cal: 150, protein: 4, carbs: 18, fat: 8 },
-  { name: 'Mixture South Indian (1 bowl)', cal: 200, protein: 6, carbs: 28, fat: 8 },
-  { name: 'Banana Chips (30g)', cal: 150, protein: 2, carbs: 20, fat: 7 },
-  { name: 'Jackfruit Chips (30g)', cal: 160, protein: 2, carbs: 22, fat: 7 },
-  { name: 'Tapioca Chips (30g)', cal: 170, protein: 2, carbs: 24, fat: 7 },
-  { name: 'Potato Chips (30g)', cal: 160, protein: 2, carbs: 20, fat: 8 },
-  { name: 'Masala Chips (30g)', cal: 170, protein: 2, carbs: 22, fat: 8 },
-  { name: 'Salted Chips (30g)', cal: 160, protein: 2, carbs: 20, fat: 8 },
-  { name: 'Diwali Chakli (5 pieces)', cal: 250, protein: 6, carbs: 30, fat: 12 },
-  { name: 'Diwali Shankarpali (5 pieces)', cal: 220, protein: 5, carbs: 28, fat: 10 },
-  { name: 'Diwali Karanji (2 pieces)', cal: 300, protein: 7, carbs: 40, fat: 14 },
-  { name: 'Diwali Laddoo Besan (2 pieces)', cal: 280, protein: 6, carbs: 30, fat: 14 },
-  { name: 'Diwali Laddoo Motichoor (2 pieces)', cal: 300, protein: 6, carbs: 35, fat: 15 },
-  { name: 'Diwali Anarsa (2 pieces)', cal: 300, protein: 7, carbs: 38, fat: 12 },
-  { name: 'Diwali Chivda (1 bowl)', cal: 180, protein: 5, carbs: 30, fat: 6 },
-  { name: 'Diwali Farsan Mix (1 bowl)', cal: 200, protein: 6, carbs: 28, fat: 8 },
-  { name: 'Holi Gujiya (2 pieces)', cal: 320, protein: 7, carbs: 42, fat: 14 },
-  { name: 'Holi Thandai (1 glass)', cal: 180, protein: 6, carbs: 25, fat: 8 },
-  { name: 'Holi Malpua (2 pieces)', cal: 330, protein: 7, carbs: 40, fat: 15 },
-  { name: 'Holi Dahi Bhalla (1 plate)', cal: 280, protein: 8, carbs: 35, fat: 10 },
-  { name: 'Eid Biryani Mutton (1 plate)', cal: 550, protein: 32, carbs: 65, fat: 15 },
-  { name: 'Eid Sheer Khurma (1 bowl)', cal: 300, protein: 9, carbs: 45, fat: 12 },
-  { name: 'Eid Kebab Mix (1 plate)', cal: 400, protein: 25, carbs: 20, fat: 18 },
-  { name: 'Eid Phirni (1 bowl)', cal: 240, protein: 7, carbs: 38, fat: 8 },
-  { name: 'Ganesh Chaturthi Ukadiche Modak (2 pieces)', cal: 290, protein: 6, carbs: 36, fat: 12 },
-  { name: 'Ganesh Chaturthi Fried Modak (2 pieces)', cal: 320, protein: 7, carbs: 38, fat: 14 },
-  { name: 'Ganesh Chaturthi Puran Poli (1 piece)', cal: 250, protein: 6, carbs: 40, fat: 8 },
-  { name: 'Navratri Sabudana Khichdi (1 bowl)', cal: 280, protein: 6, carbs: 40, fat: 10 },
-  { name: 'Navratri Singhara Halwa (1 bowl)', cal: 270, protein: 6, carbs: 38, fat: 9 },
-  { name: 'Navratri Kuttu Poori (2 pieces)', cal: 220, protein: 6, carbs: 30, fat: 8 },
-  { name: 'Navratri Samak Rice Khichdi (1 bowl)', cal: 240, protein: 7, carbs: 35, fat: 8 },
-  { name: 'Pongal Ven Pongal (1 bowl)', cal: 250, protein: 8, carbs: 40, fat: 9 },
-  { name: 'Pongal Sweet Pongal (1 bowl)', cal: 280, protein: 7, carbs: 42, fat: 10 },
-  { name: 'Pongal Coconut Rice (1 bowl)', cal: 260, protein: 6, carbs: 38, fat: 9 },
-  { name: 'Pongal Tamarind Rice (1 bowl)', cal: 240, protein: 6, carbs: 40, fat: 7 },
-  { name: 'Christmas Plum Cake (1 slice)', cal: 300, protein: 5, carbs: 45, fat: 12 },
-  { name: 'Christmas Rose Cookies (5 pieces)', cal: 250, protein: 6, carbs: 30, fat: 12 },
-  { name: 'Christmas Kulkuls (5 pieces)', cal: 220, protein: 5, carbs: 28, fat: 10 },
-  { name: 'Christmas Neureos (2 pieces)', cal: 280, protein: 6, carbs: 36, fat: 12 },
-  { name: 'Christmas Baath Cake (1 slice)', cal: 290, protein: 6, carbs: 38, fat: 11 },
-  { name: 'Sabudana Khichdi (1 bowl)', cal: 280, protein: 6, carbs: 40, fat: 10 },
-  { name: 'Sabudana Vada (2 pieces)', cal: 280, protein: 6, carbs: 35, fat: 12 },
-  { name: 'Medu Vada (2 pieces)', cal: 240, protein: 7, carbs: 28, fat: 12 },
-  { name: 'Rava Idli (2 pieces)', cal: 150, protein: 5, carbs: 28, fat: 2 },
-  { name: 'Pesarattu (1 piece)', cal: 180, protein: 7, carbs: 28, fat: 5 },
-  { name: 'Adai (1 piece)', cal: 200, protein: 8, carbs: 30, fat: 6 },
-  { name: 'Neer Dosa (2 pieces)', cal: 150, protein: 4, carbs: 28, fat: 2 },
-  { name: 'Set Dosa (2 pieces)', cal: 220, protein: 6, carbs: 36, fat: 6 },
-  { name: 'Appam (1 piece)', cal: 160, protein: 4, carbs: 30, fat: 3 },
-  { name: 'Pongal Ven (1 bowl)', cal: 250, protein: 8, carbs: 40, fat: 9 },
-  { name: 'Sweet Pongal (1 bowl)', cal: 280, protein: 7, carbs: 42, fat: 10 },
-  { name: 'Kesari Bath (1 bowl)', cal: 280, protein: 6, carbs: 42, fat: 10 },
-  { name: 'Rava Kesari (1 bowl)', cal: 270, protein: 6, carbs: 40, fat: 9 },
-  { name: 'Thepla (2 pieces)', cal: 220, protein: 6, carbs: 30, fat: 8 },
-  { name: 'Handvo (1 slice)', cal: 180, protein: 7, carbs: 22, fat: 7 },
-  { name: 'Patra (4 slices)', cal: 220, protein: 7, carbs: 28, fat: 9 },
-  { name: 'Khaman Dhokla (2 pieces)', cal: 150, protein: 6, carbs: 20, fat: 5 },
-  { name: 'Khandvi (6 pieces)', cal: 180, protein: 8, carbs: 22, fat: 6 },
-  { name: 'Fafda (2 pieces)', cal: 200, protein: 7, carbs: 25, fat: 8 },
-  { name: 'Chilla Besan (2 pieces)', cal: 220, protein: 10, carbs: 28, fat: 8 },
-  { name: 'Moong Dal Chilla (2 pieces)', cal: 230, protein: 12, carbs: 26, fat: 7 },
-  { name: 'Paneer Chilla (2 pieces)', cal: 250, protein: 14, carbs: 26, fat: 9 },
-  { name: 'Vegetable Sandwich (2 slices)', cal: 200, protein: 6, carbs: 32, fat: 6 },
-  { name: 'Paneer Sandwich (2 slices)', cal: 250, protein: 10, carbs: 30, fat: 10 },
-  { name: 'Egg Sandwich (2 slices)', cal: 240, protein: 12, carbs: 28, fat: 9 },
-  { name: 'Chicken Sandwich (2 slices)', cal: 280, protein: 15, carbs: 30, fat: 10 },
-  { name: 'Vegetable Frankie (1)', cal: 230, protein: 7, carbs: 32, fat: 9 },
-  { name: 'Paneer Frankie (1)', cal: 260, protein: 11, carbs: 30, fat: 11 },
-  { name: 'Egg Frankie (1)', cal: 250, protein: 13, carbs: 28, fat: 10 },
-  { name: 'Chicken Frankie (1)', cal: 290, protein: 16, carbs: 30, fat: 11 },
-  { name: 'Vegetable Cutlet (2 pieces)', cal: 240, protein: 6, carbs: 32, fat: 9 },
-  { name: 'Paneer Cutlet (2 pieces)', cal: 260, protein: 10, carbs: 30, fat: 10 },
-  { name: 'Egg Cutlet (2 pieces)', cal: 250, protein: 12, carbs: 28, fat: 9 },
-  { name: 'Chicken Cutlet (2 pieces)', cal: 280, protein: 15, carbs: 28, fat: 10 },
-  { name: 'Vegetable Patties (1 piece)', cal: 230, protein: 6, carbs: 28, fat: 10 },
-  { name: 'Paneer Patties (1 piece)', cal: 250, protein: 9, carbs: 28, fat: 11 },
-  { name: 'Egg Patties (1 piece)', cal: 260, protein: 10, carbs: 28, fat: 11 },
-  { name: 'Chicken Patties (1 piece)', cal: 270, protein: 12, carbs: 28, fat: 12 },
-  { name: 'Vegetable Poha Cutlet (2 pieces)', cal: 240, protein: 7, carbs: 30, fat: 9 },
-  { name: 'Vegetable Oats Cutlet (2 pieces)', cal: 250, protein: 8, carbs: 28, fat: 10 },
-  { name: 'Vegetable Rava Pancake (2 pieces)', cal: 220, protein: 7, carbs: 28, fat: 8 },
-  { name: 'Vegetable Besan Pancake (2 pieces)', cal: 230, protein: 8, carbs: 28, fat: 9 },
-  { name: 'Vegetable Moong Pancake (2 pieces)', cal: 240, protein: 9, carbs: 28, fat: 9 },
-  { name: 'Vegetable Oats Pancake (2 pieces)', cal: 250, protein: 9, carbs: 28, fat: 10 },
-  { name: 'Bhakri Pithla (1 plate)', cal: 280, protein: 10, carbs: 35, fat: 10 },
-  { name: 'Zunka Bhakri (1 plate)', cal: 300, protein: 12, carbs: 36, fat: 12 },
-  { name: 'Misal (1 bowl)', cal: 250, protein: 10, carbs: 32, fat: 9 },
-  { name: 'Solkadhi (1 glass)', cal: 90, protein: 2, carbs: 12, fat: 3 },
-  { name: 'Varan Bhaat (1 plate)', cal: 280, protein: 9, carbs: 40, fat: 6 },
-  { name: 'Pithla (1 bowl)', cal: 220, protein: 9, carbs: 28, fat: 8 },
-  { name: 'Bhindi Fry (1 bowl)', cal: 150, protein: 3, carbs: 10, fat: 9 },
-  { name: 'Aloo Baingan (1 bowl)', cal: 180, protein: 4, carbs: 20, fat: 8 },
-  { name: 'Undhiyu (1 bowl)', cal: 250, protein: 8, carbs: 28, fat: 12 },
-  { name: 'Dal Dhokli (1 bowl)', cal: 300, protein: 12, carbs: 40, fat: 10 },
-  { name: 'Handi Dal (1 bowl)', cal: 220, protein: 10, carbs: 30, fat: 8 },
-  { name: 'Khichu (1 bowl)', cal: 200, protein: 6, carbs: 32, fat: 6 },
-  { name: 'Patra Curry (1 bowl)', cal: 240, protein: 8, carbs: 30, fat: 9 },
-  { name: 'Litti Chokha (2 pieces)', cal: 300, protein: 10, carbs: 40, fat: 12 },
-  { name: 'Ghugni (1 bowl)', cal: 200, protein: 9, carbs: 30, fat: 5 },
-  { name: 'Chhena Poda (1 slice)', cal: 280, protein: 9, carbs: 35, fat: 11 },
-  { name: 'Dalma (1 bowl)', cal: 260, protein: 10, carbs: 34, fat: 9 },
-  { name: 'Pakhala Bhata (1 plate)', cal: 220, protein: 7, carbs: 32, fat: 6 },
-  { name: 'Machher Jhol (1 bowl)', cal: 280, protein: 20, carbs: 10, fat: 14 },
-  { name: 'Shukto (1 bowl)', cal: 200, protein: 6, carbs: 28, fat: 7 },
-  { name: 'Cholar Dal (1 bowl)', cal: 220, protein: 9, carbs: 32, fat: 8 },
-  { name: 'Aloo Posto (1 bowl)', cal: 240, protein: 8, carbs: 28, fat: 10 },
-  { name: 'Bhapa Ilish (1 piece)', cal: 300, protein: 22, carbs: 8, fat: 16 },
-  { name: 'Kosha Mangsho (1 bowl)', cal: 380, protein: 28, carbs: 12, fat: 22 },
-  { name: 'Sarson Da Saag (1 bowl)', cal: 200, protein: 8, carbs: 20, fat: 8 },
-  { name: 'Makki Ki Roti (1 piece)', cal: 180, protein: 4, carbs: 30, fat: 3 },
-  { name: 'Paneer Bhurji (1 bowl)', cal: 300, protein: 20, carbs: 8, fat: 22 },
-  { name: 'Chole Kulche (1 plate)', cal: 400, protein: 12, carbs: 55, fat: 14 },
-  { name: 'Dal Panchmel (1 bowl)', cal: 240, protein: 12, carbs: 34, fat: 8 },
-  { name: 'Ker Sangri (1 bowl)', cal: 220, protein: 8, carbs: 28, fat: 9 },
-  { name: 'Bajra Khichdi (1 bowl)', cal: 260, protein: 9, carbs: 36, fat: 8 },
-  { name: 'Rajasthani Kadhi (1 bowl)', cal: 230, protein: 8, carbs: 30, fat: 7 },
-  { name: 'Gatte Ki Sabzi (1 bowl)', cal: 280, protein: 10, carbs: 28, fat: 12 },
-  { name: 'Dal Baati (1 plate)', cal: 350, protein: 14, carbs: 45, fat: 14 },
-  { name: 'Baati (1 piece)', cal: 150, protein: 4, carbs: 20, fat: 6 },
-  { name: 'Ker Sangri Pulao (1 bowl)', cal: 280, protein: 9, carbs: 38, fat: 10 },
-  { name: 'Bajra Roti (1 piece)', cal: 170, protein: 6, carbs: 30, fat: 3 },
-  { name: 'Jowar Roti (1 piece)', cal: 160, protein: 5, carbs: 28, fat: 2 },
-  { name: 'Ragi Roti (1 piece)', cal: 170, protein: 5, carbs: 28, fat: 3 },
-  { name: 'Akki Roti (1 piece)', cal: 180, protein: 5, carbs: 30, fat: 4 },
-  { name: 'Neer Dosa (2 pieces)', cal: 150, protein: 4, carbs: 28, fat: 2 },
-  { name: 'Bisi Bele Bath (1 bowl)', cal: 280, protein: 9, carbs: 38, fat: 10 },
-  { name: 'Rasam Rice (1 bowl)', cal: 220, protein: 7, carbs: 32, fat: 6 },
-  { name: 'Curd Rice (1 bowl)', cal: 220, protein: 7, carbs: 35, fat: 6 },
-  { name: 'Puliyodarai (1 bowl)', cal: 240, protein: 6, carbs: 40, fat: 7 },
-  { name: 'Avial (1 bowl)', cal: 250, protein: 8, carbs: 28, fat: 10 },
-  { name: 'Kootu (1 bowl)', cal: 230, protein: 9, carbs: 30, fat: 8 },
-  { name: 'Poriyal (1 bowl)', cal: 200, protein: 7, carbs: 28, fat: 7 },
-  { name: 'Chettinad Chicken (1 bowl)', cal: 380, protein: 28, carbs: 12, fat: 22 },
-  { name: 'Malabar Fish Curry (1 bowl)', cal: 320, protein: 24, carbs: 10, fat: 18 },
-  { name: 'Kerala Parotta (1 piece)', cal: 220, protein: 5, carbs: 32, fat: 9 },
-  { name: 'Appam with Stew (1 plate)', cal: 280, protein: 9, carbs: 35, fat: 10 },
-  { name: 'Idiyappam (2 pieces)', cal: 200, protein: 6, carbs: 36, fat: 4 },
-  { name: 'Puttu (1 bowl)', cal: 220, protein: 7, carbs: 38, fat: 5 },
-  { name: 'Maggi Instant Noodles (100g)', cal: 350, protein: 7, carbs: 55, fat: 12 },
-  { name: 'Top Ramen Noodles (100g)', cal: 360, protein: 8, carbs: 54, fat: 13 },
-  { name: 'Yippee Noodles (100g)', cal: 370, protein: 8, carbs: 56, fat: 14 },
-  { name: 'Parle-G Biscuits (100g)', cal: 450, protein: 6, carbs: 70, fat: 15 },
-  { name: 'Oreo Biscuits (100g)', cal: 480, protein: 5, carbs: 72, fat: 18 },
-  { name: 'Bourbon Biscuits (100g)', cal: 470, protein: 6, carbs: 71, fat: 17 },
-  { name: 'Lays Potato Chips (100g)', cal: 550, protein: 7, carbs: 50, fat: 35 },
-  { name: 'Kurkure Masala Munch (100g)', cal: 520, protein: 6, carbs: 58, fat: 28 },
-  { name: 'Haldiram’s Bhujia (100g)', cal: 540, protein: 8, carbs: 52, fat: 32 },
-  { name: 'Kellogg’s Cornflakes (100g)', cal: 380, protein: 8, carbs: 80, fat: 2 },
-  { name: 'Kellogg’s Chocos (100g)', cal: 400, protein: 7, carbs: 78, fat: 5 },
-  { name: 'MTR Ready-to-Eat Dal Fry (100g)', cal: 150, protein: 6, carbs: 20, fat: 6 },
-  { name: 'MTR Ready-to-Eat Paneer Butter Masala (100g)', cal: 180, protein: 8, carbs: 12, fat: 10 },
-  { name: 'ITC Kitchens Rajma Masala (100g)', cal: 160, protein: 7, carbs: 22, fat: 5 },
-  { name: 'McCain French Fries (100g)', cal: 280, protein: 5, carbs: 35, fat: 12 },
-  { name: 'McCain Veg Nuggets (100g)', cal: 290, protein: 6, carbs: 34, fat: 13 },
-  { name: 'Amul Cheese (100g)', cal: 320, protein: 20, carbs: 3, fat: 25 },
-  { name: 'Amul Butter (100g)', cal: 720, protein: 1, carbs: 0, fat: 80 },
-  { name: 'Mother Dairy Yogurt Cup (100g)', cal: 90, protein: 4, carbs: 12, fat: 3 },
-  { name: 'Frooti Mango Drink (100ml)', cal: 45, protein: 0, carbs: 11, fat: 0 },
-  { name: 'Coca-Cola (100ml)', cal: 42, protein: 0, carbs: 11, fat: 0 },
-  { name: 'Pepsi (100ml)', cal: 42, protein: 0, carbs: 11, fat: 0 },
-  { name: 'Real Fruit Juice Orange (100ml)', cal: 50, protein: 0, carbs: 12, fat: 0 },
-  { name: 'Cadbury Dairy Milk (100g)', cal: 530, protein: 6, carbs: 60, fat: 28 },
-  { name: 'KitKat (100g)', cal: 520, protein: 6, carbs: 62, fat: 26 },
-  { name: 'Perk (100g)', cal: 510, protein: 6, carbs: 61, fat: 25 },
-  { name: 'Protein Bar RiteBite (100g)', cal: 350, protein: 20, carbs: 30, fat: 10 },
-  { name: 'Whey Protein Drink (100ml)', cal: 80, protein: 15, carbs: 3, fat: 1 },
-  { name: 'Brown Bread Britannia (100g)', cal: 250, protein: 9, carbs: 45, fat: 3 },
-  { name: 'Multigrain Bread (100g)', cal: 260, protein: 10, carbs: 44, fat: 4 },
-  { name: 'Baked Namkeen (100g)', cal: 420, protein: 10, carbs: 60, fat: 12 },
-  { name: 'Britannia Marie Gold Biscuits (100g)', cal: 430, protein: 7, carbs: 72, fat: 12 },
-  { name: 'Britannia Good Day Butter Cookies (100g)', cal: 480, protein: 6, carbs: 70, fat: 18 },
-  { name: 'Britannia Cake Slice (100g)', cal: 420, protein: 6, carbs: 65, fat: 14 },
-  { name: 'Britannia Rusk (100g)', cal: 410, protein: 8, carbs: 74, fat: 8 },
-  { name: 'Nestlé Milkmaid Condensed Milk (100g)', cal: 320, protein: 7, carbs: 55, fat: 8 },
-  { name: 'Nestlé Everyday Dairy Whitener (100g)', cal: 500, protein: 20, carbs: 50, fat: 25 },
-  { name: 'Nestlé KitKat (100g)', cal: 520, protein: 6, carbs: 62, fat: 26 },
-  { name: 'Nestlé Munch (100g)', cal: 510, protein: 6, carbs: 61, fat: 25 },
-  { name: 'Nestlé Cerelac (100g)', cal: 400, protein: 12, carbs: 70, fat: 8 },
-  { name: 'Patanjali Digestive Biscuits (100g)', cal: 440, protein: 8, carbs: 68, fat: 12 },
-  { name: 'Patanjali Doodh Biscuit (100g)', cal: 450, protein: 7, carbs: 70, fat: 13 },
-  { name: 'Patanjali Atta Noodles (100g)', cal: 360, protein: 8, carbs: 55, fat: 12 },
-  { name: 'Patanjali Corn Flakes Mix (100g)', cal: 380, protein: 9, carbs: 78, fat: 3 },
-  { name: 'ITC Bingo Mad Angles (100g)', cal: 520, protein: 6, carbs: 58, fat: 28 },
-  { name: 'ITC Sunfeast Dark Fantasy Choco Fills (100g)', cal: 490, protein: 6, carbs: 68, fat: 18 },
-  { name: 'ITC Aashirvaad Instant Mix Rava Idli (100g)', cal: 370, protein: 8, carbs: 72, fat: 6 },
-  { name: 'ITC Aashirvaad Instant Mix Gulab Jamun (100g)', cal: 420, protein: 6, carbs: 75, fat: 10 },
-  { name: 'Haldiram’s Soan Papdi (100g)', cal: 480, protein: 8, carbs: 60, fat: 22 },
-  { name: 'Haldiram’s Rasgulla Tin (100g)', cal: 220, protein: 6, carbs: 40, fat: 4 },
-  { name: 'Haldiram’s Gulab Jamun Tin (100g)', cal: 300, protein: 6, carbs: 45, fat: 12 },
-  { name: 'Haldiram’s Namkeen Mixture (100g)', cal: 540, protein: 8, carbs: 52, fat: 32 },
-  { name: 'Pepsi Soft Drink (100ml)', cal: 42, protein: 0, carbs: 11, fat: 0 },
-  { name: 'Mountain Dew (100ml)', cal: 45, protein: 0, carbs: 12, fat: 0 },
-  { name: 'Slice Mango Drink (100ml)', cal: 50, protein: 0, carbs: 12, fat: 0 },
-  { name: 'Tropicana Orange Juice (100ml)', cal: 48, protein: 0, carbs: 11, fat: 0 },
-  { name: 'Bournvita Health Drink Powder (100g)', cal: 400, protein: 7, carbs: 80, fat: 5 },
-  { name: 'Horlicks Health Drink Powder (100g)', cal: 390, protein: 8, carbs: 78, fat: 4 },
-  { name: 'Complan Nutrition Drink Powder (100g)', cal: 420, protein: 15, carbs: 70, fat: 6 },
-  { name: 'Boost Energy Drink Powder (100g)', cal: 410, protein: 9, carbs: 78, fat: 5 },
-  { name: 'Amul Taaza Milk (100ml)', cal: 70, protein: 3, carbs: 5, fat: 4 },
-  { name: 'Amul Lassi Tetra Pack (200ml)', cal: 150, protein: 6, carbs: 20, fat: 5 },
-  { name: 'Mother Dairy Ice Cream Vanilla (100g)', cal: 200, protein: 4, carbs: 25, fat: 10 },
-  { name: 'Kwality Walls Cornetto (100g)', cal: 250, protein: 5, carbs: 30, fat: 12 },
-  { name: 'Britannia Cheese Slices (100g)', cal: 310, protein: 18, carbs: 3, fat: 24 },
-  { name: 'Britannia Milk Bikis (100g)', cal: 460, protein: 7, carbs: 72, fat: 14 },
-  { name: 'Sunfeast Marie Light (100g)', cal: 430, protein: 7, carbs: 72, fat: 12 },
-  { name: 'Sunfeast Mom’s Magic Cashew Cookies (100g)', cal: 480, protein: 6, carbs: 70, fat: 18 },
-  { name: 'Maggi Instant Noodles (1 packet ~70g)', cal: 245, protein: 5, carbs: 38, fat: 8 },
-  { name: 'Top Ramen Noodles (1 packet ~75g)', cal: 270, protein: 6, carbs: 40, fat: 9 },
-  { name: 'Yippee Noodles (1 packet ~80g)', cal: 295, protein: 6, carbs: 42, fat: 10 },
-  { name: 'Parle-G Biscuits (10 biscuits ~56g)', cal: 250, protein: 3, carbs: 39, fat: 8 },
-  { name: 'Oreo Biscuits (4 biscuits ~46g)', cal: 220, protein: 2, carbs: 33, fat: 9 },
-  { name: 'Bourbon Biscuits (4 biscuits ~50g)', cal: 235, protein: 3, carbs: 35, fat: 9 },
-  { name: 'Lays Potato Chips (1 small pack ~28g)', cal: 150, protein: 2, carbs: 14, fat: 9 },
-  { name: 'Kurkure Masala Munch (1 pack ~30g)', cal: 155, protein: 2, carbs: 17, fat: 8 },
-  { name: 'Haldiram’s Bhujia (1 serving ~35g)', cal: 190, protein: 3, carbs: 18, fat: 11 },
-  { name: 'Kellogg’s Cornflakes (1 bowl ~30g)', cal: 115, protein: 2, carbs: 24, fat: 0.5 },
-  { name: 'Kellogg’s Chocos (1 bowl ~35g)', cal: 140, protein: 2, carbs: 27, fat: 2 },
-  { name: 'MTR Ready-to-Eat Dal Fry (1 pouch ~200g)', cal: 300, protein: 12, carbs: 40, fat: 12 },
-  { name: 'MTR Paneer Butter Masala (1 pouch ~200g)', cal: 360, protein: 16, carbs: 24, fat: 20 },
-  { name: 'ITC Kitchens Rajma Masala (1 pouch ~200g)', cal: 320, protein: 14, carbs: 44, fat: 10 },
-  { name: 'McCain French Fries (1 serving ~85g)', cal: 240, protein: 4, carbs: 30, fat: 10 },
-  { name: 'McCain Veg Nuggets (1 serving ~100g, ~6 pcs)', cal: 290, protein: 6, carbs: 34, fat: 13 },
-  { name: 'Amul Cheese Slice (1 slice ~20g)', cal: 64, protein: 4, carbs: 1, fat: 5 },
-  { name: 'Amul Butter (1 tbsp ~10g)', cal: 72, protein: 0, carbs: 0, fat: 8 },
-  { name: 'Mother Dairy Yogurt Cup (1 cup ~85g)', cal: 75, protein: 3, carbs: 10, fat: 2.5 },
-  { name: 'Frooti Mango Drink (1 tetra pack ~200ml)', cal: 90, protein: 0, carbs: 22, fat: 0 },
-  { name: 'Coca-Cola (1 can ~330ml)', cal: 140, protein: 0, carbs: 35, fat: 0 },
-  { name: 'Pepsi (1 bottle ~250ml)', cal: 105, protein: 0, carbs: 26, fat: 0 },
-  { name: 'Real Orange Juice (1 glass ~200ml)', cal: 100, protein: 0, carbs: 24, fat: 0 },
-  { name: 'Cadbury Dairy Milk (1 bar ~50g)', cal: 265, protein: 3, carbs: 30, fat: 14 },
-  { name: 'KitKat (4 fingers ~42g)', cal: 220, protein: 2, carbs: 28, fat: 11 },
-  { name: 'Perk (1 bar ~30g)', cal: 150, protein: 2, carbs: 18, fat: 7 },
-  { name: 'RiteBite Protein Bar (1 bar ~60g)', cal: 210, protein: 12, carbs: 18, fat: 6 },
-  { name: 'Whey Protein Drink (1 bottle ~200ml)', cal: 160, protein: 30, carbs: 6, fat: 2 },
-  { name: 'Britannia Brown Bread (2 slices ~60g)', cal: 150, protein: 5, carbs: 27, fat: 2 },
-  { name: 'Britannia Multigrain Bread (2 slices ~60g)', cal: 155, protein: 6, carbs: 26, fat: 2 },
-  { name: 'Baked Namkeen (1 serving ~40g)', cal: 170, protein: 4, carbs: 24, fat: 5 },
-  { name: 'Quaker Oats (1 bowl ~40g)', cal: 150, protein: 5, carbs: 27, fat: 3 },
-  { name: 'Quaker Masala Oats (1 serving ~40g)', cal: 160, protein: 5, carbs: 28, fat: 4 },
-  { name: 'Kellogg’s Cornflakes (1 bowl ~30g)', cal: 115, protein: 2, carbs: 24, fat: 0.5 },
-  { name: 'Kellogg’s Chocos (1 bowl ~35g)', cal: 140, protein: 2, carbs: 27, fat: 2 },
-  { name: 'Kellogg’s Muesli Fruit & Nut (1 bowl ~40g)', cal: 160, protein: 4, carbs: 28, fat: 4 },
-  { name: 'Tropicana Orange Juice (1 glass ~200ml)', cal: 100, protein: 0, carbs: 24, fat: 0 },
-  { name: 'Tropicana Mixed Fruit Juice (1 glass ~200ml)', cal: 110, protein: 0, carbs: 26, fat: 0 },
-  { name: 'Coca-Cola (1 can ~330ml)', cal: 140, protein: 0, carbs: 35, fat: 0 },
-  { name: 'Pepsi (1 bottle ~250ml)', cal: 105, protein: 0, carbs: 26, fat: 0 },
-  { name: 'Sprite (1 can ~330ml)', cal: 140, protein: 0, carbs: 35, fat: 0 },
-  { name: 'Mars Chocolate Bar (1 bar ~51g)', cal: 228, protein: 3, carbs: 35, fat: 9 },
-  { name: 'Snickers Bar (1 bar ~50g)', cal: 250, protein: 4, carbs: 29, fat: 12 },
-  { name: 'Bounty Bar (1 bar ~57g)', cal: 268, protein: 3, carbs: 34, fat: 13 },
-  { name: 'Twix Bar (2 fingers ~50g)', cal: 250, protein: 3, carbs: 32, fat: 12 },
-  { name: 'KitKat (4 fingers ~42g)', cal: 220, protein: 2, carbs: 28, fat: 11 },
-  { name: 'Nestlé Munch (1 bar ~30g)', cal: 150, protein: 2, carbs: 18, fat: 7 },
-  { name: 'Ferrero Rocher (3 pieces ~37g)', cal: 220, protein: 3, carbs: 17, fat: 16 },
-  { name: 'Nutella Hazelnut Spread (1 tbsp ~15g)', cal: 80, protein: 1, carbs: 9, fat: 5 },
-  { name: 'Pringles Chips (1 serving ~40g)', cal: 210, protein: 2, carbs: 21, fat: 13 },
-  { name: 'Doritos Nacho Chips (1 serving ~40g)', cal: 200, protein: 3, carbs: 20, fat: 11 },
-  { name: 'Lay’s Stax (1 serving ~40g)', cal: 210, protein: 2, carbs: 20, fat: 13 },
-  { name: 'Heinz Tomato Ketchup (1 tbsp ~15g)', cal: 15, protein: 0, carbs: 4, fat: 0 },
-  { name: 'Heinz Baked Beans (1 bowl ~100g)', cal: 90, protein: 5, carbs: 18, fat: 1 },
-  { name: 'Oreo Biscuits (4 biscuits ~46g)', cal: 220, protein: 2, carbs: 33, fat: 9 },
-  { name: 'Cadbury Dairy Milk Silk (1 bar ~60g)', cal: 320, protein: 4, carbs: 36, fat: 18 },
-  { name: 'Nestlé KitKat Chunky (1 bar ~40g)', cal: 210, protein: 2, carbs: 27, fat: 10 },
-  { name: 'Nestlé Milo Drink Powder (1 serving ~20g)', cal: 80, protein: 2, carbs: 14, fat: 1 },
-  { name: 'Red Bull Energy Drink (1 can ~250ml)', cal: 110, protein: 1, carbs: 27, fat: 0 },
-  { name: 'Monster Energy Drink (1 can ~350ml)', cal: 160, protein: 1, carbs: 40, fat: 0 },
-  { name: 'Pringles Original Chips (1 serving ~40g)', cal: 210, protein: 2, carbs: 21, fat: 13 },
-  { name: 'Doritos Nacho Cheese (1 serving ~40g)', cal: 200, protein: 3, carbs: 20, fat: 11 },
-  { name: 'Ritz Crackers (5 crackers ~16g)', cal: 80, protein: 1, carbs: 10, fat: 4 },
-  { name: 'Skittles (1 pack ~45g)', cal: 180, protein: 0, carbs: 42, fat: 1 },
-  { name: 'M&M’s Chocolate (1 pack ~40g)', cal: 200, protein: 2, carbs: 30, fat: 9 },
-  { name: 'Toblerone Chocolate (1 bar ~35g)', cal: 190, protein: 2, carbs: 20, fat: 11 },
-  { name: 'Hershey’s Kisses (5 pieces ~28g)', cal: 160, protein: 2, carbs: 18, fat: 9 },
-  { name: 'Hershey’s Syrup Chocolate (2 tbsp ~30g)', cal: 120, protein: 1, carbs: 28, fat: 0 },
-  { name: 'Nutella Hazelnut Spread (1 tbsp ~15g)', cal: 80, protein: 1, carbs: 9, fat: 5 },
-  { name: 'Peanut Butter Skippy (2 tbsp ~32g)', cal: 190, protein: 8, carbs: 7, fat: 16 },
-  { name: 'Tabasco Hot Sauce (1 tsp ~5g)', cal: 0, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Sriracha Hot Sauce (1 tbsp ~15g)', cal: 15, protein: 0, carbs: 3, fat: 0 },
-  { name: 'French’s Yellow Mustard (1 tbsp ~15g)', cal: 10, protein: 0, carbs: 1, fat: 0 },
-  { name: 'Heinz Tomato Ketchup (1 tbsp ~15g)', cal: 15, protein: 0, carbs: 4, fat: 0 },
-  { name: 'Hellmann’s Mayonnaise (1 tbsp ~15g)', cal: 90, protein: 0, carbs: 0, fat: 10 },
-  { name: 'Kraft Cheese Spread (1 tbsp ~15g)', cal: 60, protein: 2, carbs: 1, fat: 5 },
-  { name: 'Philadelphia Cream Cheese (2 tbsp ~30g)', cal: 100, protein: 2, carbs: 2, fat: 9 },
-  { name: 'Ragu Pasta Sauce (1/2 cup ~125g)', cal: 70, protein: 2, carbs: 10, fat: 2 },
-  { name: 'Barilla Pesto Sauce (2 tbsp ~30g)', cal: 120, protein: 2, carbs: 4, fat: 11 },
-  { name: 'Soy Sauce Kikkoman (1 tbsp ~15g)', cal: 10, protein: 1, carbs: 1, fat: 0 },
-  { name: 'Oreo Original (4 biscuits ~46g)', cal: 220, protein: 2, carbs: 33, fat: 9 },
-  { name: 'KitKat Chunky (1 bar ~40g)', cal: 210, protein: 2, carbs: 27, fat: 10 },
-  { name: 'Snickers Bar (1 bar ~50g)', cal: 250, protein: 4, carbs: 29, fat: 12 },
-  { name: 'Mars Bar (1 bar ~51g)', cal: 228, protein: 3, carbs: 35, fat: 9 },
-  { name: 'Twix Bar (2 fingers ~50g)', cal: 250, protein: 3, carbs: 32, fat: 12 },
-  { name: 'Red Bull Energy Drink (1 can ~250ml)', cal: 110, protein: 1, carbs: 27, fat: 0 },
-  { name: 'Monster Energy Drink (1 can ~350ml)', cal: 160, protein: 1, carbs: 40, fat: 0 },
-  { name: 'Gatorade Sports Drink (1 bottle ~500ml)', cal: 120, protein: 0, carbs: 30, fat: 0 },
-  { name: 'Powerade Sports Drink (1 bottle ~500ml)', cal: 130, protein: 0, carbs: 32, fat: 0 },
-  { name: 'Bisleri Vedica Mineral Water (1 bottle ~500ml)', cal: 0, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Aquafina Flavored Water Lemon (1 bottle ~500ml)', cal: 20, protein: 0, carbs: 5, fat: 0 },
-  { name: 'Evian Mineral Water (1 bottle ~500ml)', cal: 0, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Paper Boat Aam Panna (1 pouch ~200ml)', cal: 90, protein: 0, carbs: 22, fat: 0 },
-  { name: 'Paper Boat Kokum (1 pouch ~200ml)', cal: 80, protein: 0, carbs: 20, fat: 0 },
-  { name: 'Minute Maid Pulpy Orange (1 bottle ~250ml)', cal: 110, protein: 0, carbs: 26, fat: 0 },
-  { name: 'Minute Maid Apple Juice (1 bottle ~250ml)', cal: 115, protein: 0, carbs: 27, fat: 0 },
-  { name: 'Real Cranberry Juice (1 glass ~200ml)', cal: 95, protein: 0, carbs: 23, fat: 0 },
-  { name: 'Real Pomegranate Juice (1 glass ~200ml)', cal: 100, protein: 0, carbs: 24, fat: 0 },
-  { name: 'Yakult Probiotic Drink (1 bottle ~65ml)', cal: 50, protein: 1, carbs: 12, fat: 0 },
-  { name: 'Amul Kool Flavoured Milk (1 bottle ~200ml)', cal: 160, protein: 6, carbs: 22, fat: 6 },
-  { name: 'Mother Dairy Flavoured Lassi (1 bottle ~200ml)', cal: 150, protein: 6, carbs: 20, fat: 5 },
-  { name: 'Nestlé Milo Ready-to-Drink (1 bottle ~200ml)', cal: 160, protein: 4, carbs: 28, fat: 3 },
-  { name: 'Boost Ready-to-Drink (1 bottle ~200ml)', cal: 150, protein: 5, carbs: 26, fat: 2 },
-  { name: 'Starbucks Cold Brew (1 bottle ~250ml)', cal: 15, protein: 0, carbs: 3, fat: 0 },
-  { name: 'Costa Coffee Latte (1 cup ~250ml)', cal: 120, protein: 6, carbs: 12, fat: 6 },
-  { name: 'Hershey’s Milkshake Chocolate (1 bottle ~200ml)', cal: 180, protein: 6, carbs: 28, fat: 5 },
-  { name: 'Hershey’s Milkshake Strawberry (1 bottle ~200ml)', cal: 170, protein: 6, carbs: 27, fat: 5 },
-  { name: 'V8 Vegetable Juice (1 can ~250ml)', cal: 50, protein: 2, carbs: 10, fat: 0 },
-  { name: 'Arizona Iced Tea Lemon (1 can ~350ml)', cal: 140, protein: 0, carbs: 35, fat: 0 },
-  { name: 'Lipton Iced Tea Peach (1 bottle ~250ml)', cal: 90, protein: 0, carbs: 22, fat: 0 },
-  { name: 'Kwality Walls Cornetto (1 cone ~70g)', cal: 210, protein: 4, carbs: 28, fat: 9 },
-  { name: 'Kwality Walls Feast Bar (1 bar ~80g)', cal: 240, protein: 5, carbs: 32, fat: 11 },
-  { name: 'Kwality Walls Cassata Slice (1 slice ~100g)', cal: 280, protein: 6, carbs: 36, fat: 12 },
-  { name: 'Vadilal Ice Cream Cup Vanilla (1 cup ~100g)', cal: 200, protein: 4, carbs: 25, fat: 10 },
-  { name: 'Vadilal Kulfi Stick (1 stick ~80g)', cal: 220, protein: 5, carbs: 28, fat: 11 },
-  { name: 'Vadilal Falooda Kulfi (1 glass ~150g)', cal: 300, protein: 7, carbs: 40, fat: 14 },
-  { name: 'Amul Ice Cream Cup Chocolate (1 cup ~100g)', cal: 210, protein: 5, carbs: 28, fat: 10 },
-  { name: 'Amul Kulfi Malai (1 stick ~80g)', cal: 220, protein: 6, carbs: 26, fat: 11 },
-  { name: 'Mother Dairy Ice Cream Cup Strawberry (1 cup ~100g)', cal: 190, protein: 4, carbs: 26, fat: 8 },
-  { name: 'Mother Dairy Kulfi Kesar Pista (1 stick ~80g)', cal: 230, protein: 6, carbs: 28, fat: 12 },
-  { name: 'Baskin Robbins Scoop Chocolate (1 scoop ~90g)', cal: 210, protein: 4, carbs: 28, fat: 9 },
-  { name: 'Baskin Robbins Scoop Cotton Candy (1 scoop ~90g)', cal: 200, protein: 4, carbs: 30, fat: 8 },
-  { name: 'Baskin Robbins Ice Cream Sundae (1 serving ~150g)', cal: 320, protein: 6, carbs: 45, fat: 14 },
-  { name: 'Häagen-Dazs Ice Cream Cup Vanilla (1 cup ~100g)', cal: 250, protein: 5, carbs: 28, fat: 14 },
-  { name: 'Häagen-Dazs Ice Cream Cup Belgian Chocolate (1 cup ~100g)', cal: 260, protein: 5, carbs: 30, fat: 15 },
-  { name: 'Häagen-Dazs Ice Cream Bar Almond (1 bar ~80g)', cal: 240, protein: 5, carbs: 26, fat: 13 },
-  { name: 'Ben & Jerry’s Ice Cream Cup Chocolate Fudge (1 cup ~100g)', cal: 270, protein: 5, carbs: 32, fat: 15 },
-  { name: 'Ben & Jerry’s Ice Cream Cup Cookie Dough (1 cup ~100g)', cal: 280, protein: 5, carbs: 34, fat: 15 },
-  { name: 'Ben & Jerry’s Ice Cream Pint (1 serving ~120g)', cal: 320, protein: 6, carbs: 38, fat: 16 },
-  { name: 'Gelato Italiano Cup Mango (1 cup ~100g)', cal: 190, protein: 4, carbs: 28, fat: 7 },
-  { name: 'Gelato Italiano Cup Pistachio (1 cup ~100g)', cal: 200, protein: 5, carbs: 26, fat: 9 },
-  { name: 'London Dairy Ice Cream Cup Caramel (1 cup ~100g)', cal: 240, protein: 5, carbs: 30, fat: 12 },
-  { name: 'London Dairy Ice Cream Cup Strawberry Cheesecake (1 cup ~100g)', cal: 250, protein: 5, carbs: 32, fat: 13 },
-  { name: 'Britannia Fruit Cake Slice (1 slice ~60g)', cal: 220, protein: 3, carbs: 34, fat: 8 },
-  { name: 'Britannia Muffin Chocolate (1 piece ~70g)', cal: 250, protein: 4, carbs: 36, fat: 10 },
-  { name: 'Britannia Rusk Pack (2 pieces ~40g)', cal: 160, protein: 3, carbs: 28, fat: 3 },
-  { name: 'Sunfeast Dark Fantasy Choco Fills (1 piece ~25g)', cal: 120, protein: 2, carbs: 18, fat: 5 },
-  { name: 'Sunfeast Mom’s Magic Cashew Cookies (2 cookies ~30g)', cal: 140, protein: 2, carbs: 20, fat: 6 },
-  { name: 'ITC Fabelle Luxury Chocolate Cake (1 slice ~80g)', cal: 280, protein: 4, carbs: 40, fat: 12 },
-  { name: 'Haldiram’s Soan Cake (1 piece ~50g)', cal: 210, protein: 3, carbs: 28, fat: 9 },
-  { name: 'Local Bakery Muffin Vanilla (1 piece ~70g)', cal: 240, protein: 4, carbs: 35, fat: 9 },
-  { name: 'Local Bakery Doughnut Chocolate Glazed (1 piece ~75g)', cal: 280, protein: 4, carbs: 38, fat: 12 },
-  { name: 'Local Bakery Doughnut Sugar Coated (1 piece ~70g)', cal: 260, protein: 4, carbs: 36, fat: 11 },
-  { name: 'Croissant Butter (1 piece ~60g)', cal: 230, protein: 4, carbs: 26, fat: 12 },
-  { name: 'Croissant Chocolate Filled (1 piece ~70g)', cal: 270, protein: 5, carbs: 32, fat: 13 },
-  { name: 'Danish Pastry Cinnamon Roll (1 piece ~80g)', cal: 300, protein: 5, carbs: 40, fat: 14 },
-  { name: 'Danish Pastry Raisin Roll (1 piece ~80g)', cal: 290, protein: 5, carbs: 38, fat: 13 },
-  { name: 'Muffin Blueberry (1 piece ~70g)', cal: 260, protein: 4, carbs: 36, fat: 11 },
-  { name: 'Muffin Banana Walnut (1 piece ~70g)', cal: 270, protein: 5, carbs: 34, fat: 12 },
-  { name: 'Brownie Chocolate Fudge (1 piece ~60g)', cal: 240, protein: 4, carbs: 32, fat: 10 },
-  { name: 'Brownie Walnut (1 piece ~60g)', cal: 250, protein: 5, carbs: 30, fat: 11 },
-  { name: 'Pound Cake Slice (1 slice ~70g)', cal: 280, protein: 5, carbs: 38, fat: 12 },
-  { name: 'Cheesecake Slice (1 slice ~100g)', cal: 320, protein: 6, carbs: 34, fat: 16 },
-  { name: 'Cupcake Vanilla Frosted (1 piece ~60g)', cal: 240, protein: 4, carbs: 34, fat: 10 },
-  { name: 'Cupcake Chocolate Frosted (1 piece ~60g)', cal: 250, protein: 4, carbs: 35, fat: 11 },
-  { name: 'Donut Boston Cream (1 piece ~80g)', cal: 310, protein: 5, carbs: 40, fat: 14 },
-  { name: 'Donut Jelly Filled (1 piece ~80g)', cal: 300, protein: 5, carbs: 42, fat: 12 },
-  { name: 'MTR Ready-to-Eat Vegetable Pulao (1 pouch ~200g)', cal: 320, protein: 8, carbs: 50, fat: 10 },
-  { name: 'MTR Ready-to-Eat Paneer Tikka Masala (1 pouch ~200g)', cal: 360, protein: 14, carbs: 28, fat: 18 },
-  { name: 'ITC Kitchens of India Dal Bukhara (1 pouch ~200g)', cal: 340, protein: 12, carbs: 44, fat: 14 },
-  { name: 'ITC Kitchens of India Butter Chicken (1 pouch ~200g)', cal: 380, protein: 20, carbs: 22, fat: 20 },
-  { name: 'Haldiram’s Ready-to-Eat Rajma Masala (1 pouch ~200g)', cal: 330, protein: 12, carbs: 46, fat: 12 },
-  { name: 'Haldiram’s Ready-to-Eat Chole Masala (1 pouch ~200g)', cal: 340, protein: 13, carbs: 48, fat: 12 },
-  { name: 'Priya Ready-to-Eat Vegetable Biryani (1 pouch ~250g)', cal: 420, protein: 10, carbs: 65, fat: 14 },
-  { name: 'Priya Ready-to-Eat Chicken Biryani (1 pouch ~250g)', cal: 480, protein: 20, carbs: 60, fat: 18 },
-  { name: 'Heritage Frozen Idli with Sambar (1 tray ~250g)', cal: 350, protein: 12, carbs: 52, fat: 10 },
-  { name: 'Heritage Frozen Dosa with Chutney (1 tray ~250g)', cal: 360, protein: 12, carbs: 54, fat: 11 },
-  { name: 'Nestlé Maggi Cup Noodles Masala (1 cup ~70g)', cal: 250, protein: 6, carbs: 38, fat: 8 },
-  { name: 'Nestlé Maggi Cup Noodles Chicken (1 cup ~70g)', cal: 260, protein: 8, carbs: 36, fat: 9 },
-  { name: 'Knorr Instant Soup Tomato (1 sachet ~20g)', cal: 80, protein: 2, carbs: 16, fat: 1 },
-  { name: 'Knorr Instant Soup Sweet Corn (1 sachet ~20g)', cal: 85, protein: 2, carbs: 17, fat: 1 },
-  { name: 'Campbell’s Cream of Mushroom Soup (1 can ~250g)', cal: 180, protein: 6, carbs: 20, fat: 8 },
-  { name: 'Campbell’s Chicken Noodle Soup (1 can ~250g)', cal: 170, protein: 10, carbs: 18, fat: 6 },
-  { name: 'Barilla Ready-to-Eat Penne Arrabbiata (1 pouch ~250g)', cal: 360, protein: 12, carbs: 54, fat: 10 },
-  { name: 'Barilla Ready-to-Eat Spaghetti Alfredo (1 pouch ~250g)', cal: 380, protein: 14, carbs: 52, fat: 12 },
-  { name: 'Unibic Frozen Pizza Veggie (1 slice ~120g)', cal: 290, protein: 10, carbs: 36, fat: 11 },
-  { name: 'Unibic Frozen Pizza Chicken (1 slice ~120g)', cal: 320, protein: 14, carbs: 34, fat: 12 },
-  { name: 'Del Monte Pasta Pack Macaroni & Cheese (1 bowl ~200g)', cal: 370, protein: 14, carbs: 48, fat: 14 },
-  { name: 'Del Monte Pasta Pack Penne Tomato Basil (1 bowl ~200g)', cal: 350, protein: 12, carbs: 50, fat: 12 },
-  { name: 'Saffola Oodles Instant Ring Noodles (1 pack ~75g)', cal: 260, protein: 7, carbs: 40, fat: 8 },
-  { name: 'Saffola Masala Oats Ready Meal (1 bowl ~40g)', cal: 160, protein: 5, carbs: 28, fat: 4 },
-  { name: 'RiteBite Protein Bar (1 bar ~60g)', cal: 210, protein: 12, carbs: 18, fat: 6 },
-  { name: 'Yoga Bar Protein Bar (1 bar ~50g)', cal: 190, protein: 10, carbs: 20, fat: 7 },
-  { name: 'Yoga Bar Muesli (1 bowl ~40g)', cal: 160, protein: 5, carbs: 28, fat: 4 },
-  { name: 'Saffola Active Granola (1 bowl ~40g)', cal: 170, protein: 6, carbs: 30, fat: 5 },
-  { name: 'Saffola Masala Oats (1 serving ~40g)', cal: 160, protein: 5, carbs: 28, fat: 4 },
-  { name: 'Bagrry’s Crunchy Muesli (1 bowl ~40g)', cal: 165, protein: 6, carbs: 30, fat: 4 },
-  { name: 'Bagrry’s Oat Bran (1 bowl ~40g)', cal: 150, protein: 6, carbs: 27, fat: 3 },
-  { name: 'MyFitness Peanut Butter (2 tbsp ~32g)', cal: 190, protein: 9, carbs: 6, fat: 16 },
-  { name: 'Alpino Peanut Butter (2 tbsp ~32g)', cal: 185, protein: 8, carbs: 7, fat: 15 },
-  { name: 'Optimum Nutrition Whey Protein (1 scoop ~30g)', cal: 120, protein: 24, carbs: 3, fat: 1 },
-  { name: 'MuscleBlaze Whey Protein (1 scoop ~30g)', cal: 115, protein: 24, carbs: 2, fat: 1 },
-  { name: 'Herbalife Formula 1 Shake (1 scoop ~25g)', cal: 90, protein: 9, carbs: 12, fat: 1 },
-  { name: 'Ensure Nutrition Drink Powder (1 serving ~30g)', cal: 110, protein: 9, carbs: 15, fat: 2 },
-  { name: 'Horlicks Protein Plus (1 scoop ~30g)', cal: 120, protein: 10, carbs: 14, fat: 2 },
-  { name: 'Boost Protein Drink Powder (1 scoop ~30g)', cal: 115, protein: 9, carbs: 15, fat: 2 },
-  { name: 'Granola Bar Kellogg’s (1 bar ~40g)', cal: 160, protein: 4, carbs: 28, fat: 5 },
-  { name: 'Granola Bar Nature Valley (1 bar ~42g)', cal: 190, protein: 4, carbs: 29, fat: 7 },
-  { name: 'Granola Bar Gaia (1 bar ~40g)', cal: 170, protein: 5, carbs: 28, fat: 6 },
-  { name: 'Gaia Green Tea (1 cup ~200ml)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Tetley Green Tea (1 cup ~200ml)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Lipton Green Tea (1 cup ~200ml)', cal: 2, protein: 0, carbs: 0, fat: 0 },
-  { name: 'Protinex Powder (1 scoop ~30g)', cal: 110, protein: 11, carbs: 12, fat: 2 },
-  { name: 'Amul Pro Whey Drink (1 bottle ~200ml)', cal: 160, protein: 15, carbs: 10, fat: 4 },
-  { name: 'Soy Milk Silk Unsweetened (1 glass ~200ml)', cal: 80, protein: 7, carbs: 4, fat: 4 },
-  { name: 'Almond Milk Raw Pressery (1 glass ~200ml)', cal: 90, protein: 3, carbs: 8, fat: 5 },
-  { name: 'Coconut Water Raw Pressery (1 bottle ~200ml)', cal: 40, protein: 0, carbs: 10, fat: 0 },
-  { name: 'Optimum Nutrition Whey Protein (1 scoop ~30g)', cal: 120, protein: 24, carbs: 3, fat: 1 },
-  { name: 'Optimum Nutrition Gold Standard Whey RTD (1 bottle ~330ml)', cal: 160, protein: 30, carbs: 6, fat: 2 },
-  { name: 'MuscleBlaze Whey Protein (1 scoop ~30g)', cal: 115, protein: 24, carbs: 2, fat: 1 },
-  { name: 'MuscleBlaze Raw Whey Isolate (1 scoop ~30g)', cal: 110, protein: 26, carbs: 1, fat: 0.5 },
-  { name: 'Herbalife Formula 1 Shake (1 scoop ~25g)', cal: 90, protein: 9, carbs: 12, fat: 1 },
-  { name: 'Herbalife Protein Drink Mix (1 scoop ~25g)', cal: 95, protein: 10, carbs: 11, fat: 1 },
-  { name: 'Protinex Powder (1 scoop ~30g)', cal: 110, protein: 11, carbs: 12, fat: 2 },
-  { name: 'Protinex Lite (1 scoop ~30g)', cal: 105, protein: 10, carbs: 11, fat: 2 },
-  { name: 'Ensure Nutrition Powder (1 scoop ~30g)', cal: 110, protein: 9, carbs: 15, fat: 2 },
-  { name: 'Ensure High Protein RTD (1 bottle ~200ml)', cal: 160, protein: 16, carbs: 19, fat: 3 },
-  { name: 'Horlicks Protein Plus (1 scoop ~30g)', cal: 120, protein: 10, carbs: 14, fat: 2 },
-  { name: 'Boost Protein Drink Powder (1 scoop ~30g)', cal: 115, protein: 9, carbs: 15, fat: 2 },
-  { name: 'Amul Pro Whey Drink (1 bottle ~200ml)', cal: 160, protein: 15, carbs: 10, fat: 4 },
-  { name: 'Amul High Protein Milk (1 bottle ~200ml)', cal: 150, protein: 14, carbs: 12, fat: 3 },
-  { name: 'RiteBite Protein Bar (1 bar ~60g)', cal: 210, protein: 12, carbs: 18, fat: 6 },
-  { name: 'Yoga Bar Protein Bar (1 bar ~50g)', cal: 190, protein: 10, carbs: 20, fat: 7 },
-  { name: 'Nature Valley Protein Bar (1 bar ~42g)', cal: 190, protein: 10, carbs: 20, fat: 7 },
-  { name: 'Gaia Protein Bar (1 bar ~40g)', cal: 170, protein: 9, carbs: 18, fat: 6 },
-  { name: 'Soy Protein Isolate (Generic, 1 scoop ~30g)', cal: 110, protein: 25, carbs: 2, fat: 1 },
-  { name: 'Pea Protein Powder (Generic, 1 scoop ~30g)', cal: 115, protein: 24, carbs: 3, fat: 1 },
-  { name: 'Almond Protein Shake Raw Pressery (1 bottle ~200ml)', cal: 160, protein: 12, carbs: 14, fat: 6 },
-  { name: 'Soy Milk Silk Protein+ (1 glass ~200ml)', cal: 90, protein: 7, carbs: 6, fat: 4 },
-  { name: 'Yakult Probiotic + Protein Drink (1 bottle ~65ml)', cal: 60, protein: 3, carbs: 12, fat: 0 },
-  { name: 'MyProtein Impact Whey (1 scoop ~25g)', cal: 100, protein: 21, carbs: 2, fat: 1 },
-  { name: 'MyProtein Isolate (1 scoop ~30g)', cal: 110, protein: 25, carbs: 1, fat: 0.5 },
-  { name: 'MyProtein Vegan Blend (1 scoop ~30g)', cal: 115, protein: 22, carbs: 3, fat: 1 },
-  { name: 'Dymatize Elite Whey (1 scoop ~30g)', cal: 120, protein: 25, carbs: 2, fat: 1 },
-  { name: 'Dymatize ISO100 Hydrolyzed (1 scoop ~30g)', cal: 110, protein: 26, carbs: 1, fat: 0.5 },
-  { name: 'Isopure Zero Carb Whey (1 scoop ~30g)', cal: 100, protein: 25, carbs: 0, fat: 0 },
-  { name: 'Isopure Low Carb Whey (1 scoop ~30g)', cal: 110, protein: 25, carbs: 1, fat: 0.5 },
-  { name: 'GNC Pro Performance Whey (1 scoop ~33g)', cal: 130, protein: 24, carbs: 4, fat: 2 },
-  { name: 'GNC AMP Gold Whey (1 scoop ~30g)', cal: 120, protein: 25, carbs: 2, fat: 1 },
-  { name: 'BigMuscles Nutrition Premium Whey (1 scoop ~30g)', cal: 115, protein: 24, carbs: 2, fat: 1 },
-  { name: 'BigMuscles Raw Whey Isolate (1 scoop ~30g)', cal: 110, protein: 26, carbs: 1, fat: 0.5 },
-  { name: 'Fast&Up Whey Protein (1 scoop ~30g)', cal: 120, protein: 24, carbs: 3, fat: 1 },
-  { name: 'Fast&Up Plant Protein (1 scoop ~30g)', cal: 115, protein: 22, carbs: 3, fat: 1 },
-  { name: 'HealthKart Whey Protein (1 scoop ~30g)', cal: 120, protein: 24, carbs: 3, fat: 1 },
-  { name: 'HealthKart Soy Protein (1 scoop ~30g)', cal: 115, protein: 25, carbs: 2, fat: 1 },
-  { name: 'MuscleTech NitroTech Whey Gold (1 scoop ~33g)', cal: 130, protein: 24, carbs: 3, fat: 2 },
-  { name: 'MuscleTech Mass Gainer (1 serving ~100g)', cal: 380, protein: 20, carbs: 60, fat: 5 },
-  { name: 'Ultimate Nutrition Prostar Whey (1 scoop ~30g)', cal: 120, protein: 25, carbs: 2, fat: 1 },
-  { name: 'Ultimate Nutrition ISO Sensation (1 scoop ~30g)', cal: 110, protein: 26, carbs: 1, fat: 0.5 },
-  { name: 'ON Serious Mass Gainer (1 serving ~100g)', cal: 380, protein: 20, carbs: 60, fat: 5 },
-  { name: 'ON Casein Protein (1 scoop ~30g)', cal: 120, protein: 24, carbs: 3, fat: 1 },
-  { name: 'Amway Nutrilite Protein Powder (1 scoop ~30g)', cal: 120, protein: 22, carbs: 4, fat: 2 },
-  { name: 'Amway Nutrilite All Plant Protein (1 scoop ~30g)', cal: 115, protein: 23, carbs: 3, fat: 1 },
-  { name: 'RiteBite Max Protein Bar (1 bar ~60g)', cal: 220, protein: 20, carbs: 18, fat: 7 },
-  { name: 'Yoga Bar High Protein Bar (1 bar ~50g)', cal: 200, protein: 20, carbs: 16, fat: 8 },
-  { name: 'Gaia Whey Protein Shake RTD (1 bottle ~200ml)', cal: 160, protein: 15, carbs: 10, fat: 4 },
-  { name: 'Raw Pressery Almond Protein Shake (1 bottle ~200ml)', cal: 160, protein: 12, carbs: 14, fat: 6 },
-  { name: 'Soy Protein Isolate Generic (1 scoop ~30g)', cal: 110, protein: 25, carbs: 2, fat: 1 },
-  { name: 'Pea Protein Powder Generic (1 scoop ~30g)', cal: 115, protein: 24, carbs: 3, fat: 1 },
-  { name: 'Collagen Peptides Powder (1 scoop ~10g)', cal: 35, protein: 9, carbs: 0, fat: 0 },
-  { name: 'Vital Proteins Collagen (1 scoop ~10g)', cal: 40, protein: 9, carbs: 0, fat: 0 },
-  { name: 'Hemp Protein Powder (1 scoop ~30g)', cal: 120, protein: 15, carbs: 8, fat: 4 },
-  { name: 'Hemp Hearts Raw (2 tbsp ~30g)', cal: 170, protein: 10, carbs: 3, fat: 13 },
-  { name: 'Egg White Protein Powder (1 scoop ~30g)', cal: 110, protein: 24, carbs: 2, fat: 0 },
-  { name: 'Whole Egg Protein Powder (1 scoop ~30g)', cal: 120, protein: 23, carbs: 2, fat: 2 },
-  { name: 'Keto Protein Blend Chocolate (1 scoop ~30g)', cal: 140, protein: 20, carbs: 3, fat: 5 },
-  { name: 'Keto Collagen Protein (1 scoop ~30g)', cal: 130, protein: 18, carbs: 2, fat: 6 },
-  { name: 'Bone Broth Protein Powder (1 scoop ~30g)', cal: 120, protein: 20, carbs: 2, fat: 3 },
-  { name: 'Plant-Based Protein Blend (Pea + Rice, 1 scoop ~30g)', cal: 115, protein: 22, carbs: 3, fat: 1 },
-  { name: 'Soy Isolate Protein Drink (1 bottle ~200ml)', cal: 90, protein: 10, carbs: 6, fat: 2 },
-  { name: 'Almond Protein Shake (1 bottle ~200ml)', cal: 160, protein: 12, carbs: 14, fat: 6 },
-  { name: 'Pumpkin Seed Protein Powder (1 scoop ~30g)', cal: 120, protein: 19, carbs: 4, fat: 3 },
-  { name: 'Sunflower Seed Protein Powder (1 scoop ~30g)', cal: 115, protein: 18, carbs: 3, fat: 2 },
-  { name: 'Brown Rice Protein Powder (1 scoop ~30g)', cal: 110, protein: 22, carbs: 3, fat: 1 },
-  { name: 'Casein Protein Powder (Slow Digesting, 1 scoop ~30g)', cal: 120, protein: 24, carbs: 3, fat: 1 },
-  { name: 'Mixed Plant Protein (Soy + Hemp + Pea, 1 scoop ~30g)', cal: 120, protein: 23, carbs: 3, fat: 2 },
-  { name: 'Collagen Coffee Mix (1 sachet ~15g)', cal: 60, protein: 8, carbs: 2, fat: 1 },
-  { name: 'Egg Protein RTD Shake (1 bottle ~250ml)', cal: 150, protein: 20, carbs: 6, fat: 3 },
-  { name: 'Hemp Protein RTD Shake (1 bottle ~250ml)', cal: 160, protein: 18, carbs: 8, fat: 5 },
-  { name: 'ON Amino Energy + Electrolytes (1 scoop ~9g)', cal: 35, protein: 5, carbs: 2, fat: 0 },
-  { name: 'ON BCAA Powder (1 scoop ~8g)', cal: 30, protein: 6, carbs: 1, fat: 0 },
-  { name: 'MuscleBlaze BCAA Pro (1 scoop ~15g)', cal: 60, protein: 7, carbs: 4, fat: 0 },
-  { name: 'MuscleBlaze Recovery Protein (1 scoop ~30g)', cal: 120, protein: 20, carbs: 6, fat: 2 },
-  { name: 'Fast&Up Recover BCAA + Glutamine (1 scoop ~15g)', cal: 55, protein: 6, carbs: 3, fat: 0 },
-  { name: 'Fast&Up Reload Electrolyte + Protein (1 sachet ~20g)', cal: 70, protein: 5, carbs: 10, fat: 0 },
-  { name: 'GNC Pro Performance BCAA (1 scoop ~10g)', cal: 40, protein: 7, carbs: 2, fat: 0 },
-  { name: 'GNC AMP Recovery Protein (1 scoop ~30g)', cal: 120, protein: 22, carbs: 5, fat: 2 },
-  { name: 'MyProtein Recovery Blend (1 scoop ~30g)', cal: 125, protein: 21, carbs: 6, fat: 2 },
-  { name: 'MyProtein BCAA 2:1:1 (1 scoop ~8g)', cal: 30, protein: 6, carbs: 1, fat: 0 },
-  { name: 'Dymatize BCAA Complex (1 scoop ~10g)', cal: 40, protein: 7, carbs: 2, fat: 0 },
-  { name: 'Isopure Aminos + Electrolytes (1 scoop ~10g)', cal: 35, protein: 6, carbs: 2, fat: 0 },
-  { name: 'Ultimate Nutrition BCAA Powder (1 scoop ~10g)', cal: 40, protein: 7, carbs: 2, fat: 0 },
-  { name: 'MuscleTech Cell-Tech Recovery (1 scoop ~50g)', cal: 180, protein: 10, carbs: 35, fat: 1 },
-  { name: 'MuscleTech Amino Build Next Gen (1 scoop ~14g)', cal: 60, protein: 8, carbs: 3, fat: 0 },
-  { name: 'BigMuscles BCAA Energy (1 scoop ~12g)', cal: 50, protein: 7, carbs: 3, fat: 0 },
-  { name: 'HealthKart BCAA + Glutamine (1 scoop ~12g)', cal: 50, protein: 7, carbs: 3, fat: 0 },
-  { name: 'Raw Pressery Protein + Electrolyte RTD (1 bottle ~250ml)', cal: 150, protein: 15, carbs: 12, fat: 2 },
-  { name: 'Gaia Recovery Shake (1 bottle ~250ml)', cal: 160, protein: 16, carbs: 14, fat: 2 },
-  { name: 'Endura Mass Recovery Shake (1 scoop ~30g)', cal: 120, protein: 18, carbs: 8, fat: 2 },
-  { name: 'GU Energy Gel (1 sachet ~32g)', cal: 100, protein: 0, carbs: 25, fat: 0 },
-  { name: 'GU Roctane Ultra Endurance Gel (1 sachet ~32g)', cal: 110, protein: 0, carbs: 26, fat: 0 },
-  { name: 'Fast&Up Energy Gel (1 sachet ~30g)', cal: 90, protein: 0, carbs: 22, fat: 0 },
-  { name: 'Fast&Up Reload Electrolyte Drink (1 sachet ~20g)', cal: 70, protein: 0, carbs: 17, fat: 0 },
-  { name: 'Gatorade Endurance Formula (1 bottle ~500ml)', cal: 120, protein: 0, carbs: 30, fat: 0 },
-  { name: 'Powerade Endurance Drink (1 bottle ~500ml)', cal: 130, protein: 0, carbs: 32, fat: 0 },
-  { name: 'SIS GO Isotonic Gel (1 sachet ~30g)', cal: 90, protein: 0, carbs: 22, fat: 0 },
-  { name: 'SIS GO Electrolyte Powder (1 scoop ~20g)', cal: 75, protein: 0, carbs: 18, fat: 0 },
-  { name: 'High5 Energy Gel (1 sachet ~40g)', cal: 95, protein: 0, carbs: 23, fat: 0 },
-  { name: 'High5 Energy Drink Powder (1 scoop ~20g)', cal: 80, protein: 0, carbs: 19, fat: 0 },
-  { name: 'Endura Sports Energy Gel (1 sachet ~30g)', cal: 85, protein: 0, carbs: 21, fat: 0 },
-  { name: 'Endura Sports Recovery Drink (1 scoop ~30g)', cal: 120, protein: 5, carbs: 20, fat: 1 },
-  { name: 'Hammer Nutrition HEED Endurance Drink (1 scoop ~30g)', cal: 110, protein: 0, carbs: 27, fat: 0 },
-  { name: 'Hammer Nutrition Perpetuem Endurance Fuel (1 scoop ~30g)', cal: 120, protein: 3, carbs: 25, fat: 2 },
-  { name: 'Tailwind Endurance Fuel (1 scoop ~27g)', cal: 100, protein: 0, carbs: 25, fat: 0 },
-  { name: 'Tailwind Recovery Mix (1 scoop ~30g)', cal: 120, protein: 10, carbs: 15, fat: 2 },
-  { name: 'Maurten Gel 100 (1 sachet ~40g)', cal: 100, protein: 0, carbs: 25, fat: 0 },
-  { name: 'Maurten Drink Mix 320 (1 sachet ~80g)', cal: 320, protein: 0, carbs: 80, fat: 0 },
-  { name: 'Clif Shot Energy Gel (1 sachet ~34g)', cal: 100, protein: 0, carbs: 24, fat: 0 },
-  { name: 'Clif Bloks Energy Chews (3 pieces ~30g)', cal: 100, protein: 0, carbs: 25, fat: 0 },
-  { name: 'Sarson Ka Saag (1 bowl ~200g)', cal: 220, protein: 8, carbs: 20, fat: 12 },
-  { name: 'Makki Ki Roti (2 pieces ~100g)', cal: 240, protein: 7, carbs: 40, fat: 6 },
-  { name: 'Gajar Ka Halwa (1 bowl ~150g)', cal: 280, protein: 6, carbs: 40, fat: 12 },
-  { name: 'Til Ladoo (2 pieces ~40g)', cal: 180, protein: 5, carbs: 22, fat: 8 },
-  { name: 'Panjiri (1 bowl ~100g)', cal: 300, protein: 7, carbs: 40, fat: 14 },
-  { name: 'Aam Panna (1 glass ~200ml)', cal: 90, protein: 0, carbs: 22, fat: 0 },
-  { name: 'Buttermilk / Chaas (1 glass ~200ml)', cal: 70, protein: 3, carbs: 8, fat: 3 },
-  { name: 'Nimbu Pani (1 glass ~200ml)', cal: 60, protein: 0, carbs: 15, fat: 0 },
-  { name: 'Kokum Sherbet (1 glass ~200ml)', cal: 80, protein: 0, carbs: 18, fat: 0 },
-  { name: 'Watermelon Juice (1 glass ~200ml)', cal: 70, protein: 1, carbs: 16, fat: 0 },
-  { name: 'Cucumber Raita (1 bowl ~150g)', cal: 120, protein: 4, carbs: 10, fat: 6 },
-  { name: 'Pakora (Mixed Veg, 4 pieces ~100g)', cal: 280, protein: 6, carbs: 30, fat: 14 },
-  { name: 'Bhutta (Roasted Corn, 1 cob ~150g)', cal: 160, protein: 5, carbs: 32, fat: 3 },
-  { name: 'Masala Chai (1 cup ~150ml)', cal: 80, protein: 2, carbs: 12, fat: 3 },
-  { name: 'Batata Vada (2 pieces ~100g)', cal: 260, protein: 6, carbs: 32, fat: 12 },
-  { name: 'Onion Bhajiya (4 pieces ~100g)', cal: 270, protein: 5, carbs: 28, fat: 13 },
-  { name: 'Jamun Fruit Bowl (1 bowl ~150g)', cal: 70, protein: 1, carbs: 16, fat: 0 },
-  { name: 'Lychee Fruit Bowl (1 bowl ~150g)', cal: 90, protein: 1, carbs: 22, fat: 0 },
-  { name: 'Guava Fruit Bowl (1 bowl ~150g)', cal: 80, protein: 2, carbs: 18, fat: 1 },
-  { name: 'Pineapple Fruit Bowl (1 bowl ~150g)', cal: 85, protein: 1, carbs: 20, fat: 0 },
-  { name: 'Custard Apple Fruit Bowl (1 bowl ~150g)', cal: 100, protein: 2, carbs: 24, fat: 1 },
-  { name: 'Fresh Orange Juice (1 glass ~200ml)', cal: 90, protein: 2, carbs: 20, fat: 0 },
-  { name: 'Fresh Apple Juice (1 glass ~200ml)', cal: 95, protein: 0, carbs: 23, fat: 0 },
-  { name: 'Fresh Pomegranate Juice (1 glass ~200ml)', cal: 100, protein: 1, carbs: 24, fat: 0 },
-  { name: 'Fresh Mango Juice (1 glass ~200ml)', cal: 120, protein: 1, carbs: 28, fat: 0 },
-  { name: 'Fresh Pineapple Juice (1 glass ~200ml)', cal: 85, protein: 1, carbs: 20, fat: 0 },
-  { name: 'Fresh Watermelon Juice (1 glass ~200ml)', cal: 70, protein: 1, carbs: 16, fat: 0 },
-  { name: 'Fresh Guava Juice (1 glass ~200ml)', cal: 80, protein: 2, carbs: 18, fat: 1 },
-  { name: 'Fresh Papaya Juice (1 glass ~200ml)', cal: 85, protein: 1, carbs: 20, fat: 0 },
-  { name: 'Fresh Lychee Juice (1 glass ~200ml)', cal: 90, protein: 1, carbs: 22, fat: 0 },
-  { name: 'Fresh Custard Apple Juice (1 glass ~200ml)', cal: 100, protein: 2, carbs: 24, fat: 1 },
-  { name: 'Fresh Carrot Juice (1 glass ~200ml)', cal: 80, protein: 2, carbs: 18, fat: 0 },
-  { name: 'Fresh Beetroot Juice (1 glass ~200ml)', cal: 90, protein: 2, carbs: 20, fat: 0 },
-  { name: 'Fresh Tomato Juice (1 glass ~200ml)', cal: 40, protein: 2, carbs: 9, fat: 0 },
-  { name: 'Fresh Cucumber Juice (1 glass ~200ml)', cal: 30, protein: 1, carbs: 7, fat: 0 },
-  { name: 'Fresh Spinach Juice (1 glass ~200ml)', cal: 50, protein: 3, carbs: 8, fat: 0 },
-  { name: 'Fresh Bottle Gourd Juice (1 glass ~200ml)', cal: 25, protein: 1, carbs: 6, fat: 0 },
-  { name: 'Fresh Amla Juice (1 glass ~200ml)', cal: 40, protein: 1, carbs: 10, fat: 0 },
-  { name: 'Fresh Ginger-Lemon Shot (1 shot ~50ml)', cal: 20, protein: 0, carbs: 5, fat: 0 },
-  { name: 'Fresh Mixed Veg Juice (Carrot + Beet + Tomato, 1 glass ~200ml)', cal: 85, protein: 3, carbs: 18, fat: 0 },
-  { name: 'Fresh Celery Juice (1 glass ~200ml)', cal: 35, protein: 1, carbs: 8, fat: 0 },
+  {
+    "name": "Aloo Sabzi (1 bowl)",
+    "cal": 150,
+    "protein": 3,
+    "carbs": 28,
+    "fat": 5
+  },
+  {
+    "name": "Bhindi Sabzi (1 bowl)",
+    "cal": 120,
+    "protein": 3,
+    "carbs": 10,
+    "fat": 7
+  },
+  {
+    "name": "Baingan Bharta (1 bowl)",
+    "cal": 180,
+    "protein": 4,
+    "carbs": 12,
+    "fat": 12
+  },
+  {
+    "name": "Cabbage Sabzi (1 bowl)",
+    "cal": 100,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 4
+  },
+  {
+    "name": "Gobi Sabzi (1 bowl)",
+    "cal": 130,
+    "protein": 4,
+    "carbs": 14,
+    "fat": 6
+  },
+  {
+    "name": "Tinda Sabzi (1 bowl)",
+    "cal": 110,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 5
+  },
+  {
+    "name": "Lauki Sabzi (1 bowl)",
+    "cal": 90,
+    "protein": 2,
+    "carbs": 9,
+    "fat": 3
+  },
+  {
+    "name": "Karela Sabzi (1 bowl)",
+    "cal": 95,
+    "protein": 3,
+    "carbs": 8,
+    "fat": 4
+  },
+  {
+    "name": "Spinach Sabzi (1 bowl)",
+    "cal": 80,
+    "protein": 4,
+    "carbs": 7,
+    "fat": 2
+  },
+  {
+    "name": "Methi Sabzi (1 bowl)",
+    "cal": 100,
+    "protein": 3,
+    "carbs": 9,
+    "fat": 3
+  },
+  {
+    "name": "Mixed Vegetable Curry (1 bowl)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 18,
+    "fat": 6
+  },
+  {
+    "name": "Green Beans Sabzi (1 bowl)",
+    "cal": 110,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 4
+  },
+  {
+    "name": "Carrot Sabzi (1 bowl)",
+    "cal": 120,
+    "protein": 2,
+    "carbs": 14,
+    "fat": 5
+  },
+  {
+    "name": "Peas Curry (1 bowl)",
+    "cal": 140,
+    "protein": 5,
+    "carbs": 18,
+    "fat": 4
+  },
+  {
+    "name": "Corn Curry (1 bowl)",
+    "cal": 150,
+    "protein": 4,
+    "carbs": 20,
+    "fat": 5
+  },
+  {
+    "name": "Drumstick Curry (1 bowl)",
+    "cal": 130,
+    "protein": 4,
+    "carbs": 12,
+    "fat": 5
+  },
+  {
+    "name": "Pumpkin Sabzi (1 bowl)",
+    "cal": 100,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 3
+  },
+  {
+    "name": "Arbi Sabzi (1 bowl)",
+    "cal": 160,
+    "protein": 3,
+    "carbs": 20,
+    "fat": 6
+  },
+  {
+    "name": "Matar Paneer (1 bowl)",
+    "cal": 280,
+    "protein": 12,
+    "carbs": 18,
+    "fat": 18
+  },
+  {
+    "name": "Chana Dal (1 bowl)",
+    "cal": 180,
+    "protein": 10,
+    "carbs": 25,
+    "fat": 4
+  },
+  {
+    "name": "Moong Dal (1 bowl)",
+    "cal": 160,
+    "protein": 12,
+    "carbs": 22,
+    "fat": 2
+  },
+  {
+    "name": "Masoor Dal (1 bowl)",
+    "cal": 170,
+    "protein": 11,
+    "carbs": 24,
+    "fat": 3
+  },
+  {
+    "name": "Urad Dal (1 bowl)",
+    "cal": 190,
+    "protein": 12,
+    "carbs": 26,
+    "fat": 4
+  },
+  {
+    "name": "Tur Dal (1 bowl)",
+    "cal": 180,
+    "protein": 11,
+    "carbs": 25,
+    "fat": 3
+  },
+  {
+    "name": "Rajma Curry (1 bowl)",
+    "cal": 220,
+    "protein": 14,
+    "carbs": 38,
+    "fat": 2
+  },
+  {
+    "name": "Kala Chana Curry (1 bowl)",
+    "cal": 200,
+    "protein": 12,
+    "carbs": 30,
+    "fat": 3
+  },
+  {
+    "name": "Kabuli Chana Curry (1 bowl)",
+    "cal": 210,
+    "protein": 11,
+    "carbs": 35,
+    "fat": 4
+  },
+  {
+    "name": "Soybean Curry (1 bowl)",
+    "cal": 240,
+    "protein": 18,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Whole Wheat Flour (100g)",
+    "cal": 364,
+    "protein": 12,
+    "carbs": 76,
+    "fat": 2
+  },
+  {
+    "name": "Rice Raw (100g)",
+    "cal": 360,
+    "protein": 7,
+    "carbs": 80,
+    "fat": 1
+  },
+  {
+    "name": "Basmati Rice (100g)",
+    "cal": 365,
+    "protein": 8,
+    "carbs": 78,
+    "fat": 1
+  },
+  {
+    "name": "Maida (100g)",
+    "cal": 364,
+    "protein": 10,
+    "carbs": 76,
+    "fat": 1
+  },
+  {
+    "name": "Ragi Flour (100g)",
+    "cal": 336,
+    "protein": 7,
+    "carbs": 72,
+    "fat": 2
+  },
+  {
+    "name": "Jowar Flour (100g)",
+    "cal": 349,
+    "protein": 10,
+    "carbs": 72,
+    "fat": 3
+  },
+  {
+    "name": "Bajra Flour (100g)",
+    "cal": 361,
+    "protein": 11,
+    "carbs": 73,
+    "fat": 5
+  },
+  {
+    "name": "Besan (100g)",
+    "cal": 387,
+    "protein": 22,
+    "carbs": 58,
+    "fat": 6
+  },
+  {
+    "name": "Mustard Oil (1 tbsp)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 14
+  },
+  {
+    "name": "Sunflower Oil (1 tbsp)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 14
+  },
+  {
+    "name": "Groundnut Oil (1 tbsp)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 14
+  },
+  {
+    "name": "Ghee (1 tbsp)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 14
+  },
+  {
+    "name": "Butter (1 tbsp)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 11
+  },
+  {
+    "name": "Salt (1 tsp)",
+    "cal": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Sugar (1 tsp)",
+    "cal": 16,
+    "protein": 0,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Jaggery (20g)",
+    "cal": 80,
+    "protein": 0,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Pickle (1 tbsp)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 3
+  },
+  {
+    "name": "Papad (1 piece)",
+    "cal": 60,
+    "protein": 2,
+    "carbs": 8,
+    "fat": 2
+  },
+  {
+    "name": "Onion (1 medium)",
+    "cal": 45,
+    "protein": 1,
+    "carbs": 11,
+    "fat": 0
+  },
+  {
+    "name": "Tomato (1 medium)",
+    "cal": 25,
+    "protein": 1,
+    "carbs": 5,
+    "fat": 0
+  },
+  {
+    "name": "Potato (1 medium)",
+    "cal": 110,
+    "protein": 2,
+    "carbs": 26,
+    "fat": 0
+  },
+  {
+    "name": "Carrot (1 medium)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Cucumber (1 medium)",
+    "cal": 15,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Radish (1 medium)",
+    "cal": 20,
+    "protein": 1,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Spinach (100g raw)",
+    "cal": 23,
+    "protein": 3,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Fenugreek Leaves (100g raw)",
+    "cal": 49,
+    "protein": 4,
+    "carbs": 6,
+    "fat": 1
+  },
+  {
+    "name": "Coriander Leaves (100g raw)",
+    "cal": 30,
+    "protein": 3,
+    "carbs": 6,
+    "fat": 1
+  },
+  {
+    "name": "Mint Leaves (100g raw)",
+    "cal": 44,
+    "protein": 4,
+    "carbs": 8,
+    "fat": 1
+  },
+  {
+    "name": "Green Chillies (100g)",
+    "cal": 40,
+    "protein": 2,
+    "carbs": 9,
+    "fat": 0
+  },
+  {
+    "name": "Garlic (10g)",
+    "cal": 15,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Ginger (10g)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Curry Leaves (10g)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Turmeric Powder (1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Red Chilli Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Cumin Seeds (1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Black Pepper (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Cloves (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Cardamom (1 pod)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Cinnamon (1 stick)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Bay Leaf (1 leaf)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Mustard Seeds (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Fenugreek Seeds (1 tsp)",
+    "cal": 12,
+    "protein": 1,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Sesame Seeds (1 tbsp)",
+    "cal": 52,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Nigella Seeds (1 tsp)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 1
+  },
+  {
+    "name": "Coconut (100g grated)",
+    "cal": 354,
+    "protein": 3,
+    "carbs": 15,
+    "fat": 33
+  },
+  {
+    "name": "Dry Coconut (50g)",
+    "cal": 200,
+    "protein": 2,
+    "carbs": 8,
+    "fat": 18
+  },
+  {
+    "name": "Coconut Oil (1 tbsp)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 14
+  },
+  {
+    "name": "Tamarind (20g pulp)",
+    "cal": 50,
+    "protein": 1,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "Green Gram Sprouts (1 bowl)",
+    "cal": 100,
+    "protein": 7,
+    "carbs": 18,
+    "fat": 1
+  },
+  {
+    "name": "Chana Sprouts (1 bowl)",
+    "cal": 120,
+    "protein": 8,
+    "carbs": 20,
+    "fat": 2
+  },
+  {
+    "name": "Soybean Sprouts (1 bowl)",
+    "cal": 140,
+    "protein": 10,
+    "carbs": 18,
+    "fat": 3
+  },
+  {
+    "name": "Methi Seeds (1 tsp)",
+    "cal": 12,
+    "protein": 1,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Red Chillies (2 pieces)",
+    "cal": 16,
+    "protein": 0,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Green Peas (100g raw)",
+    "cal": 81,
+    "protein": 5,
+    "carbs": 14,
+    "fat": 0
+  },
+  {
+    "name": "Cauliflower (100g raw)",
+    "cal": 25,
+    "protein": 2,
+    "carbs": 5,
+    "fat": 0
+  },
+  {
+    "name": "Cabbage (100g raw)",
+    "cal": 25,
+    "protein": 1,
+    "carbs": 6,
+    "fat": 0
+  },
+  {
+    "name": "Bottle Gourd (100g raw)",
+    "cal": 14,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Bitter Gourd (100g raw)",
+    "cal": 17,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Okra (100g raw)",
+    "cal": 33,
+    "protein": 2,
+    "carbs": 7,
+    "fat": 0
+  },
+  {
+    "name": "Brinjal (100g raw)",
+    "cal": 25,
+    "protein": 1,
+    "carbs": 6,
+    "fat": 0
+  },
+  {
+    "name": "Pumpkin (100g raw)",
+    "cal": 26,
+    "protein": 1,
+    "carbs": 7,
+    "fat": 0
+  },
+  {
+    "name": "Radish Leaves (100g raw)",
+    "cal": 20,
+    "protein": 2,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Turnip (100g raw)",
+    "cal": 28,
+    "protein": 1,
+    "carbs": 6,
+    "fat": 0
+  },
+  {
+    "name": "Beetroot (100g raw)",
+    "cal": 43,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Sweet Potato (100g raw)",
+    "cal": 86,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Yam (100g raw)",
+    "cal": 118,
+    "protein": 2,
+    "carbs": 27,
+    "fat": 0
+  },
+  {
+    "name": "Green Capsicum (100g raw)",
+    "cal": 20,
+    "protein": 1,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Red Capsicum (100g raw)",
+    "cal": 31,
+    "protein": 1,
+    "carbs": 6,
+    "fat": 0
+  },
+  {
+    "name": "Mushroom (100g raw)",
+    "cal": 22,
+    "protein": 3,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Spring Onion (100g raw)",
+    "cal": 32,
+    "protein": 2,
+    "carbs": 7,
+    "fat": 0
+  },
+  {
+    "name": "Coriander Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Cumin Powder (1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Garam Masala (1 tsp)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Sambar Powder (1 tsp)",
+    "cal": 12,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Rasam Powder (1 tsp)",
+    "cal": 12,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Chaat Masala (1 tsp)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Pav Bhaji Masala (1 tsp)",
+    "cal": 12,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Tea Leaves (1 tsp)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Coffee Powder (1 tsp)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Dry Fruits Mix (30g)",
+    "cal": 150,
+    "protein": 5,
+    "carbs": 12,
+    "fat": 10
+  },
+  {
+    "name": "Raisins (30g)",
+    "cal": 90,
+    "protein": 1,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Dates (30g)",
+    "cal": 80,
+    "protein": 1,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Walnuts (30g)",
+    "cal": 200,
+    "protein": 5,
+    "carbs": 5,
+    "fat": 18
+  },
+  {
+    "name": "Pistachios (30g)",
+    "cal": 160,
+    "protein": 6,
+    "carbs": 8,
+    "fat": 13
+  },
+  {
+    "name": "Hazelnuts (30g)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 6,
+    "fat": 15
+  },
+  {
+    "name": "Fox Nuts / Makhana (30g)",
+    "cal": 100,
+    "protein": 4,
+    "carbs": 18,
+    "fat": 1
+  },
+  {
+    "name": "Dry Coconut Chutney (1 tbsp)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 2,
+    "fat": 3
+  },
+  {
+    "name": "Green Chutney (1 tbsp)",
+    "cal": 20,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Tamarind Chutney (1 tbsp)",
+    "cal": 30,
+    "protein": 0,
+    "carbs": 6,
+    "fat": 0
+  },
+  {
+    "name": "Coconut Chutney (1 tbsp)",
+    "cal": 50,
+    "protein": 1,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Peanut Chutney (1 tbsp)",
+    "cal": 60,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 5
+  },
+  {
+    "name": "Sesame Chutney (1 tbsp)",
+    "cal": 55,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Tomato Chutney (1 tbsp)",
+    "cal": 25,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Onion Chutney (1 tbsp)",
+    "cal": 25,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Garlic Chutney (1 tbsp)",
+    "cal": 30,
+    "protein": 1,
+    "carbs": 2,
+    "fat": 2
+  },
+  {
+    "name": "Pickled Lemon (1 piece)",
+    "cal": 20,
+    "protein": 0,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Pickled Mango (1 piece)",
+    "cal": 25,
+    "protein": 0,
+    "carbs": 5,
+    "fat": 0
+  },
+  {
+    "name": "Pickled Chilli (1 piece)",
+    "cal": 15,
+    "protein": 0,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Pickled Garlic (1 piece)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Mango Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Asafoetida / Hing (1 pinch)",
+    "cal": 1,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Rock Salt (1 tsp)",
+    "cal": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Black Salt (1 tsp)",
+    "cal": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Paneer Cubes (50g)",
+    "cal": 130,
+    "protein": 9,
+    "carbs": 2,
+    "fat": 10
+  },
+  {
+    "name": "Tofu Cubes (50g)",
+    "cal": 40,
+    "protein": 5,
+    "carbs": 1,
+    "fat": 2
+  },
+  {
+    "name": "Curd (100g)",
+    "cal": 60,
+    "protein": 4,
+    "carbs": 5,
+    "fat": 3
+  },
+  {
+    "name": "Buttermilk (1 glass)",
+    "cal": 40,
+    "protein": 2,
+    "carbs": 5,
+    "fat": 1
+  },
+  {
+    "name": "Milk (1 glass)",
+    "cal": 120,
+    "protein": 6,
+    "carbs": 12,
+    "fat": 6
+  },
+  {
+    "name": "Paneer Bhurji (1 bowl)",
+    "cal": 280,
+    "protein": 18,
+    "carbs": 8,
+    "fat": 20
+  },
+  {
+    "name": "Vegetable Khichdi (1 bowl)",
+    "cal": 200,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 4
+  },
+  {
+    "name": "Plain Khichdi (1 bowl)",
+    "cal": 180,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 3
+  },
+  {
+    "name": "Curd Rice (1 bowl)",
+    "cal": 220,
+    "protein": 7,
+    "carbs": 35,
+    "fat": 6
+  },
+  {
+    "name": "Lemon Rice (1 bowl)",
+    "cal": 230,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 7
+  },
+  {
+    "name": "Tamarind Rice (1 bowl)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 7
+  },
+  {
+    "name": "Vegetable Pulao (1 bowl)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 42,
+    "fat": 6
+  },
+  {
+    "name": "Plain Pulao (1 bowl)",
+    "cal": 230,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 5
+  },
+  {
+    "name": "Jeera Rice (1 bowl)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 5
+  },
+  {
+    "name": "Steamed Rice (1 bowl)",
+    "cal": 200,
+    "protein": 4,
+    "carbs": 44,
+    "fat": 0
+  },
+  {
+    "name": "Brown Rice (1 bowl)",
+    "cal": 215,
+    "protein": 5,
+    "carbs": 45,
+    "fat": 1
+  },
+  {
+    "name": "Broken Wheat / Dalia (1 bowl)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 2
+  },
+  {
+    "name": "Vegetable Upma (1 bowl)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 38,
+    "fat": 6
+  },
+  {
+    "name": "Vegetable Poha (1 bowl)",
+    "cal": 250,
+    "protein": 5,
+    "carbs": 48,
+    "fat": 5
+  },
+  {
+    "name": "Vegetable Idli (2 pieces)",
+    "cal": 140,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 1
+  },
+  {
+    "name": "Vegetable Dosa (1 piece)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 5
+  },
+  {
+    "name": "Vegetable Uttapam (1 piece)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 6
+  },
+  {
+    "name": "Vegetable Vada (2 pieces)",
+    "cal": 250,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Vegetable Sambar (1 bowl)",
+    "cal": 110,
+    "protein": 5,
+    "carbs": 18,
+    "fat": 2
+  },
+  {
+    "name": "Vegetable Rasam (1 bowl)",
+    "cal": 90,
+    "protein": 3,
+    "carbs": 15,
+    "fat": 2
+  },
+  {
+    "name": "Vegetable Curry (1 bowl)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 18,
+    "fat": 6
+  },
+  {
+    "name": "Vegetable Stew (1 bowl)",
+    "cal": 150,
+    "protein": 4,
+    "carbs": 16,
+    "fat": 6
+  },
+  {
+    "name": "Vegetable Soup (1 bowl)",
+    "cal": 100,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 3
+  },
+  {
+    "name": "Tomato Soup (1 bowl)",
+    "cal": 90,
+    "protein": 2,
+    "carbs": 14,
+    "fat": 2
+  },
+  {
+    "name": "Sweet Corn Soup (1 bowl)",
+    "cal": 120,
+    "protein": 3,
+    "carbs": 20,
+    "fat": 3
+  },
+  {
+    "name": "Hot & Sour Soup (1 bowl)",
+    "cal": 110,
+    "protein": 4,
+    "carbs": 15,
+    "fat": 3
+  },
+  {
+    "name": "Mushroom Soup (1 bowl)",
+    "cal": 100,
+    "protein": 4,
+    "carbs": 12,
+    "fat": 3
+  },
+  {
+    "name": "Spinach Soup (1 bowl)",
+    "cal": 90,
+    "protein": 3,
+    "carbs": 10,
+    "fat": 2
+  },
+  {
+    "name": "Dal Soup (1 bowl)",
+    "cal": 120,
+    "protein": 6,
+    "carbs": 18,
+    "fat": 3
+  },
+  {
+    "name": "Vegetable Salad (1 bowl)",
+    "cal": 80,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 2
+  },
+  {
+    "name": "Cucumber Salad (1 bowl)",
+    "cal": 60,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 1
+  },
+  {
+    "name": "Tomato Salad (1 bowl)",
+    "cal": 50,
+    "protein": 1,
+    "carbs": 9,
+    "fat": 1
+  },
+  {
+    "name": "Onion Salad (1 bowl)",
+    "cal": 45,
+    "protein": 1,
+    "carbs": 8,
+    "fat": 0
+  },
+  {
+    "name": "Mixed Fruit Salad (1 bowl)",
+    "cal": 120,
+    "protein": 2,
+    "carbs": 28,
+    "fat": 1
+  },
+  {
+    "name": "Sprout Salad (1 bowl)",
+    "cal": 140,
+    "protein": 8,
+    "carbs": 20,
+    "fat": 3
+  },
+  {
+    "name": "Chana Chaat (1 bowl)",
+    "cal": 150,
+    "protein": 8,
+    "carbs": 22,
+    "fat": 3
+  },
+  {
+    "name": "Moong Chaat (1 bowl)",
+    "cal": 140,
+    "protein": 9,
+    "carbs": 20,
+    "fat": 2
+  },
+  {
+    "name": "Corn Chaat (1 bowl)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 25,
+    "fat": 3
+  },
+  {
+    "name": "Fruit Chaat (1 bowl)",
+    "cal": 130,
+    "protein": 2,
+    "carbs": 30,
+    "fat": 1
+  },
+  {
+    "name": "Vegetable Sandwich (2 slices)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 6
+  },
+  {
+    "name": "Paneer Sandwich (2 slices)",
+    "cal": 250,
+    "protein": 10,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Cheese Sandwich (2 slices)",
+    "cal": 260,
+    "protein": 9,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Egg Sandwich (2 slices)",
+    "cal": 240,
+    "protein": 12,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Chicken Sandwich (2 slices)",
+    "cal": 280,
+    "protein": 15,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Vegetable Roll (1)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 8
+  },
+  {
+    "name": "Paneer Roll (1)",
+    "cal": 250,
+    "protein": 10,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Egg Roll (1)",
+    "cal": 240,
+    "protein": 12,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Chicken Roll (1)",
+    "cal": 280,
+    "protein": 15,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Vegetable Frankie (1)",
+    "cal": 230,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 9
+  },
+  {
+    "name": "Paneer Frankie (1)",
+    "cal": 260,
+    "protein": 11,
+    "carbs": 30,
+    "fat": 11
+  },
+  {
+    "name": "Egg Frankie (1)",
+    "cal": 250,
+    "protein": 13,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Chicken Frankie (1)",
+    "cal": 290,
+    "protein": 16,
+    "carbs": 30,
+    "fat": 11
+  },
+  {
+    "name": "Pickled Onion (1 piece)",
+    "cal": 15,
+    "protein": 0,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Pickled Carrot (1 piece)",
+    "cal": 20,
+    "protein": 0,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Pickled Radish (1 piece)",
+    "cal": 18,
+    "protein": 0,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Pickled Cucumber (1 piece)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Coconut Powder (1 tbsp)",
+    "cal": 35,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 3
+  },
+  {
+    "name": "Groundnut Chikki (1 piece)",
+    "cal": 120,
+    "protein": 3,
+    "carbs": 15,
+    "fat": 6
+  },
+  {
+    "name": "Sesame Chikki (1 piece)",
+    "cal": 110,
+    "protein": 3,
+    "carbs": 14,
+    "fat": 5
+  },
+  {
+    "name": "Jaggery Chikki (1 piece)",
+    "cal": 100,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 2
+  },
+  {
+    "name": "Rice Flour (100g)",
+    "cal": 366,
+    "protein": 6,
+    "carbs": 80,
+    "fat": 1
+  },
+  {
+    "name": "Corn Flour (100g)",
+    "cal": 361,
+    "protein": 7,
+    "carbs": 79,
+    "fat": 1
+  },
+  {
+    "name": "Sooji / Rava (100g)",
+    "cal": 360,
+    "protein": 11,
+    "carbs": 73,
+    "fat": 1
+  },
+  {
+    "name": "Poha Raw (100g)",
+    "cal": 350,
+    "protein": 7,
+    "carbs": 77,
+    "fat": 1
+  },
+  {
+    "name": "Flattened Rice (100g)",
+    "cal": 350,
+    "protein": 7,
+    "carbs": 77,
+    "fat": 1
+  },
+  {
+    "name": "Sabudana (100g)",
+    "cal": 350,
+    "protein": 1,
+    "carbs": 87,
+    "fat": 0
+  },
+  {
+    "name": "Vermicelli (100g)",
+    "cal": 360,
+    "protein": 8,
+    "carbs": 78,
+    "fat": 1
+  },
+  {
+    "name": "Dry Ginger Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Garlic Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Onion Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Tomato Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Mint Powder (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Coriander Powder (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Curry Leaves Powder (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Fenugreek Leaves (Kasuri Methi, 1 tsp)",
+    "cal": 4,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Red Chilli Flakes (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Basil Leaves (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Oregano (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Thyme (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Rosemary (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Parsley (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Dill Leaves (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Bay Leaf Powder (1 tsp)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Curry Powder (1 tsp)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Turmeric Powder (1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Mustard Powder (1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Fenugreek Powder (1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Cumin Powder (1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Coriander Seeds (1 tsp)",
+    "cal": 6,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dry Fennel Seeds (1 tsp)",
+    "cal": 7,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Carom Seeds (Ajwain, 1 tsp)",
+    "cal": 8,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Dry Nigella Seeds (1 tsp)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 1
+  },
+  {
+    "name": "Dry Sesame Seeds (1 tsp)",
+    "cal": 26,
+    "protein": 1,
+    "carbs": 1,
+    "fat": 2
+  },
+  {
+    "name": "Dry Poppy Seeds (1 tsp)",
+    "cal": 30,
+    "protein": 1,
+    "carbs": 1,
+    "fat": 2
+  },
+  {
+    "name": "Dry Flax Seeds (1 tsp)",
+    "cal": 26,
+    "protein": 1,
+    "carbs": 1,
+    "fat": 2
+  },
+  {
+    "name": "Dry Chia Seeds (1 tsp)",
+    "cal": 25,
+    "protein": 1,
+    "carbs": 1,
+    "fat": 2
+  },
+  {
+    "name": "Dry Pumpkin Seeds (1 tbsp)",
+    "cal": 50,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Dry Sunflower Seeds (1 tbsp)",
+    "cal": 50,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Dry Watermelon Seeds (1 tbsp)",
+    "cal": 50,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Dry Muskmelon Seeds (1 tbsp)",
+    "cal": 50,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Dry Hemp Seeds (1 tbsp)",
+    "cal": 55,
+    "protein": 3,
+    "carbs": 2,
+    "fat": 4
+  },
+  {
+    "name": "Dry Quinoa (100g)",
+    "cal": 368,
+    "protein": 14,
+    "carbs": 64,
+    "fat": 6
+  },
+  {
+    "name": "Dry Amaranth (100g)",
+    "cal": 371,
+    "protein": 13,
+    "carbs": 65,
+    "fat": 7
+  },
+  {
+    "name": "Dry Buckwheat (100g)",
+    "cal": 343,
+    "protein": 13,
+    "carbs": 71,
+    "fat": 3
+  },
+  {
+    "name": "Dry Barley (100g)",
+    "cal": 354,
+    "protein": 12,
+    "carbs": 73,
+    "fat": 2
+  },
+  {
+    "name": "Dry Oats (100g)",
+    "cal": 389,
+    "protein": 17,
+    "carbs": 66,
+    "fat": 7
+  },
+  {
+    "name": "Dry Millet (100g)",
+    "cal": 378,
+    "protein": 11,
+    "carbs": 72,
+    "fat": 4
+  },
+  {
+    "name": "Dry Sorghum (100g)",
+    "cal": 349,
+    "protein": 10,
+    "carbs": 72,
+    "fat": 3
+  },
+  {
+    "name": "Dry Finger Millet (100g)",
+    "cal": 336,
+    "protein": 7,
+    "carbs": 72,
+    "fat": 2
+  },
+  {
+    "name": "Dry Pearl Millet (100g)",
+    "cal": 361,
+    "protein": 11,
+    "carbs": 73,
+    "fat": 5
+  },
+  {
+    "name": "Dry Foxtail Millet (100g)",
+    "cal": 351,
+    "protein": 12,
+    "carbs": 72,
+    "fat": 4
+  },
+  {
+    "name": "Dry Little Millet (100g)",
+    "cal": 350,
+    "protein": 11,
+    "carbs": 72,
+    "fat": 4
+  },
+  {
+    "name": "Dry Barnyard Millet (100g)",
+    "cal": 350,
+    "protein": 11,
+    "carbs": 72,
+    "fat": 4
+  },
+  {
+    "name": "Dry Kodo Millet (100g)",
+    "cal": 350,
+    "protein": 11,
+    "carbs": 72,
+    "fat": 4
+  },
+  {
+    "name": "Plain Roti (1 piece)",
+    "cal": 80,
+    "protein": 3,
+    "carbs": 15,
+    "fat": 1
+  },
+  {
+    "name": "Chapati (1 piece)",
+    "cal": 70,
+    "protein": 2,
+    "carbs": 13,
+    "fat": 1
+  },
+  {
+    "name": "Phulka (1 piece)",
+    "cal": 65,
+    "protein": 2,
+    "carbs": 12,
+    "fat": 1
+  },
+  {
+    "name": "Tandoori Roti (1 piece)",
+    "cal": 120,
+    "protein": 4,
+    "carbs": 22,
+    "fat": 2
+  },
+  {
+    "name": "Butter Roti (1 piece)",
+    "cal": 100,
+    "protein": 3,
+    "carbs": 15,
+    "fat": 4
+  },
+  {
+    "name": "Naan (1 piece)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 6
+  },
+  {
+    "name": "Butter Naan (1 piece)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 8
+  },
+  {
+    "name": "Garlic Naan (1 piece)",
+    "cal": 230,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 9
+  },
+  {
+    "name": "Kulcha (1 piece)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 5
+  },
+  {
+    "name": "Stuffed Kulcha (1 piece)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 7
+  },
+  {
+    "name": "Paratha (1 piece)",
+    "cal": 200,
+    "protein": 4,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Aloo Paratha (1 piece)",
+    "cal": 250,
+    "protein": 5,
+    "carbs": 38,
+    "fat": 9
+  },
+  {
+    "name": "Paneer Paratha (1 piece)",
+    "cal": 260,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Methi Paratha (1 piece)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 8
+  },
+  {
+    "name": "Gobhi Paratha (1 piece)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 9
+  },
+  {
+    "name": "Missi Roti (1 piece)",
+    "cal": 150,
+    "protein": 5,
+    "carbs": 20,
+    "fat": 4
+  },
+  {
+    "name": "Makki Ki Roti (1 piece)",
+    "cal": 180,
+    "protein": 4,
+    "carbs": 30,
+    "fat": 3
+  },
+  {
+    "name": "Jowar Bhakri (1 piece)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 2
+  },
+  {
+    "name": "Bajra Bhakri (1 piece)",
+    "cal": 170,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 3
+  },
+  {
+    "name": "Rice Bhakri (1 piece)",
+    "cal": 150,
+    "protein": 3,
+    "carbs": 28,
+    "fat": 1
+  },
+  {
+    "name": "Thalipeeth (1 piece)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 6
+  },
+  {
+    "name": "Puran Poli (1 piece)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 8
+  },
+  {
+    "name": "Bhakri with Ghee (1 piece)",
+    "cal": 190,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 6
+  },
+  {
+    "name": "Dal Fry (1 bowl)",
+    "cal": 220,
+    "protein": 12,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Dal Tadka (1 bowl)",
+    "cal": 200,
+    "protein": 12,
+    "carbs": 30,
+    "fat": 5
+  },
+  {
+    "name": "Dal Makhani (1 bowl)",
+    "cal": 300,
+    "protein": 14,
+    "carbs": 40,
+    "fat": 10
+  },
+  {
+    "name": "Paneer Curry (1 bowl)",
+    "cal": 280,
+    "protein": 14,
+    "carbs": 15,
+    "fat": 18
+  },
+  {
+    "name": "Chicken Curry (1 bowl)",
+    "cal": 350,
+    "protein": 28,
+    "carbs": 10,
+    "fat": 22
+  },
+  {
+    "name": "Mutton Curry (1 bowl)",
+    "cal": 380,
+    "protein": 26,
+    "carbs": 8,
+    "fat": 28
+  },
+  {
+    "name": "Fish Curry (1 bowl)",
+    "cal": 280,
+    "protein": 24,
+    "carbs": 8,
+    "fat": 16
+  },
+  {
+    "name": "Egg Curry (1 bowl)",
+    "cal": 250,
+    "protein": 14,
+    "carbs": 10,
+    "fat": 16
+  },
+  {
+    "name": "Vegetable Kurma (1 bowl)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 10
+  },
+  {
+    "name": "Chole Masala (1 bowl)",
+    "cal": 210,
+    "protein": 11,
+    "carbs": 35,
+    "fat": 4
+  },
+  {
+    "name": "Rajma Masala (1 bowl)",
+    "cal": 220,
+    "protein": 14,
+    "carbs": 38,
+    "fat": 2
+  },
+  {
+    "name": "Kadhi Pakora (1 bowl)",
+    "cal": 250,
+    "protein": 10,
+    "carbs": 20,
+    "fat": 14
+  },
+  {
+    "name": "Vegetable Korma (1 bowl)",
+    "cal": 230,
+    "protein": 7,
+    "carbs": 22,
+    "fat": 10
+  },
+  {
+    "name": "Bhindi Fry (1 bowl)",
+    "cal": 150,
+    "protein": 3,
+    "carbs": 10,
+    "fat": 9
+  },
+  {
+    "name": "Aloo Gobi (1 bowl)",
+    "cal": 180,
+    "protein": 4,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Baingan Masala (1 bowl)",
+    "cal": 170,
+    "protein": 4,
+    "carbs": 12,
+    "fat": 10
+  },
+  {
+    "name": "Cabbage Curry (1 bowl)",
+    "cal": 140,
+    "protein": 3,
+    "carbs": 14,
+    "fat": 6
+  },
+  {
+    "name": "Methi Aloo (1 bowl)",
+    "cal": 160,
+    "protein": 4,
+    "carbs": 18,
+    "fat": 7
+  },
+  {
+    "name": "Palak Paneer (1 bowl)",
+    "cal": 280,
+    "protein": 15,
+    "carbs": 10,
+    "fat": 20
+  },
+  {
+    "name": "Shahi Paneer (1 bowl)",
+    "cal": 360,
+    "protein": 14,
+    "carbs": 18,
+    "fat": 28
+  },
+  {
+    "name": "Kadai Paneer (1 bowl)",
+    "cal": 320,
+    "protein": 16,
+    "carbs": 12,
+    "fat": 24
+  },
+  {
+    "name": "Paneer Butter Masala (1 bowl)",
+    "cal": 350,
+    "protein": 18,
+    "carbs": 15,
+    "fat": 25
+  },
+  {
+    "name": "Vegetable Biryani (1 plate)",
+    "cal": 400,
+    "protein": 10,
+    "carbs": 70,
+    "fat": 10
+  },
+  {
+    "name": "Chicken Biryani (1 plate)",
+    "cal": 500,
+    "protein": 30,
+    "carbs": 65,
+    "fat": 12
+  },
+  {
+    "name": "Mutton Biryani (1 plate)",
+    "cal": 550,
+    "protein": 32,
+    "carbs": 65,
+    "fat": 15
+  },
+  {
+    "name": "Egg Biryani (1 plate)",
+    "cal": 450,
+    "protein": 20,
+    "carbs": 60,
+    "fat": 12
+  },
+  {
+    "name": "Onion Uttapam (1 piece)",
+    "cal": 210,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 7
+  },
+  {
+    "name": "Tomato Uttapam (1 piece)",
+    "cal": 210,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 7
+  },
+  {
+    "name": "Rava Dosa (1 piece)",
+    "cal": 190,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 6
+  },
+  {
+    "name": "Set Dosa (2 pieces)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 6
+  },
+  {
+    "name": "Neer Dosa (2 pieces)",
+    "cal": 150,
+    "protein": 4,
+    "carbs": 28,
+    "fat": 2
+  },
+  {
+    "name": "Appam (1 piece)",
+    "cal": 160,
+    "protein": 4,
+    "carbs": 30,
+    "fat": 3
+  },
+  {
+    "name": "Pesarattu (1 piece)",
+    "cal": 180,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 5
+  },
+  {
+    "name": "Adai (1 piece)",
+    "cal": 200,
+    "protein": 8,
+    "carbs": 30,
+    "fat": 6
+  },
+  {
+    "name": "Poori (1 piece)",
+    "cal": 110,
+    "protein": 2,
+    "carbs": 14,
+    "fat": 6
+  },
+  {
+    "name": "Bhatura (1 piece)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Laccha Paratha (1 piece)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 9
+  },
+  {
+    "name": "Stuffed Paratha (1 piece)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 9
+  },
+  {
+    "name": "Paneer Bhakri (1 piece)",
+    "cal": 200,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Methi Bhakri (1 piece)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 26,
+    "fat": 6
+  },
+  {
+    "name": "Onion Bhakri (1 piece)",
+    "cal": 190,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 7
+  },
+  {
+    "name": "Garlic Bhakri (1 piece)",
+    "cal": 190,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 7
+  },
+  {
+    "name": "Stuffed Bhakri (1 piece)",
+    "cal": 210,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Vegetable Bhakri (1 piece)",
+    "cal": 200,
+    "protein": 7,
+    "carbs": 29,
+    "fat": 7
+  },
+  {
+    "name": "Dal Khichdi (1 bowl)",
+    "cal": 200,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 4
+  },
+  {
+    "name": "Paneer Tikka Masala (1 bowl)",
+    "cal": 340,
+    "protein": 18,
+    "carbs": 15,
+    "fat": 24
+  },
+  {
+    "name": "Chicken Tikka Masala (1 bowl)",
+    "cal": 380,
+    "protein": 28,
+    "carbs": 12,
+    "fat": 26
+  },
+  {
+    "name": "Mutton Rogan Josh (1 bowl)",
+    "cal": 400,
+    "protein": 30,
+    "carbs": 10,
+    "fat": 28
+  },
+  {
+    "name": "Fish Fry (2 pieces)",
+    "cal": 280,
+    "protein": 24,
+    "carbs": 8,
+    "fat": 16
+  },
+  {
+    "name": "Egg Bhurji (1 bowl)",
+    "cal": 200,
+    "protein": 13,
+    "carbs": 5,
+    "fat": 14
+  },
+  {
+    "name": "Vegetable Pakora (4 pieces)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Onion Pakora (4 pieces)",
+    "cal": 260,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 12
+  },
+  {
+    "name": "Paneer Pakora (4 pieces)",
+    "cal": 280,
+    "protein": 10,
+    "carbs": 28,
+    "fat": 14
+  },
+  {
+    "name": "Bread Pakora (1 piece)",
+    "cal": 300,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 15
+  },
+  {
+    "name": "Aloo Tikki (2 pieces)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Vegetable Cutlet (2 pieces)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 9
+  },
+  {
+    "name": "Paneer Cutlet (2 pieces)",
+    "cal": 260,
+    "protein": 10,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Chicken Cutlet (2 pieces)",
+    "cal": 280,
+    "protein": 15,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Mutton Cutlet (2 pieces)",
+    "cal": 300,
+    "protein": 16,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Vegetable Kofta Curry (1 bowl)",
+    "cal": 280,
+    "protein": 10,
+    "carbs": 20,
+    "fat": 18
+  },
+  {
+    "name": "Malai Kofta (1 bowl)",
+    "cal": 320,
+    "protein": 12,
+    "carbs": 22,
+    "fat": 20
+  },
+  {
+    "name": "Lauki Kofta (1 bowl)",
+    "cal": 260,
+    "protein": 9,
+    "carbs": 18,
+    "fat": 16
+  },
+  {
+    "name": "Paneer Kofta (1 bowl)",
+    "cal": 300,
+    "protein": 14,
+    "carbs": 20,
+    "fat": 18
+  },
+  {
+    "name": "Vegetable Handi (1 bowl)",
+    "cal": 250,
+    "protein": 9,
+    "carbs": 22,
+    "fat": 14
+  },
+  {
+    "name": "Paneer Handi (1 bowl)",
+    "cal": 320,
+    "protein": 16,
+    "carbs": 18,
+    "fat": 20
+  },
+  {
+    "name": "Chicken Handi (1 bowl)",
+    "cal": 360,
+    "protein": 28,
+    "carbs": 12,
+    "fat": 22
+  },
+  {
+    "name": "Mutton Handi (1 bowl)",
+    "cal": 380,
+    "protein": 26,
+    "carbs": 10,
+    "fat": 24
+  },
+  {
+    "name": "Fish Handi (1 bowl)",
+    "cal": 300,
+    "protein": 24,
+    "carbs": 10,
+    "fat": 18
+  },
+  {
+    "name": "Egg Handi (1 bowl)",
+    "cal": 280,
+    "protein": 16,
+    "carbs": 10,
+    "fat": 18
+  },
+  {
+    "name": "Pani Puri (6 pieces)",
+    "cal": 180,
+    "protein": 4,
+    "carbs": 30,
+    "fat": 6
+  },
+  {
+    "name": "Sev Puri (1 plate)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 8
+  },
+  {
+    "name": "Bhel Puri (1 plate)",
+    "cal": 200,
+    "protein": 5,
+    "carbs": 38,
+    "fat": 4
+  },
+  {
+    "name": "Dahi Puri (6 pieces)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 8
+  },
+  {
+    "name": "Ragda Pattice (1 plate)",
+    "cal": 280,
+    "protein": 10,
+    "carbs": 40,
+    "fat": 8
+  },
+  {
+    "name": "Misal Pav (1 plate)",
+    "cal": 350,
+    "protein": 12,
+    "carbs": 45,
+    "fat": 12
+  },
+  {
+    "name": "Vada Pav (1)",
+    "cal": 320,
+    "protein": 7,
+    "carbs": 48,
+    "fat": 12
+  },
+  {
+    "name": "Pav Bhaji (1 plate)",
+    "cal": 450,
+    "protein": 10,
+    "carbs": 70,
+    "fat": 16
+  },
+  {
+    "name": "Dabeli (1)",
+    "cal": 300,
+    "protein": 6,
+    "carbs": 45,
+    "fat": 10
+  },
+  {
+    "name": "Kachori (1 piece)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "Samosa (1 piece)",
+    "cal": 250,
+    "protein": 4,
+    "carbs": 32,
+    "fat": 13
+  },
+  {
+    "name": "Chole Bhature (1 plate)",
+    "cal": 500,
+    "protein": 15,
+    "carbs": 60,
+    "fat": 20
+  },
+  {
+    "name": "Kathi Roll Veg (1)",
+    "cal": 280,
+    "protein": 8,
+    "carbs": 40,
+    "fat": 9
+  },
+  {
+    "name": "Kathi Roll Chicken (1)",
+    "cal": 320,
+    "protein": 15,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "Frankie Veg (1)",
+    "cal": 230,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 9
+  },
+  {
+    "name": "Frankie Paneer (1)",
+    "cal": 260,
+    "protein": 11,
+    "carbs": 30,
+    "fat": 11
+  },
+  {
+    "name": "Frankie Chicken (1)",
+    "cal": 290,
+    "protein": 16,
+    "carbs": 30,
+    "fat": 11
+  },
+  {
+    "name": "Chowmein Veg (1 plate)",
+    "cal": 350,
+    "protein": 8,
+    "carbs": 55,
+    "fat": 12
+  },
+  {
+    "name": "Chowmein Chicken (1 plate)",
+    "cal": 400,
+    "protein": 20,
+    "carbs": 50,
+    "fat": 14
+  },
+  {
+    "name": "Hakka Noodles Veg (1 plate)",
+    "cal": 400,
+    "protein": 10,
+    "carbs": 60,
+    "fat": 14
+  },
+  {
+    "name": "Hakka Noodles Chicken (1 plate)",
+    "cal": 420,
+    "protein": 22,
+    "carbs": 55,
+    "fat": 15
+  },
+  {
+    "name": "Maggi Masala (1 plate)",
+    "cal": 350,
+    "protein": 7,
+    "carbs": 50,
+    "fat": 14
+  },
+  {
+    "name": "Egg Maggi (1 plate)",
+    "cal": 380,
+    "protein": 12,
+    "carbs": 50,
+    "fat": 15
+  },
+  {
+    "name": "Paneer Maggi (1 plate)",
+    "cal": 400,
+    "protein": 15,
+    "carbs": 52,
+    "fat": 16
+  },
+  {
+    "name": "Chicken Maggi (1 plate)",
+    "cal": 420,
+    "protein": 20,
+    "carbs": 50,
+    "fat": 16
+  },
+  {
+    "name": "Pakora Mix Veg (6 pieces)",
+    "cal": 280,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 14
+  },
+  {
+    "name": "Fish Pakora (4 pieces)",
+    "cal": 300,
+    "protein": 18,
+    "carbs": 20,
+    "fat": 14
+  },
+  {
+    "name": "Chicken Pakora (4 pieces)",
+    "cal": 320,
+    "protein": 20,
+    "carbs": 20,
+    "fat": 15
+  },
+  {
+    "name": "Mutton Kebab (4 pieces)",
+    "cal": 350,
+    "protein": 22,
+    "carbs": 15,
+    "fat": 18
+  },
+  {
+    "name": "Seekh Kebab (2 pieces)",
+    "cal": 280,
+    "protein": 18,
+    "carbs": 12,
+    "fat": 14
+  },
+  {
+    "name": "Shami Kebab (2 pieces)",
+    "cal": 300,
+    "protein": 20,
+    "carbs": 15,
+    "fat": 16
+  },
+  {
+    "name": "Galouti Kebab (2 pieces)",
+    "cal": 320,
+    "protein": 22,
+    "carbs": 14,
+    "fat": 18
+  },
+  {
+    "name": "Tandoori Chicken (1 leg)",
+    "cal": 300,
+    "protein": 28,
+    "carbs": 5,
+    "fat": 16
+  },
+  {
+    "name": "Chicken Tikka (6 pieces)",
+    "cal": 280,
+    "protein": 35,
+    "carbs": 5,
+    "fat": 14
+  },
+  {
+    "name": "Paneer Tikka (6 pieces)",
+    "cal": 260,
+    "protein": 18,
+    "carbs": 8,
+    "fat": 12
+  },
+  {
+    "name": "Veg Momos (6 pieces)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 6
+  },
+  {
+    "name": "Chicken Momos (6 pieces)",
+    "cal": 260,
+    "protein": 12,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Paneer Momos (6 pieces)",
+    "cal": 240,
+    "protein": 10,
+    "carbs": 30,
+    "fat": 7
+  },
+  {
+    "name": "Fried Momos Veg (6 pieces)",
+    "cal": 280,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 12
+  },
+  {
+    "name": "Fried Momos Chicken (6 pieces)",
+    "cal": 300,
+    "protein": 14,
+    "carbs": 30,
+    "fat": 14
+  },
+  {
+    "name": "Spring Roll Veg (2 pieces)",
+    "cal": 260,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Spring Roll Chicken (2 pieces)",
+    "cal": 280,
+    "protein": 12,
+    "carbs": 32,
+    "fat": 12
+  },
+  {
+    "name": "Paneer Spring Roll (2 pieces)",
+    "cal": 270,
+    "protein": 10,
+    "carbs": 32,
+    "fat": 11
+  },
+  {
+    "name": "Egg Spring Roll (2 pieces)",
+    "cal": 260,
+    "protein": 12,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Chilli Paneer Dry (1 plate)",
+    "cal": 320,
+    "protein": 18,
+    "carbs": 20,
+    "fat": 16
+  },
+  {
+    "name": "Chilli Chicken Dry (1 plate)",
+    "cal": 350,
+    "protein": 25,
+    "carbs": 18,
+    "fat": 18
+  },
+  {
+    "name": "Chilli Potato (1 plate)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 12
+  },
+  {
+    "name": "Chilli Mushroom (1 plate)",
+    "cal": 300,
+    "protein": 12,
+    "carbs": 25,
+    "fat": 14
+  },
+  {
+    "name": "Egg Chowmein (1 plate)",
+    "cal": 380,
+    "protein": 14,
+    "carbs": 50,
+    "fat": 15
+  },
+  {
+    "name": "Paneer Chowmein (1 plate)",
+    "cal": 400,
+    "protein": 16,
+    "carbs": 52,
+    "fat": 16
+  },
+  {
+    "name": "Chicken Chowmein (1 plate)",
+    "cal": 420,
+    "protein": 20,
+    "carbs": 50,
+    "fat": 16
+  },
+  {
+    "name": "Mutton Chowmein (1 plate)",
+    "cal": 450,
+    "protein": 22,
+    "carbs": 50,
+    "fat": 18
+  },
+  {
+    "name": "Dhokla (2 pieces)",
+    "cal": 150,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 5
+  },
+  {
+    "name": "Khandvi (6 pieces)",
+    "cal": 180,
+    "protein": 8,
+    "carbs": 22,
+    "fat": 6
+  },
+  {
+    "name": "Fafda (2 pieces)",
+    "cal": 200,
+    "protein": 7,
+    "carbs": 25,
+    "fat": 8
+  },
+  {
+    "name": "Jalebi (100g)",
+    "cal": 400,
+    "protein": 5,
+    "carbs": 85,
+    "fat": 10
+  },
+  {
+    "name": "Patra (4 slices)",
+    "cal": 220,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Litti Chokha (2 pieces)",
+    "cal": 300,
+    "protein": 10,
+    "carbs": 40,
+    "fat": 12
+  },
+  {
+    "name": "Ghugni (1 bowl)",
+    "cal": 200,
+    "protein": 9,
+    "carbs": 30,
+    "fat": 5
+  },
+  {
+    "name": "Sattu Paratha (1 piece)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 9
+  },
+  {
+    "name": "Thepla (2 pieces)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Handvo (1 slice)",
+    "cal": 180,
+    "protein": 7,
+    "carbs": 22,
+    "fat": 7
+  },
+  {
+    "name": "Undhiyu (1 bowl)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Poha Jalebi (combo plate)",
+    "cal": 350,
+    "protein": 7,
+    "carbs": 55,
+    "fat": 10
+  },
+  {
+    "name": "Kachori Chaat (1 plate)",
+    "cal": 320,
+    "protein": 9,
+    "carbs": 45,
+    "fat": 12
+  },
+  {
+    "name": "Samosa Chaat (1 plate)",
+    "cal": 350,
+    "protein": 8,
+    "carbs": 50,
+    "fat": 14
+  },
+  {
+    "name": "Aloo Chaat (1 plate)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 10
+  },
+  {
+    "name": "Papdi Chaat (1 plate)",
+    "cal": 300,
+    "protein": 7,
+    "carbs": 45,
+    "fat": 12
+  },
+  {
+    "name": "Raj Kachori (1 piece)",
+    "cal": 350,
+    "protein": 10,
+    "carbs": 48,
+    "fat": 14
+  },
+  {
+    "name": "Chole Kulche (1 plate)",
+    "cal": 400,
+    "protein": 12,
+    "carbs": 55,
+    "fat": 14
+  },
+  {
+    "name": "Bedmi Puri (2 pieces)",
+    "cal": 280,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Aloo Puri (2 pieces)",
+    "cal": 260,
+    "protein": 7,
+    "carbs": 34,
+    "fat": 9
+  },
+  {
+    "name": "Kathi Kabab Roll (1)",
+    "cal": 320,
+    "protein": 15,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "Keema Pav (1 plate)",
+    "cal": 380,
+    "protein": 20,
+    "carbs": 40,
+    "fat": 16
+  },
+  {
+    "name": "Anda Pav (1)",
+    "cal": 280,
+    "protein": 12,
+    "carbs": 32,
+    "fat": 10
+  },
+  {
+    "name": "Bhajiya Mix (6 pieces)",
+    "cal": 300,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 14
+  },
+  {
+    "name": "Mirchi Bhajiya (2 pieces)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Paneer Bhajiya (2 pieces)",
+    "cal": 240,
+    "protein": 9,
+    "carbs": 26,
+    "fat": 10
+  },
+  {
+    "name": "Aloo Bhajiya (2 pieces)",
+    "cal": 230,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Bread Bhajiya (2 pieces)",
+    "cal": 250,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Sabudana Vada (2 pieces)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "Batata Vada (2 pieces)",
+    "cal": 260,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 10
+  },
+  {
+    "name": "Kothimbir Vadi (4 pieces)",
+    "cal": 220,
+    "protein": 8,
+    "carbs": 25,
+    "fat": 8
+  },
+  {
+    "name": "Moong Dal Pakora (6 pieces)",
+    "cal": 280,
+    "protein": 10,
+    "carbs": 30,
+    "fat": 12
+  },
+  {
+    "name": "Chana Dal Pakora (6 pieces)",
+    "cal": 290,
+    "protein": 9,
+    "carbs": 32,
+    "fat": 12
+  },
+  {
+    "name": "Paneer Tikka Roll (1)",
+    "cal": 300,
+    "protein": 14,
+    "carbs": 32,
+    "fat": 11
+  },
+  {
+    "name": "Chicken Shawarma Roll (1)",
+    "cal": 350,
+    "protein": 20,
+    "carbs": 35,
+    "fat": 14
+  },
+  {
+    "name": "Egg Shawarma Roll (1)",
+    "cal": 320,
+    "protein": 15,
+    "carbs": 32,
+    "fat": 12
+  },
+  {
+    "name": "Veg Burger Street Style (1)",
+    "cal": 350,
+    "protein": 8,
+    "carbs": 45,
+    "fat": 14
+  },
+  {
+    "name": "Paneer Burger Street Style (1)",
+    "cal": 380,
+    "protein": 12,
+    "carbs": 42,
+    "fat": 15
+  },
+  {
+    "name": "Chicken Burger Street Style (1)",
+    "cal": 420,
+    "protein": 20,
+    "carbs": 40,
+    "fat": 16
+  },
+  {
+    "name": "Veg Pizza Street Style (2 slices)",
+    "cal": 480,
+    "protein": 14,
+    "carbs": 60,
+    "fat": 18
+  },
+  {
+    "name": "Paneer Pizza Street Style (2 slices)",
+    "cal": 500,
+    "protein": 18,
+    "carbs": 58,
+    "fat": 20
+  },
+  {
+    "name": "Chicken Pizza Street Style (2 slices)",
+    "cal": 520,
+    "protein": 22,
+    "carbs": 55,
+    "fat": 22
+  },
+  {
+    "name": "Egg Puff (1 piece)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 30,
+    "fat": 12
+  },
+  {
+    "name": "Veg Puff (1 piece)",
+    "cal": 240,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 11
+  },
+  {
+    "name": "Paneer Puff (1 piece)",
+    "cal": 260,
+    "protein": 9,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Chicken Puff (1 piece)",
+    "cal": 280,
+    "protein": 12,
+    "carbs": 28,
+    "fat": 13
+  },
+  {
+    "name": "Veg Patties (1 piece)",
+    "cal": 230,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Paneer Patties (1 piece)",
+    "cal": 250,
+    "protein": 9,
+    "carbs": 28,
+    "fat": 11
+  },
+  {
+    "name": "Chicken Patties (1 piece)",
+    "cal": 270,
+    "protein": 12,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Egg Patties (1 piece)",
+    "cal": 260,
+    "protein": 10,
+    "carbs": 28,
+    "fat": 11
+  },
+  {
+    "name": "Veg Cutlet (2 pieces)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 9
+  },
+  {
+    "name": "Paneer Cutlet 2 pieces)",
+    "cal": 260,
+    "protein": 10,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Gulab Jamun (2 pieces)",
+    "cal": 300,
+    "protein": 5,
+    "carbs": 45,
+    "fat": 12
+  },
+  {
+    "name": "Rasgulla (2 pieces)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 4
+  },
+  {
+    "name": "Sandesh (2 pieces)",
+    "cal": 200,
+    "protein": 7,
+    "carbs": 35,
+    "fat": 5
+  },
+  {
+    "name": "Mishti Doi (1 bowl)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Kheer (1 bowl)",
+    "cal": 250,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 8
+  },
+  {
+    "name": "Payasam (1 bowl)",
+    "cal": 260,
+    "protein": 8,
+    "carbs": 42,
+    "fat": 9
+  },
+  {
+    "name": "Phirni (1 bowl)",
+    "cal": 240,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 8
+  },
+  {
+    "name": "Sheera / Halwa (1 bowl)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 45,
+    "fat": 10
+  },
+  {
+    "name": "Sooji Halwa (1 bowl)",
+    "cal": 270,
+    "protein": 6,
+    "carbs": 44,
+    "fat": 9
+  },
+  {
+    "name": "Besan Halwa (1 bowl)",
+    "cal": 300,
+    "protein": 8,
+    "carbs": 40,
+    "fat": 12
+  },
+  {
+    "name": "Moong Dal Halwa (1 bowl)",
+    "cal": 320,
+    "protein": 10,
+    "carbs": 42,
+    "fat": 14
+  },
+  {
+    "name": "Carrot Halwa (1 bowl)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 10
+  },
+  {
+    "name": "Lauki Halwa (1 bowl)",
+    "cal": 260,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 9
+  },
+  {
+    "name": "Atta Halwa (1 bowl)",
+    "cal": 290,
+    "protein": 7,
+    "carbs": 42,
+    "fat": 11
+  },
+  {
+    "name": "Badam Halwa (1 bowl)",
+    "cal": 350,
+    "protein": 10,
+    "carbs": 38,
+    "fat": 16
+  },
+  {
+    "name": "Coconut Barfi (2 pieces)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "Kaju Katli (2 pieces)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Badam Katli (2 pieces)",
+    "cal": 260,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 11
+  },
+  {
+    "name": "Pista Barfi (2 pieces)",
+    "cal": 270,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 12
+  },
+  {
+    "name": "Milk Barfi (2 pieces)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 9
+  },
+  {
+    "name": "Kalakand (2 pieces)",
+    "cal": 260,
+    "protein": 8,
+    "carbs": 32,
+    "fat": 10
+  },
+  {
+    "name": "Burfi Mix (2 pieces)",
+    "cal": 250,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Laddoo Besan (2 pieces)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 14
+  },
+  {
+    "name": "Laddoo Motichoor (2 pieces)",
+    "cal": 300,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 15
+  },
+  {
+    "name": "Laddoo Boondi (2 pieces)",
+    "cal": 290,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 14
+  },
+  {
+    "name": "Til Laddoo (2 pieces)",
+    "cal": 280,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 15
+  },
+  {
+    "name": "Dry Fruit Laddoo (2 pieces)",
+    "cal": 320,
+    "protein": 8,
+    "carbs": 30,
+    "fat": 16
+  },
+  {
+    "name": "Churma Laddoo (2 pieces)",
+    "cal": 310,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 15
+  },
+  {
+    "name": "Peda (2 pieces)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Mathura Peda (2 pieces)",
+    "cal": 250,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Malai Peda (2 pieces)",
+    "cal": 260,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 11
+  },
+  {
+    "name": "Shrikhand (1 bowl)",
+    "cal": 280,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "Amrakhand (1 bowl)",
+    "cal": 290,
+    "protein": 8,
+    "carbs": 38,
+    "fat": 12
+  },
+  {
+    "name": "Rabri (1 bowl)",
+    "cal": 320,
+    "protein": 9,
+    "carbs": 40,
+    "fat": 14
+  },
+  {
+    "name": "Kulfi (1 stick)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Falooda (1 glass)",
+    "cal": 350,
+    "protein": 8,
+    "carbs": 50,
+    "fat": 12
+  },
+  {
+    "name": "Ice Cream Vanilla (1 scoop)",
+    "cal": 150,
+    "protein": 3,
+    "carbs": 20,
+    "fat": 7
+  },
+  {
+    "name": "Ice Cream Chocolate (1 scoop)",
+    "cal": 160,
+    "protein": 3,
+    "carbs": 22,
+    "fat": 8
+  },
+  {
+    "name": "Ice Cream Strawberry (1 scoop)",
+    "cal": 150,
+    "protein": 3,
+    "carbs": 21,
+    "fat": 7
+  },
+  {
+    "name": "Kulfi Falooda (1 glass)",
+    "cal": 380,
+    "protein": 9,
+    "carbs": 52,
+    "fat": 14
+  },
+  {
+    "name": "Rasgulla Sandesh Mix (2 pieces)",
+    "cal": 230,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 5
+  },
+  {
+    "name": "Chhena Murki (1 bowl)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 40,
+    "fat": 9
+  },
+  {
+    "name": "Balushahi (2 pieces)",
+    "cal": 300,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 14
+  },
+  {
+    "name": "Imarti (2 pieces)",
+    "cal": 320,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 15
+  },
+  {
+    "name": "Malpua (2 pieces)",
+    "cal": 330,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 15
+  },
+  {
+    "name": "Kesari Bath (1 bowl)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 42,
+    "fat": 10
+  },
+  {
+    "name": "Rava Kesari (1 bowl)",
+    "cal": 270,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 9
+  },
+  {
+    "name": "Modak (2 pieces)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "Ukadiche Modak (2 pieces)",
+    "cal": 290,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 12
+  },
+  {
+    "name": "Dry Fruit Modak (2 pieces)",
+    "cal": 320,
+    "protein": 8,
+    "carbs": 34,
+    "fat": 15
+  },
+  {
+    "name": "Ghevar (1 piece)",
+    "cal": 320,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 14
+  },
+  {
+    "name": "Chhena Gaja (2 pieces)",
+    "cal": 280,
+    "protein": 8,
+    "carbs": 38,
+    "fat": 10
+  },
+  {
+    "name": "Arisa (2 pieces)",
+    "cal": 300,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 12
+  },
+  {
+    "name": "Pitha (2 pieces)",
+    "cal": 260,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 9
+  },
+  {
+    "name": "Malpua with Rabri (2 pieces)",
+    "cal": 400,
+    "protein": 9,
+    "carbs": 50,
+    "fat": 16
+  },
+  {
+    "name": "Chhena Poda (1 slice)",
+    "cal": 280,
+    "protein": 9,
+    "carbs": 35,
+    "fat": 11
+  },
+  {
+    "name": "Rasgulla Mix (2 pieces)",
+    "cal": 230,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 5
+  },
+  {
+    "name": "Rajbhog (2 pieces)",
+    "cal": 260,
+    "protein": 8,
+    "carbs": 40,
+    "fat": 8
+  },
+  {
+    "name": "Cham Cham (2 pieces)",
+    "cal": 250,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 7
+  },
+  {
+    "name": "Kalojam (2 pieces)",
+    "cal": 280,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 10
+  },
+  {
+    "name": "Pantua (2 pieces)",
+    "cal": 290,
+    "protein": 7,
+    "carbs": 42,
+    "fat": 11
+  },
+  {
+    "name": "Shondesh (2 pieces)",
+    "cal": 200,
+    "protein": 7,
+    "carbs": 35,
+    "fat": 5
+  },
+  {
+    "name": "Kesar Peda (2 pieces)",
+    "cal": 250,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Tilkut (2 pieces)",
+    "cal": 280,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 14
+  },
+  {
+    "name": "Anarsa (2 pieces)",
+    "cal": 300,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 12
+  },
+  {
+    "name": "Motichoor Laddoo (2 pieces)",
+    "cal": 300,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 15
+  },
+  {
+    "name": "Boondi Laddoo (2 pieces)",
+    "cal": 290,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 14
+  },
+  {
+    "name": "Besan Laddoo (2 pieces)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 14
+  },
+  {
+    "name": "Sugarcane Juice (1 glass)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 30,
+    "fat": 0
+  },
+  {
+    "name": "Jaljeera (1 glass)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 8,
+    "fat": 0
+  },
+  {
+    "name": "Thandai (1 glass)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 25,
+    "fat": 8
+  },
+  {
+    "name": "Kokum Sherbet (1 glass)",
+    "cal": 90,
+    "protein": 1,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Aam Panna (1 glass)",
+    "cal": 100,
+    "protein": 1,
+    "carbs": 24,
+    "fat": 0
+  },
+  {
+    "name": "Bel Sherbet (1 glass)",
+    "cal": 110,
+    "protein": 1,
+    "carbs": 26,
+    "fat": 0
+  },
+  {
+    "name": "Rose Sherbet (1 glass)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 28,
+    "fat": 0
+  },
+  {
+    "name": "Khus Sherbet (1 glass)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 28,
+    "fat": 0
+  },
+  {
+    "name": "Lemon Sherbet (1 glass)",
+    "cal": 60,
+    "protein": 0,
+    "carbs": 15,
+    "fat": 0
+  },
+  {
+    "name": "Nimbu Pani (1 glass)",
+    "cal": 50,
+    "protein": 0,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "Masala Chaas (1 glass)",
+    "cal": 40,
+    "protein": 2,
+    "carbs": 5,
+    "fat": 1
+  },
+  {
+    "name": "Sweet Lassi (1 glass)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 5
+  },
+  {
+    "name": "Salted Lassi (1 glass)",
+    "cal": 150,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 5
+  },
+  {
+    "name": "Dry Fruit Lassi (1 glass)",
+    "cal": 220,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Mango Lassi (1 glass)",
+    "cal": 200,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 6
+  },
+  {
+    "name": "Banana Milkshake (1 glass)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 5
+  },
+  {
+    "name": "Mango Milkshake (1 glass)",
+    "cal": 210,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 5
+  },
+  {
+    "name": "Chikoo Milkshake (1 glass)",
+    "cal": 230,
+    "protein": 6,
+    "carbs": 42,
+    "fat": 6
+  },
+  {
+    "name": "Strawberry Milkshake (1 glass)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 5
+  },
+  {
+    "name": "Rose Milkshake (1 glass)",
+    "cal": 210,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 5
+  },
+  {
+    "name": "Cold Coffee (1 glass)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 5
+  },
+  {
+    "name": "Hot Coffee (1 cup)",
+    "cal": 60,
+    "protein": 2,
+    "carbs": 8,
+    "fat": 2
+  },
+  {
+    "name": "Masala Tea (1 cup)",
+    "cal": 50,
+    "protein": 1,
+    "carbs": 8,
+    "fat": 1
+  },
+  {
+    "name": "Green Tea (1 cup)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Black Tea (1 cup)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Herbal Tea (1 cup)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Tulsi Tea (1 cup)",
+    "cal": 5,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Ginger Tea (1 cup)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Cardamom Tea (1 cup)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Kesar Milk (1 glass)",
+    "cal": 180,
+    "protein": 7,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Badam Milk (1 glass)",
+    "cal": 200,
+    "protein": 8,
+    "carbs": 22,
+    "fat": 9
+  },
+  {
+    "name": "Haldi Doodh (1 glass)",
+    "cal": 150,
+    "protein": 7,
+    "carbs": 18,
+    "fat": 6
+  },
+  {
+    "name": "Ragi Malt (1 glass)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 4
+  },
+  {
+    "name": "Sattu Drink (1 glass)",
+    "cal": 160,
+    "protein": 8,
+    "carbs": 25,
+    "fat": 3
+  },
+  {
+    "name": "Kanji (1 glass)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 15,
+    "fat": 1
+  },
+  {
+    "name": "Fermented Rice Water (1 glass)",
+    "cal": 70,
+    "protein": 2,
+    "carbs": 14,
+    "fat": 0
+  },
+  {
+    "name": "Buttermilk Spiced (1 glass)",
+    "cal": 45,
+    "protein": 2,
+    "carbs": 6,
+    "fat": 1
+  },
+  {
+    "name": "Solkadhi (1 glass)",
+    "cal": 90,
+    "protein": 2,
+    "carbs": 12,
+    "fat": 3
+  },
+  {
+    "name": "Kokum Kadhi (1 glass)",
+    "cal": 100,
+    "protein": 2,
+    "carbs": 14,
+    "fat": 3
+  },
+  {
+    "name": "Amla Juice (1 glass)",
+    "cal": 60,
+    "protein": 1,
+    "carbs": 14,
+    "fat": 0
+  },
+  {
+    "name": "Tulsi Juice (1 glass)",
+    "cal": 50,
+    "protein": 1,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "Neem Juice (1 glass)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Giloy Juice (1 glass)",
+    "cal": 45,
+    "protein": 1,
+    "carbs": 11,
+    "fat": 0
+  },
+  {
+    "name": "Wheatgrass Juice (1 glass)",
+    "cal": 50,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Carrot Juice (1 glass)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 0
+  },
+  {
+    "name": "Beetroot Juice (1 glass)",
+    "cal": 90,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Cucumber Juice (1 glass)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 9,
+    "fat": 0
+  },
+  {
+    "name": "Tomato Juice (1 glass)",
+    "cal": 50,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Orange Juice (1 glass)",
+    "cal": 110,
+    "protein": 2,
+    "carbs": 25,
+    "fat": 0
+  },
+  {
+    "name": "Apple Juice (1 glass)",
+    "cal": 120,
+    "protein": 1,
+    "carbs": 28,
+    "fat": 0
+  },
+  {
+    "name": "Pineapple Juice (1 glass)",
+    "cal": 130,
+    "protein": 1,
+    "carbs": 30,
+    "fat": 0
+  },
+  {
+    "name": "Watermelon Juice (1 glass)",
+    "cal": 80,
+    "protein": 1,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Mango Juice (1 glass)",
+    "cal": 120,
+    "protein": 1,
+    "carbs": 28,
+    "fat": 0
+  },
+  {
+    "name": "Banana Smoothie (1 glass)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 5
+  },
+  {
+    "name": "Papaya Smoothie (1 glass)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 5
+  },
+  {
+    "name": "Mixed Fruit Smoothie (1 glass)",
+    "cal": 230,
+    "protein": 7,
+    "carbs": 42,
+    "fat": 6
+  },
+  {
+    "name": "Papad Fry (1 piece)",
+    "cal": 60,
+    "protein": 2,
+    "carbs": 8,
+    "fat": 2
+  },
+  {
+    "name": "Masala Papad (1 piece)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 3
+  },
+  {
+    "name": "Roasted Papad (1 piece)",
+    "cal": 40,
+    "protein": 2,
+    "carbs": 6,
+    "fat": 1
+  },
+  {
+    "name": "Farsan Mix (1 bowl)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Chivda (1 bowl)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 6
+  },
+  {
+    "name": "Poha Chivda (1 bowl)",
+    "cal": 170,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 5
+  },
+  {
+    "name": "Sev (30g)",
+    "cal": 150,
+    "protein": 4,
+    "carbs": 18,
+    "fat": 8
+  },
+  {
+    "name": "Bhujia (30g)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 18,
+    "fat": 9
+  },
+  {
+    "name": "Gathiya (30g)",
+    "cal": 170,
+    "protein": 5,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Namak Para (30g)",
+    "cal": 140,
+    "protein": 3,
+    "carbs": 20,
+    "fat": 6
+  },
+  {
+    "name": "Shakar Para (30g)",
+    "cal": 160,
+    "protein": 3,
+    "carbs": 22,
+    "fat": 7
+  },
+  {
+    "name": "Mathri (2 pieces)",
+    "cal": 180,
+    "protein": 4,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Khakhra (1 piece)",
+    "cal": 80,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 3
+  },
+  {
+    "name": "Methi Khakhra (1 piece)",
+    "cal": 90,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 4
+  },
+  {
+    "name": "Jeera Khakhra (1 piece)",
+    "cal": 90,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 4
+  },
+  {
+    "name": "Masala Khakhra (1 piece)",
+    "cal": 100,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 5
+  },
+  {
+    "name": "Pickle Mango (1 tbsp)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 3
+  },
+  {
+    "name": "Pickle Lemon (1 tbsp)",
+    "cal": 30,
+    "protein": 0,
+    "carbs": 3,
+    "fat": 2
+  },
+  {
+    "name": "Pickle Chilli (1 tbsp)",
+    "cal": 25,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 2
+  },
+  {
+    "name": "Pickle Garlic (1 tbsp)",
+    "cal": 30,
+    "protein": 1,
+    "carbs": 2,
+    "fat": 2
+  },
+  {
+    "name": "Pickle Mixed Veg (1 tbsp)",
+    "cal": 35,
+    "protein": 1,
+    "carbs": 3,
+    "fat": 2
+  },
+  {
+    "name": "Coriander Chutney (1 tbsp)",
+    "cal": 20,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Mint Chutney (1 tbsp)",
+    "cal": 20,
+    "protein": 0,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Imli Chutney (1 tbsp)",
+    "cal": 30,
+    "protein": 0,
+    "carbs": 6,
+    "fat": 0
+  },
+  {
+    "name": "Raita Boondi (1 bowl)",
+    "cal": 120,
+    "protein": 4,
+    "carbs": 10,
+    "fat": 6
+  },
+  {
+    "name": "Raita Cucumber (1 bowl)",
+    "cal": 100,
+    "protein": 4,
+    "carbs": 8,
+    "fat": 4
+  },
+  {
+    "name": "Raita Onion (1 bowl)",
+    "cal": 100,
+    "protein": 4,
+    "carbs": 8,
+    "fat": 4
+  },
+  {
+    "name": "Raita Tomato (1 bowl)",
+    "cal": 100,
+    "protein": 4,
+    "carbs": 8,
+    "fat": 4
+  },
+  {
+    "name": "Raita Mixed Veg (1 bowl)",
+    "cal": 110,
+    "protein": 4,
+    "carbs": 9,
+    "fat": 4
+  },
+  {
+    "name": "Farsan Jalebi Combo (plate)",
+    "cal": 400,
+    "protein": 8,
+    "carbs": 60,
+    "fat": 14
+  },
+  {
+    "name": "Bhujia Sev Mix (1 bowl)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Chivda Mix (1 bowl)",
+    "cal": 190,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 7
+  },
+  {
+    "name": "Namkeen Mixture (1 bowl)",
+    "cal": 210,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 8
+  },
+  {
+    "name": "Murukku (2 pieces)",
+    "cal": 160,
+    "protein": 4,
+    "carbs": 20,
+    "fat": 7
+  },
+  {
+    "name": "Thattai (2 pieces)",
+    "cal": 170,
+    "protein": 5,
+    "carbs": 22,
+    "fat": 7
+  },
+  {
+    "name": "Ribbon Pakoda (2 pieces)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 24,
+    "fat": 8
+  },
+  {
+    "name": "Kara Sev (30g)",
+    "cal": 150,
+    "protein": 4,
+    "carbs": 18,
+    "fat": 8
+  },
+  {
+    "name": "Mixture South Indian (1 bowl)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Banana Chips (30g)",
+    "cal": 150,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 7
+  },
+  {
+    "name": "Jackfruit Chips (30g)",
+    "cal": 160,
+    "protein": 2,
+    "carbs": 22,
+    "fat": 7
+  },
+  {
+    "name": "Tapioca Chips (30g)",
+    "cal": 170,
+    "protein": 2,
+    "carbs": 24,
+    "fat": 7
+  },
+  {
+    "name": "Potato Chips (30g)",
+    "cal": 160,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Masala Chips (30g)",
+    "cal": 170,
+    "protein": 2,
+    "carbs": 22,
+    "fat": 8
+  },
+  {
+    "name": "Salted Chips (30g)",
+    "cal": 160,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Diwali Chakli (5 pieces)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 12
+  },
+  {
+    "name": "Diwali Shankarpali (5 pieces)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Diwali Karanji (2 pieces)",
+    "cal": 300,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 14
+  },
+  {
+    "name": "Diwali Laddoo Besan (2 pieces)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 14
+  },
+  {
+    "name": "Diwali Laddoo Motichoor (2 pieces)",
+    "cal": 300,
+    "protein": 6,
+    "carbs": 35,
+    "fat": 15
+  },
+  {
+    "name": "Diwali Anarsa (2 pieces)",
+    "cal": 300,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 12
+  },
+  {
+    "name": "Diwali Chivda (1 bowl)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 6
+  },
+  {
+    "name": "Diwali Farsan Mix (1 bowl)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Holi Gujiya (2 pieces)",
+    "cal": 320,
+    "protein": 7,
+    "carbs": 42,
+    "fat": 14
+  },
+  {
+    "name": "Holi Thandai (1 glass)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 25,
+    "fat": 8
+  },
+  {
+    "name": "Holi Malpua (2 pieces)",
+    "cal": 330,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 15
+  },
+  {
+    "name": "Holi Dahi Bhalla (1 plate)",
+    "cal": 280,
+    "protein": 8,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Eid Biryani Mutton (1 plate)",
+    "cal": 550,
+    "protein": 32,
+    "carbs": 65,
+    "fat": 15
+  },
+  {
+    "name": "Eid Sheer Khurma (1 bowl)",
+    "cal": 300,
+    "protein": 9,
+    "carbs": 45,
+    "fat": 12
+  },
+  {
+    "name": "Eid Kebab Mix (1 plate)",
+    "cal": 400,
+    "protein": 25,
+    "carbs": 20,
+    "fat": 18
+  },
+  {
+    "name": "Eid Phirni (1 bowl)",
+    "cal": 240,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 8
+  },
+  {
+    "name": "Ganesh Chaturthi Ukadiche Modak (2 pieces)",
+    "cal": 290,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 12
+  },
+  {
+    "name": "Ganesh Chaturthi Fried Modak (2 pieces)",
+    "cal": 320,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 14
+  },
+  {
+    "name": "Ganesh Chaturthi Puran Poli (1 piece)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 8
+  },
+  {
+    "name": "Navratri Sabudana Khichdi (1 bowl)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 10
+  },
+  {
+    "name": "Navratri Singhara Halwa (1 bowl)",
+    "cal": 270,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 9
+  },
+  {
+    "name": "Navratri Kuttu Poori (2 pieces)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Navratri Samak Rice Khichdi (1 bowl)",
+    "cal": 240,
+    "protein": 7,
+    "carbs": 35,
+    "fat": 8
+  },
+  {
+    "name": "Pongal Ven Pongal (1 bowl)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 40,
+    "fat": 9
+  },
+  {
+    "name": "Pongal Sweet Pongal (1 bowl)",
+    "cal": 280,
+    "protein": 7,
+    "carbs": 42,
+    "fat": 10
+  },
+  {
+    "name": "Pongal Coconut Rice (1 bowl)",
+    "cal": 260,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 9
+  },
+  {
+    "name": "Pongal Tamarind Rice (1 bowl)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 7
+  },
+  {
+    "name": "Christmas Plum Cake (1 slice)",
+    "cal": 300,
+    "protein": 5,
+    "carbs": 45,
+    "fat": 12
+  },
+  {
+    "name": "Christmas Rose Cookies (5 pieces)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 12
+  },
+  {
+    "name": "Christmas Kulkuls (5 pieces)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Christmas Neureos (2 pieces)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 12
+  },
+  {
+    "name": "Christmas Baath Cake (1 slice)",
+    "cal": 290,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 11
+  },
+  {
+    "name": "Sabudana Khichdi (1 bowl)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 10
+  },
+  {
+    "name": "Medu Vada (2 pieces)",
+    "cal": 240,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Rava Idli (2 pieces)",
+    "cal": 150,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 2
+  },
+  {
+    "name": "Pongal Ven (1 bowl)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 40,
+    "fat": 9
+  },
+  {
+    "name": "Sweet Pongal (1 bowl)",
+    "cal": 280,
+    "protein": 7,
+    "carbs": 42,
+    "fat": 10
+  },
+  {
+    "name": "Khaman Dhokla (2 pieces)",
+    "cal": 150,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 5
+  },
+  {
+    "name": "Chilla Besan (2 pieces)",
+    "cal": 220,
+    "protein": 10,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Moong Dal Chilla (2 pieces)",
+    "cal": 230,
+    "protein": 12,
+    "carbs": 26,
+    "fat": 7
+  },
+  {
+    "name": "Paneer Chilla (2 pieces)",
+    "cal": 250,
+    "protein": 14,
+    "carbs": 26,
+    "fat": 9
+  },
+  {
+    "name": "Egg Cutlet (2 pieces)",
+    "cal": 250,
+    "protein": 12,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Vegetable Patties (1 piece)",
+    "cal": 230,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Vegetable Poha Cutlet (2 pieces)",
+    "cal": 240,
+    "protein": 7,
+    "carbs": 30,
+    "fat": 9
+  },
+  {
+    "name": "Vegetable Oats Cutlet (2 pieces)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Vegetable Rava Pancake (2 pieces)",
+    "cal": 220,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Vegetable Besan Pancake (2 pieces)",
+    "cal": 230,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Vegetable Moong Pancake (2 pieces)",
+    "cal": 240,
+    "protein": 9,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Vegetable Oats Pancake (2 pieces)",
+    "cal": 250,
+    "protein": 9,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Bhakri Pithla (1 plate)",
+    "cal": 280,
+    "protein": 10,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Zunka Bhakri (1 plate)",
+    "cal": 300,
+    "protein": 12,
+    "carbs": 36,
+    "fat": 12
+  },
+  {
+    "name": "Misal (1 bowl)",
+    "cal": 250,
+    "protein": 10,
+    "carbs": 32,
+    "fat": 9
+  },
+  {
+    "name": "Varan Bhaat (1 plate)",
+    "cal": 280,
+    "protein": 9,
+    "carbs": 40,
+    "fat": 6
+  },
+  {
+    "name": "Pithla (1 bowl)",
+    "cal": 220,
+    "protein": 9,
+    "carbs": 28,
+    "fat": 8
+  },
+  {
+    "name": "Aloo Baingan (1 bowl)",
+    "cal": 180,
+    "protein": 4,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Dal Dhokli (1 bowl)",
+    "cal": 300,
+    "protein": 12,
+    "carbs": 40,
+    "fat": 10
+  },
+  {
+    "name": "Handi Dal (1 bowl)",
+    "cal": 220,
+    "protein": 10,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Khichu (1 bowl)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 6
+  },
+  {
+    "name": "Patra Curry (1 bowl)",
+    "cal": 240,
+    "protein": 8,
+    "carbs": 30,
+    "fat": 9
+  },
+  {
+    "name": "Dalma (1 bowl)",
+    "cal": 260,
+    "protein": 10,
+    "carbs": 34,
+    "fat": 9
+  },
+  {
+    "name": "Pakhala Bhata (1 plate)",
+    "cal": 220,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 6
+  },
+  {
+    "name": "Machher Jhol (1 bowl)",
+    "cal": 280,
+    "protein": 20,
+    "carbs": 10,
+    "fat": 14
+  },
+  {
+    "name": "Shukto (1 bowl)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 7
+  },
+  {
+    "name": "Cholar Dal (1 bowl)",
+    "cal": 220,
+    "protein": 9,
+    "carbs": 32,
+    "fat": 8
+  },
+  {
+    "name": "Aloo Posto (1 bowl)",
+    "cal": 240,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Bhapa Ilish (1 piece)",
+    "cal": 300,
+    "protein": 22,
+    "carbs": 8,
+    "fat": 16
+  },
+  {
+    "name": "Kosha Mangsho (1 bowl)",
+    "cal": 380,
+    "protein": 28,
+    "carbs": 12,
+    "fat": 22
+  },
+  {
+    "name": "Sarson Da Saag (1 bowl)",
+    "cal": 200,
+    "protein": 8,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Dal Panchmel (1 bowl)",
+    "cal": 240,
+    "protein": 12,
+    "carbs": 34,
+    "fat": 8
+  },
+  {
+    "name": "Ker Sangri (1 bowl)",
+    "cal": 220,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Bajra Khichdi (1 bowl)",
+    "cal": 260,
+    "protein": 9,
+    "carbs": 36,
+    "fat": 8
+  },
+  {
+    "name": "Rajasthani Kadhi (1 bowl)",
+    "cal": 230,
+    "protein": 8,
+    "carbs": 30,
+    "fat": 7
+  },
+  {
+    "name": "Gatte Ki Sabzi (1 bowl)",
+    "cal": 280,
+    "protein": 10,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Dal Baati (1 plate)",
+    "cal": 350,
+    "protein": 14,
+    "carbs": 45,
+    "fat": 14
+  },
+  {
+    "name": "Baati (1 piece)",
+    "cal": 150,
+    "protein": 4,
+    "carbs": 20,
+    "fat": 6
+  },
+  {
+    "name": "Ker Sangri Pulao (1 bowl)",
+    "cal": 280,
+    "protein": 9,
+    "carbs": 38,
+    "fat": 10
+  },
+  {
+    "name": "Bajra Roti (1 piece)",
+    "cal": 170,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 3
+  },
+  {
+    "name": "Jowar Roti (1 piece)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 2
+  },
+  {
+    "name": "Ragi Roti (1 piece)",
+    "cal": 170,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 3
+  },
+  {
+    "name": "Akki Roti (1 piece)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 4
+  },
+  {
+    "name": "Bisi Bele Bath (1 bowl)",
+    "cal": 280,
+    "protein": 9,
+    "carbs": 38,
+    "fat": 10
+  },
+  {
+    "name": "Rasam Rice (1 bowl)",
+    "cal": 220,
+    "protein": 7,
+    "carbs": 32,
+    "fat": 6
+  },
+  {
+    "name": "Puliyodarai (1 bowl)",
+    "cal": 240,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 7
+  },
+  {
+    "name": "Avial (1 bowl)",
+    "cal": 250,
+    "protein": 8,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Kootu (1 bowl)",
+    "cal": 230,
+    "protein": 9,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Poriyal (1 bowl)",
+    "cal": 200,
+    "protein": 7,
+    "carbs": 28,
+    "fat": 7
+  },
+  {
+    "name": "Chettinad Chicken (1 bowl)",
+    "cal": 380,
+    "protein": 28,
+    "carbs": 12,
+    "fat": 22
+  },
+  {
+    "name": "Malabar Fish Curry (1 bowl)",
+    "cal": 320,
+    "protein": 24,
+    "carbs": 10,
+    "fat": 18
+  },
+  {
+    "name": "Kerala Parotta (1 piece)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 9
+  },
+  {
+    "name": "Appam with Stew (1 plate)",
+    "cal": 280,
+    "protein": 9,
+    "carbs": 35,
+    "fat": 10
+  },
+  {
+    "name": "Idiyappam (2 pieces)",
+    "cal": 200,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 4
+  },
+  {
+    "name": "Puttu (1 bowl)",
+    "cal": 220,
+    "protein": 7,
+    "carbs": 38,
+    "fat": 5
+  },
+  {
+    "name": "Maggi Instant Noodles (100g)",
+    "cal": 350,
+    "protein": 7,
+    "carbs": 55,
+    "fat": 12
+  },
+  {
+    "name": "Top Ramen Noodles (100g)",
+    "cal": 360,
+    "protein": 8,
+    "carbs": 54,
+    "fat": 13
+  },
+  {
+    "name": "Yippee Noodles (100g)",
+    "cal": 370,
+    "protein": 8,
+    "carbs": 56,
+    "fat": 14
+  },
+  {
+    "name": "Parle-G Biscuits (100g)",
+    "cal": 450,
+    "protein": 6,
+    "carbs": 70,
+    "fat": 15
+  },
+  {
+    "name": "Oreo Biscuits (100g)",
+    "cal": 480,
+    "protein": 5,
+    "carbs": 72,
+    "fat": 18
+  },
+  {
+    "name": "Bourbon Biscuits (100g)",
+    "cal": 470,
+    "protein": 6,
+    "carbs": 71,
+    "fat": 17
+  },
+  {
+    "name": "Lays Potato Chips (100g)",
+    "cal": 550,
+    "protein": 7,
+    "carbs": 50,
+    "fat": 35
+  },
+  {
+    "name": "Kurkure Masala Munch (100g)",
+    "cal": 520,
+    "protein": 6,
+    "carbs": 58,
+    "fat": 28
+  },
+  {
+    "name": "Haldiram’s Bhujia (100g)",
+    "cal": 540,
+    "protein": 8,
+    "carbs": 52,
+    "fat": 32
+  },
+  {
+    "name": "Kellogg’s Cornflakes (100g)",
+    "cal": 380,
+    "protein": 8,
+    "carbs": 80,
+    "fat": 2
+  },
+  {
+    "name": "Kellogg’s Chocos (100g)",
+    "cal": 400,
+    "protein": 7,
+    "carbs": 78,
+    "fat": 5
+  },
+  {
+    "name": "MTR Ready-to-Eat Dal Fry (100g)",
+    "cal": 150,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 6
+  },
+  {
+    "name": "MTR Ready-to-Eat Paneer Butter Masala (100g)",
+    "cal": 180,
+    "protein": 8,
+    "carbs": 12,
+    "fat": 10
+  },
+  {
+    "name": "ITC Kitchens Rajma Masala (100g)",
+    "cal": 160,
+    "protein": 7,
+    "carbs": 22,
+    "fat": 5
+  },
+  {
+    "name": "McCain French Fries (100g)",
+    "cal": 280,
+    "protein": 5,
+    "carbs": 35,
+    "fat": 12
+  },
+  {
+    "name": "McCain Veg Nuggets (100g)",
+    "cal": 290,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 13
+  },
+  {
+    "name": "Amul Cheese (100g)",
+    "cal": 320,
+    "protein": 20,
+    "carbs": 3,
+    "fat": 25
+  },
+  {
+    "name": "Amul Butter (100g)",
+    "cal": 720,
+    "protein": 1,
+    "carbs": 0,
+    "fat": 80
+  },
+  {
+    "name": "Mother Dairy Yogurt Cup (100g)",
+    "cal": 90,
+    "protein": 4,
+    "carbs": 12,
+    "fat": 3
+  },
+  {
+    "name": "Frooti Mango Drink (100ml)",
+    "cal": 45,
+    "protein": 0,
+    "carbs": 11,
+    "fat": 0
+  },
+  {
+    "name": "Coca-Cola (100ml)",
+    "cal": 42,
+    "protein": 0,
+    "carbs": 11,
+    "fat": 0
+  },
+  {
+    "name": "Pepsi (100ml)",
+    "cal": 42,
+    "protein": 0,
+    "carbs": 11,
+    "fat": 0
+  },
+  {
+    "name": "Real Fruit Juice Orange (100ml)",
+    "cal": 50,
+    "protein": 0,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "Cadbury Dairy Milk (100g)",
+    "cal": 530,
+    "protein": 6,
+    "carbs": 60,
+    "fat": 28
+  },
+  {
+    "name": "KitKat (100g)",
+    "cal": 520,
+    "protein": 6,
+    "carbs": 62,
+    "fat": 26
+  },
+  {
+    "name": "Perk (100g)",
+    "cal": 510,
+    "protein": 6,
+    "carbs": 61,
+    "fat": 25
+  },
+  {
+    "name": "Protein Bar RiteBite (100g)",
+    "cal": 350,
+    "protein": 20,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "Whey Protein Drink (100ml)",
+    "cal": 80,
+    "protein": 15,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Brown Bread Britannia (100g)",
+    "cal": 250,
+    "protein": 9,
+    "carbs": 45,
+    "fat": 3
+  },
+  {
+    "name": "Multigrain Bread (100g)",
+    "cal": 260,
+    "protein": 10,
+    "carbs": 44,
+    "fat": 4
+  },
+  {
+    "name": "Baked Namkeen (100g)",
+    "cal": 420,
+    "protein": 10,
+    "carbs": 60,
+    "fat": 12
+  },
+  {
+    "name": "Britannia Marie Gold Biscuits (100g)",
+    "cal": 430,
+    "protein": 7,
+    "carbs": 72,
+    "fat": 12
+  },
+  {
+    "name": "Britannia Good Day Butter Cookies (100g)",
+    "cal": 480,
+    "protein": 6,
+    "carbs": 70,
+    "fat": 18
+  },
+  {
+    "name": "Britannia Cake Slice (100g)",
+    "cal": 420,
+    "protein": 6,
+    "carbs": 65,
+    "fat": 14
+  },
+  {
+    "name": "Britannia Rusk (100g)",
+    "cal": 410,
+    "protein": 8,
+    "carbs": 74,
+    "fat": 8
+  },
+  {
+    "name": "Nestlé Milkmaid Condensed Milk (100g)",
+    "cal": 320,
+    "protein": 7,
+    "carbs": 55,
+    "fat": 8
+  },
+  {
+    "name": "Nestlé Everyday Dairy Whitener (100g)",
+    "cal": 500,
+    "protein": 20,
+    "carbs": 50,
+    "fat": 25
+  },
+  {
+    "name": "Nestlé KitKat (100g)",
+    "cal": 520,
+    "protein": 6,
+    "carbs": 62,
+    "fat": 26
+  },
+  {
+    "name": "Nestlé Munch (100g)",
+    "cal": 510,
+    "protein": 6,
+    "carbs": 61,
+    "fat": 25
+  },
+  {
+    "name": "Nestlé Cerelac (100g)",
+    "cal": 400,
+    "protein": 12,
+    "carbs": 70,
+    "fat": 8
+  },
+  {
+    "name": "Patanjali Digestive Biscuits (100g)",
+    "cal": 440,
+    "protein": 8,
+    "carbs": 68,
+    "fat": 12
+  },
+  {
+    "name": "Patanjali Doodh Biscuit (100g)",
+    "cal": 450,
+    "protein": 7,
+    "carbs": 70,
+    "fat": 13
+  },
+  {
+    "name": "Patanjali Atta Noodles (100g)",
+    "cal": 360,
+    "protein": 8,
+    "carbs": 55,
+    "fat": 12
+  },
+  {
+    "name": "Patanjali Corn Flakes Mix (100g)",
+    "cal": 380,
+    "protein": 9,
+    "carbs": 78,
+    "fat": 3
+  },
+  {
+    "name": "ITC Bingo Mad Angles (100g)",
+    "cal": 520,
+    "protein": 6,
+    "carbs": 58,
+    "fat": 28
+  },
+  {
+    "name": "ITC Sunfeast Dark Fantasy Choco Fills (100g)",
+    "cal": 490,
+    "protein": 6,
+    "carbs": 68,
+    "fat": 18
+  },
+  {
+    "name": "ITC Aashirvaad Instant Mix Rava Idli (100g)",
+    "cal": 370,
+    "protein": 8,
+    "carbs": 72,
+    "fat": 6
+  },
+  {
+    "name": "ITC Aashirvaad Instant Mix Gulab Jamun (100g)",
+    "cal": 420,
+    "protein": 6,
+    "carbs": 75,
+    "fat": 10
+  },
+  {
+    "name": "Haldiram’s Soan Papdi (100g)",
+    "cal": 480,
+    "protein": 8,
+    "carbs": 60,
+    "fat": 22
+  },
+  {
+    "name": "Haldiram’s Rasgulla Tin (100g)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 4
+  },
+  {
+    "name": "Haldiram’s Gulab Jamun Tin (100g)",
+    "cal": 300,
+    "protein": 6,
+    "carbs": 45,
+    "fat": 12
+  },
+  {
+    "name": "Haldiram’s Namkeen Mixture (100g)",
+    "cal": 540,
+    "protein": 8,
+    "carbs": 52,
+    "fat": 32
+  },
+  {
+    "name": "Pepsi Soft Drink (100ml)",
+    "cal": 42,
+    "protein": 0,
+    "carbs": 11,
+    "fat": 0
+  },
+  {
+    "name": "Mountain Dew (100ml)",
+    "cal": 45,
+    "protein": 0,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "Slice Mango Drink (100ml)",
+    "cal": 50,
+    "protein": 0,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "Tropicana Orange Juice (100ml)",
+    "cal": 48,
+    "protein": 0,
+    "carbs": 11,
+    "fat": 0
+  },
+  {
+    "name": "Bournvita Health Drink Powder (100g)",
+    "cal": 400,
+    "protein": 7,
+    "carbs": 80,
+    "fat": 5
+  },
+  {
+    "name": "Horlicks Health Drink Powder (100g)",
+    "cal": 390,
+    "protein": 8,
+    "carbs": 78,
+    "fat": 4
+  },
+  {
+    "name": "Complan Nutrition Drink Powder (100g)",
+    "cal": 420,
+    "protein": 15,
+    "carbs": 70,
+    "fat": 6
+  },
+  {
+    "name": "Boost Energy Drink Powder (100g)",
+    "cal": 410,
+    "protein": 9,
+    "carbs": 78,
+    "fat": 5
+  },
+  {
+    "name": "Amul Taaza Milk (100ml)",
+    "cal": 70,
+    "protein": 3,
+    "carbs": 5,
+    "fat": 4
+  },
+  {
+    "name": "Amul Lassi Tetra Pack (200ml)",
+    "cal": 150,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 5
+  },
+  {
+    "name": "Mother Dairy Ice Cream Vanilla (100g)",
+    "cal": 200,
+    "protein": 4,
+    "carbs": 25,
+    "fat": 10
+  },
+  {
+    "name": "Kwality Walls Cornetto (100g)",
+    "cal": 250,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 12
+  },
+  {
+    "name": "Britannia Cheese Slices (100g)",
+    "cal": 310,
+    "protein": 18,
+    "carbs": 3,
+    "fat": 24
+  },
+  {
+    "name": "Britannia Milk Bikis (100g)",
+    "cal": 460,
+    "protein": 7,
+    "carbs": 72,
+    "fat": 14
+  },
+  {
+    "name": "Sunfeast Marie Light (100g)",
+    "cal": 430,
+    "protein": 7,
+    "carbs": 72,
+    "fat": 12
+  },
+  {
+    "name": "Sunfeast Mom’s Magic Cashew Cookies (100g)",
+    "cal": 480,
+    "protein": 6,
+    "carbs": 70,
+    "fat": 18
+  },
+  {
+    "name": "Maggi Instant Noodles (1 packet ~70g)",
+    "cal": 245,
+    "protein": 5,
+    "carbs": 38,
+    "fat": 8
+  },
+  {
+    "name": "Top Ramen Noodles (1 packet ~75g)",
+    "cal": 270,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 9
+  },
+  {
+    "name": "Yippee Noodles (1 packet ~80g)",
+    "cal": 295,
+    "protein": 6,
+    "carbs": 42,
+    "fat": 10
+  },
+  {
+    "name": "Parle-G Biscuits (10 biscuits ~56g)",
+    "cal": 250,
+    "protein": 3,
+    "carbs": 39,
+    "fat": 8
+  },
+  {
+    "name": "Oreo Biscuits (4 biscuits ~46g)",
+    "cal": 220,
+    "protein": 2,
+    "carbs": 33,
+    "fat": 9
+  },
+  {
+    "name": "Bourbon Biscuits (4 biscuits ~50g)",
+    "cal": 235,
+    "protein": 3,
+    "carbs": 35,
+    "fat": 9
+  },
+  {
+    "name": "Lays Potato Chips (1 small pack ~28g)",
+    "cal": 150,
+    "protein": 2,
+    "carbs": 14,
+    "fat": 9
+  },
+  {
+    "name": "Kurkure Masala Munch (1 pack ~30g)",
+    "cal": 155,
+    "protein": 2,
+    "carbs": 17,
+    "fat": 8
+  },
+  {
+    "name": "Haldiram’s Bhujia (1 serving ~35g)",
+    "cal": 190,
+    "protein": 3,
+    "carbs": 18,
+    "fat": 11
+  },
+  {
+    "name": "Kellogg’s Cornflakes (1 bowl ~30g)",
+    "cal": 115,
+    "protein": 2,
+    "carbs": 24,
+    "fat": 0.5
+  },
+  {
+    "name": "Kellogg’s Chocos (1 bowl ~35g)",
+    "cal": 140,
+    "protein": 2,
+    "carbs": 27,
+    "fat": 2
+  },
+  {
+    "name": "MTR Ready-to-Eat Dal Fry (1 pouch ~200g)",
+    "cal": 300,
+    "protein": 12,
+    "carbs": 40,
+    "fat": 12
+  },
+  {
+    "name": "MTR Paneer Butter Masala (1 pouch ~200g)",
+    "cal": 360,
+    "protein": 16,
+    "carbs": 24,
+    "fat": 20
+  },
+  {
+    "name": "ITC Kitchens Rajma Masala (1 pouch ~200g)",
+    "cal": 320,
+    "protein": 14,
+    "carbs": 44,
+    "fat": 10
+  },
+  {
+    "name": "McCain French Fries (1 serving ~85g)",
+    "cal": 240,
+    "protein": 4,
+    "carbs": 30,
+    "fat": 10
+  },
+  {
+    "name": "McCain Veg Nuggets (1 serving ~100g, ~6 pcs)",
+    "cal": 290,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 13
+  },
+  {
+    "name": "Amul Cheese Slice (1 slice ~20g)",
+    "cal": 64,
+    "protein": 4,
+    "carbs": 1,
+    "fat": 5
+  },
+  {
+    "name": "Amul Butter (1 tbsp ~10g)",
+    "cal": 72,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 8
+  },
+  {
+    "name": "Mother Dairy Yogurt Cup (1 cup ~85g)",
+    "cal": 75,
+    "protein": 3,
+    "carbs": 10,
+    "fat": 2.5
+  },
+  {
+    "name": "Frooti Mango Drink (1 tetra pack ~200ml)",
+    "cal": 90,
+    "protein": 0,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Coca-Cola (1 can ~330ml)",
+    "cal": 140,
+    "protein": 0,
+    "carbs": 35,
+    "fat": 0
+  },
+  {
+    "name": "Pepsi (1 bottle ~250ml)",
+    "cal": 105,
+    "protein": 0,
+    "carbs": 26,
+    "fat": 0
+  },
+  {
+    "name": "Real Orange Juice (1 glass ~200ml)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 24,
+    "fat": 0
+  },
+  {
+    "name": "Cadbury Dairy Milk (1 bar ~50g)",
+    "cal": 265,
+    "protein": 3,
+    "carbs": 30,
+    "fat": 14
+  },
+  {
+    "name": "KitKat (4 fingers ~42g)",
+    "cal": 220,
+    "protein": 2,
+    "carbs": 28,
+    "fat": 11
+  },
+  {
+    "name": "Perk (1 bar ~30g)",
+    "cal": 150,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 7
+  },
+  {
+    "name": "RiteBite Protein Bar (1 bar ~60g)",
+    "cal": 210,
+    "protein": 12,
+    "carbs": 18,
+    "fat": 6
+  },
+  {
+    "name": "Whey Protein Drink (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 30,
+    "carbs": 6,
+    "fat": 2
+  },
+  {
+    "name": "Britannia Brown Bread (2 slices ~60g)",
+    "cal": 150,
+    "protein": 5,
+    "carbs": 27,
+    "fat": 2
+  },
+  {
+    "name": "Britannia Multigrain Bread (2 slices ~60g)",
+    "cal": 155,
+    "protein": 6,
+    "carbs": 26,
+    "fat": 2
+  },
+  {
+    "name": "Baked Namkeen (1 serving ~40g)",
+    "cal": 170,
+    "protein": 4,
+    "carbs": 24,
+    "fat": 5
+  },
+  {
+    "name": "Quaker Oats (1 bowl ~40g)",
+    "cal": 150,
+    "protein": 5,
+    "carbs": 27,
+    "fat": 3
+  },
+  {
+    "name": "Quaker Masala Oats (1 serving ~40g)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 4
+  },
+  {
+    "name": "Kellogg’s Muesli Fruit & Nut (1 bowl ~40g)",
+    "cal": 160,
+    "protein": 4,
+    "carbs": 28,
+    "fat": 4
+  },
+  {
+    "name": "Tropicana Orange Juice (1 glass ~200ml)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 24,
+    "fat": 0
+  },
+  {
+    "name": "Tropicana Mixed Fruit Juice (1 glass ~200ml)",
+    "cal": 110,
+    "protein": 0,
+    "carbs": 26,
+    "fat": 0
+  },
+  {
+    "name": "Sprite (1 can ~330ml)",
+    "cal": 140,
+    "protein": 0,
+    "carbs": 35,
+    "fat": 0
+  },
+  {
+    "name": "Mars Chocolate Bar (1 bar ~51g)",
+    "cal": 228,
+    "protein": 3,
+    "carbs": 35,
+    "fat": 9
+  },
+  {
+    "name": "Snickers Bar (1 bar ~50g)",
+    "cal": 250,
+    "protein": 4,
+    "carbs": 29,
+    "fat": 12
+  },
+  {
+    "name": "Bounty Bar (1 bar ~57g)",
+    "cal": 268,
+    "protein": 3,
+    "carbs": 34,
+    "fat": 13
+  },
+  {
+    "name": "Twix Bar (2 fingers ~50g)",
+    "cal": 250,
+    "protein": 3,
+    "carbs": 32,
+    "fat": 12
+  },
+  {
+    "name": "Nestlé Munch (1 bar ~30g)",
+    "cal": 150,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 7
+  },
+  {
+    "name": "Ferrero Rocher (3 pieces ~37g)",
+    "cal": 220,
+    "protein": 3,
+    "carbs": 17,
+    "fat": 16
+  },
+  {
+    "name": "Nutella Hazelnut Spread (1 tbsp ~15g)",
+    "cal": 80,
+    "protein": 1,
+    "carbs": 9,
+    "fat": 5
+  },
+  {
+    "name": "Pringles Chips (1 serving ~40g)",
+    "cal": 210,
+    "protein": 2,
+    "carbs": 21,
+    "fat": 13
+  },
+  {
+    "name": "Doritos Nacho Chips (1 serving ~40g)",
+    "cal": 200,
+    "protein": 3,
+    "carbs": 20,
+    "fat": 11
+  },
+  {
+    "name": "Lay’s Stax (1 serving ~40g)",
+    "cal": 210,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 13
+  },
+  {
+    "name": "Heinz Tomato Ketchup (1 tbsp ~15g)",
+    "cal": 15,
+    "protein": 0,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "Heinz Baked Beans (1 bowl ~100g)",
+    "cal": 90,
+    "protein": 5,
+    "carbs": 18,
+    "fat": 1
+  },
+  {
+    "name": "Cadbury Dairy Milk Silk (1 bar ~60g)",
+    "cal": 320,
+    "protein": 4,
+    "carbs": 36,
+    "fat": 18
+  },
+  {
+    "name": "Nestlé KitKat Chunky (1 bar ~40g)",
+    "cal": 210,
+    "protein": 2,
+    "carbs": 27,
+    "fat": 10
+  },
+  {
+    "name": "Nestlé Milo Drink Powder (1 serving ~20g)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 14,
+    "fat": 1
+  },
+  {
+    "name": "Red Bull Energy Drink (1 can ~250ml)",
+    "cal": 110,
+    "protein": 1,
+    "carbs": 27,
+    "fat": 0
+  },
+  {
+    "name": "Monster Energy Drink (1 can ~350ml)",
+    "cal": 160,
+    "protein": 1,
+    "carbs": 40,
+    "fat": 0
+  },
+  {
+    "name": "Pringles Original Chips (1 serving ~40g)",
+    "cal": 210,
+    "protein": 2,
+    "carbs": 21,
+    "fat": 13
+  },
+  {
+    "name": "Doritos Nacho Cheese (1 serving ~40g)",
+    "cal": 200,
+    "protein": 3,
+    "carbs": 20,
+    "fat": 11
+  },
+  {
+    "name": "Ritz Crackers (5 crackers ~16g)",
+    "cal": 80,
+    "protein": 1,
+    "carbs": 10,
+    "fat": 4
+  },
+  {
+    "name": "Skittles (1 pack ~45g)",
+    "cal": 180,
+    "protein": 0,
+    "carbs": 42,
+    "fat": 1
+  },
+  {
+    "name": "M&M’s Chocolate (1 pack ~40g)",
+    "cal": 200,
+    "protein": 2,
+    "carbs": 30,
+    "fat": 9
+  },
+  {
+    "name": "Toblerone Chocolate (1 bar ~35g)",
+    "cal": 190,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 11
+  },
+  {
+    "name": "Hershey’s Kisses (5 pieces ~28g)",
+    "cal": 160,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 9
+  },
+  {
+    "name": "Hershey’s Syrup Chocolate (2 tbsp ~30g)",
+    "cal": 120,
+    "protein": 1,
+    "carbs": 28,
+    "fat": 0
+  },
+  {
+    "name": "Peanut Butter Skippy (2 tbsp ~32g)",
+    "cal": 190,
+    "protein": 8,
+    "carbs": 7,
+    "fat": 16
+  },
+  {
+    "name": "Tabasco Hot Sauce (1 tsp ~5g)",
+    "cal": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Sriracha Hot Sauce (1 tbsp ~15g)",
+    "cal": 15,
+    "protein": 0,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "French’s Yellow Mustard (1 tbsp ~15g)",
+    "cal": 10,
+    "protein": 0,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Hellmann’s Mayonnaise (1 tbsp ~15g)",
+    "cal": 90,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 10
+  },
+  {
+    "name": "Kraft Cheese Spread (1 tbsp ~15g)",
+    "cal": 60,
+    "protein": 2,
+    "carbs": 1,
+    "fat": 5
+  },
+  {
+    "name": "Philadelphia Cream Cheese (2 tbsp ~30g)",
+    "cal": 100,
+    "protein": 2,
+    "carbs": 2,
+    "fat": 9
+  },
+  {
+    "name": "Ragu Pasta Sauce (1/2 cup ~125g)",
+    "cal": 70,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 2
+  },
+  {
+    "name": "Barilla Pesto Sauce (2 tbsp ~30g)",
+    "cal": 120,
+    "protein": 2,
+    "carbs": 4,
+    "fat": 11
+  },
+  {
+    "name": "Soy Sauce Kikkoman (1 tbsp ~15g)",
+    "cal": 10,
+    "protein": 1,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Oreo Original (4 biscuits ~46g)",
+    "cal": 220,
+    "protein": 2,
+    "carbs": 33,
+    "fat": 9
+  },
+  {
+    "name": "KitKat Chunky (1 bar ~40g)",
+    "cal": 210,
+    "protein": 2,
+    "carbs": 27,
+    "fat": 10
+  },
+  {
+    "name": "Mars Bar (1 bar ~51g)",
+    "cal": 228,
+    "protein": 3,
+    "carbs": 35,
+    "fat": 9
+  },
+  {
+    "name": "Gatorade Sports Drink (1 bottle ~500ml)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 30,
+    "fat": 0
+  },
+  {
+    "name": "Powerade Sports Drink (1 bottle ~500ml)",
+    "cal": 130,
+    "protein": 0,
+    "carbs": 32,
+    "fat": 0
+  },
+  {
+    "name": "Bisleri Vedica Mineral Water (1 bottle ~500ml)",
+    "cal": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Aquafina Flavored Water Lemon (1 bottle ~500ml)",
+    "cal": 20,
+    "protein": 0,
+    "carbs": 5,
+    "fat": 0
+  },
+  {
+    "name": "Evian Mineral Water (1 bottle ~500ml)",
+    "cal": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Paper Boat Aam Panna (1 pouch ~200ml)",
+    "cal": 90,
+    "protein": 0,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Paper Boat Kokum (1 pouch ~200ml)",
+    "cal": 80,
+    "protein": 0,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Minute Maid Pulpy Orange (1 bottle ~250ml)",
+    "cal": 110,
+    "protein": 0,
+    "carbs": 26,
+    "fat": 0
+  },
+  {
+    "name": "Minute Maid Apple Juice (1 bottle ~250ml)",
+    "cal": 115,
+    "protein": 0,
+    "carbs": 27,
+    "fat": 0
+  },
+  {
+    "name": "Real Cranberry Juice (1 glass ~200ml)",
+    "cal": 95,
+    "protein": 0,
+    "carbs": 23,
+    "fat": 0
+  },
+  {
+    "name": "Real Pomegranate Juice (1 glass ~200ml)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 24,
+    "fat": 0
+  },
+  {
+    "name": "Yakult Probiotic Drink (1 bottle ~65ml)",
+    "cal": 50,
+    "protein": 1,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "Amul Kool Flavoured Milk (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 6,
+    "carbs": 22,
+    "fat": 6
+  },
+  {
+    "name": "Mother Dairy Flavoured Lassi (1 bottle ~200ml)",
+    "cal": 150,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 5
+  },
+  {
+    "name": "Nestlé Milo Ready-to-Drink (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 4,
+    "carbs": 28,
+    "fat": 3
+  },
+  {
+    "name": "Boost Ready-to-Drink (1 bottle ~200ml)",
+    "cal": 150,
+    "protein": 5,
+    "carbs": 26,
+    "fat": 2
+  },
+  {
+    "name": "Starbucks Cold Brew (1 bottle ~250ml)",
+    "cal": 15,
+    "protein": 0,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Costa Coffee Latte (1 cup ~250ml)",
+    "cal": 120,
+    "protein": 6,
+    "carbs": 12,
+    "fat": 6
+  },
+  {
+    "name": "Hershey’s Milkshake Chocolate (1 bottle ~200ml)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 5
+  },
+  {
+    "name": "Hershey’s Milkshake Strawberry (1 bottle ~200ml)",
+    "cal": 170,
+    "protein": 6,
+    "carbs": 27,
+    "fat": 5
+  },
+  {
+    "name": "V8 Vegetable Juice (1 can ~250ml)",
+    "cal": 50,
+    "protein": 2,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Arizona Iced Tea Lemon (1 can ~350ml)",
+    "cal": 140,
+    "protein": 0,
+    "carbs": 35,
+    "fat": 0
+  },
+  {
+    "name": "Lipton Iced Tea Peach (1 bottle ~250ml)",
+    "cal": 90,
+    "protein": 0,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Kwality Walls Cornetto (1 cone ~70g)",
+    "cal": 210,
+    "protein": 4,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Kwality Walls Feast Bar (1 bar ~80g)",
+    "cal": 240,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 11
+  },
+  {
+    "name": "Kwality Walls Cassata Slice (1 slice ~100g)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 36,
+    "fat": 12
+  },
+  {
+    "name": "Vadilal Ice Cream Cup Vanilla (1 cup ~100g)",
+    "cal": 200,
+    "protein": 4,
+    "carbs": 25,
+    "fat": 10
+  },
+  {
+    "name": "Vadilal Kulfi Stick (1 stick ~80g)",
+    "cal": 220,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 11
+  },
+  {
+    "name": "Vadilal Falooda Kulfi (1 glass ~150g)",
+    "cal": 300,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 14
+  },
+  {
+    "name": "Amul Ice Cream Cup Chocolate (1 cup ~100g)",
+    "cal": 210,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 10
+  },
+  {
+    "name": "Amul Kulfi Malai (1 stick ~80g)",
+    "cal": 220,
+    "protein": 6,
+    "carbs": 26,
+    "fat": 11
+  },
+  {
+    "name": "Mother Dairy Ice Cream Cup Strawberry (1 cup ~100g)",
+    "cal": 190,
+    "protein": 4,
+    "carbs": 26,
+    "fat": 8
+  },
+  {
+    "name": "Mother Dairy Kulfi Kesar Pista (1 stick ~80g)",
+    "cal": 230,
+    "protein": 6,
+    "carbs": 28,
+    "fat": 12
+  },
+  {
+    "name": "Baskin Robbins Scoop Chocolate (1 scoop ~90g)",
+    "cal": 210,
+    "protein": 4,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Baskin Robbins Scoop Cotton Candy (1 scoop ~90g)",
+    "cal": 200,
+    "protein": 4,
+    "carbs": 30,
+    "fat": 8
+  },
+  {
+    "name": "Baskin Robbins Ice Cream Sundae (1 serving ~150g)",
+    "cal": 320,
+    "protein": 6,
+    "carbs": 45,
+    "fat": 14
+  },
+  {
+    "name": "Häagen-Dazs Ice Cream Cup Vanilla (1 cup ~100g)",
+    "cal": 250,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 14
+  },
+  {
+    "name": "Häagen-Dazs Ice Cream Cup Belgian Chocolate (1 cup ~100g)",
+    "cal": 260,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 15
+  },
+  {
+    "name": "Häagen-Dazs Ice Cream Bar Almond (1 bar ~80g)",
+    "cal": 240,
+    "protein": 5,
+    "carbs": 26,
+    "fat": 13
+  },
+  {
+    "name": "Ben & Jerry’s Ice Cream Cup Chocolate Fudge (1 cup ~100g)",
+    "cal": 270,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 15
+  },
+  {
+    "name": "Ben & Jerry’s Ice Cream Cup Cookie Dough (1 cup ~100g)",
+    "cal": 280,
+    "protein": 5,
+    "carbs": 34,
+    "fat": 15
+  },
+  {
+    "name": "Ben & Jerry’s Ice Cream Pint (1 serving ~120g)",
+    "cal": 320,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 16
+  },
+  {
+    "name": "Gelato Italiano Cup Mango (1 cup ~100g)",
+    "cal": 190,
+    "protein": 4,
+    "carbs": 28,
+    "fat": 7
+  },
+  {
+    "name": "Gelato Italiano Cup Pistachio (1 cup ~100g)",
+    "cal": 200,
+    "protein": 5,
+    "carbs": 26,
+    "fat": 9
+  },
+  {
+    "name": "London Dairy Ice Cream Cup Caramel (1 cup ~100g)",
+    "cal": 240,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 12
+  },
+  {
+    "name": "London Dairy Ice Cream Cup Strawberry Cheesecake (1 cup ~100g)",
+    "cal": 250,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 13
+  },
+  {
+    "name": "Britannia Fruit Cake Slice (1 slice ~60g)",
+    "cal": 220,
+    "protein": 3,
+    "carbs": 34,
+    "fat": 8
+  },
+  {
+    "name": "Britannia Muffin Chocolate (1 piece ~70g)",
+    "cal": 250,
+    "protein": 4,
+    "carbs": 36,
+    "fat": 10
+  },
+  {
+    "name": "Britannia Rusk Pack (2 pieces ~40g)",
+    "cal": 160,
+    "protein": 3,
+    "carbs": 28,
+    "fat": 3
+  },
+  {
+    "name": "Sunfeast Dark Fantasy Choco Fills (1 piece ~25g)",
+    "cal": 120,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 5
+  },
+  {
+    "name": "Sunfeast Mom’s Magic Cashew Cookies (2 cookies ~30g)",
+    "cal": 140,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 6
+  },
+  {
+    "name": "ITC Fabelle Luxury Chocolate Cake (1 slice ~80g)",
+    "cal": 280,
+    "protein": 4,
+    "carbs": 40,
+    "fat": 12
+  },
+  {
+    "name": "Haldiram’s Soan Cake (1 piece ~50g)",
+    "cal": 210,
+    "protein": 3,
+    "carbs": 28,
+    "fat": 9
+  },
+  {
+    "name": "Local Bakery Muffin Vanilla (1 piece ~70g)",
+    "cal": 240,
+    "protein": 4,
+    "carbs": 35,
+    "fat": 9
+  },
+  {
+    "name": "Local Bakery Doughnut Chocolate Glazed (1 piece ~75g)",
+    "cal": 280,
+    "protein": 4,
+    "carbs": 38,
+    "fat": 12
+  },
+  {
+    "name": "Local Bakery Doughnut Sugar Coated (1 piece ~70g)",
+    "cal": 260,
+    "protein": 4,
+    "carbs": 36,
+    "fat": 11
+  },
+  {
+    "name": "Croissant Butter (1 piece ~60g)",
+    "cal": 230,
+    "protein": 4,
+    "carbs": 26,
+    "fat": 12
+  },
+  {
+    "name": "Croissant Chocolate Filled (1 piece ~70g)",
+    "cal": 270,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 13
+  },
+  {
+    "name": "Danish Pastry Cinnamon Roll (1 piece ~80g)",
+    "cal": 300,
+    "protein": 5,
+    "carbs": 40,
+    "fat": 14
+  },
+  {
+    "name": "Danish Pastry Raisin Roll (1 piece ~80g)",
+    "cal": 290,
+    "protein": 5,
+    "carbs": 38,
+    "fat": 13
+  },
+  {
+    "name": "Muffin Blueberry (1 piece ~70g)",
+    "cal": 260,
+    "protein": 4,
+    "carbs": 36,
+    "fat": 11
+  },
+  {
+    "name": "Muffin Banana Walnut (1 piece ~70g)",
+    "cal": 270,
+    "protein": 5,
+    "carbs": 34,
+    "fat": 12
+  },
+  {
+    "name": "Brownie Chocolate Fudge (1 piece ~60g)",
+    "cal": 240,
+    "protein": 4,
+    "carbs": 32,
+    "fat": 10
+  },
+  {
+    "name": "Brownie Walnut (1 piece ~60g)",
+    "cal": 250,
+    "protein": 5,
+    "carbs": 30,
+    "fat": 11
+  },
+  {
+    "name": "Pound Cake Slice (1 slice ~70g)",
+    "cal": 280,
+    "protein": 5,
+    "carbs": 38,
+    "fat": 12
+  },
+  {
+    "name": "Cheesecake Slice (1 slice ~100g)",
+    "cal": 320,
+    "protein": 6,
+    "carbs": 34,
+    "fat": 16
+  },
+  {
+    "name": "Cupcake Vanilla Frosted (1 piece ~60g)",
+    "cal": 240,
+    "protein": 4,
+    "carbs": 34,
+    "fat": 10
+  },
+  {
+    "name": "Cupcake Chocolate Frosted (1 piece ~60g)",
+    "cal": 250,
+    "protein": 4,
+    "carbs": 35,
+    "fat": 11
+  },
+  {
+    "name": "Donut Boston Cream (1 piece ~80g)",
+    "cal": 310,
+    "protein": 5,
+    "carbs": 40,
+    "fat": 14
+  },
+  {
+    "name": "Donut Jelly Filled (1 piece ~80g)",
+    "cal": 300,
+    "protein": 5,
+    "carbs": 42,
+    "fat": 12
+  },
+  {
+    "name": "MTR Ready-to-Eat Vegetable Pulao (1 pouch ~200g)",
+    "cal": 320,
+    "protein": 8,
+    "carbs": 50,
+    "fat": 10
+  },
+  {
+    "name": "MTR Ready-to-Eat Paneer Tikka Masala (1 pouch ~200g)",
+    "cal": 360,
+    "protein": 14,
+    "carbs": 28,
+    "fat": 18
+  },
+  {
+    "name": "ITC Kitchens of India Dal Bukhara (1 pouch ~200g)",
+    "cal": 340,
+    "protein": 12,
+    "carbs": 44,
+    "fat": 14
+  },
+  {
+    "name": "ITC Kitchens of India Butter Chicken (1 pouch ~200g)",
+    "cal": 380,
+    "protein": 20,
+    "carbs": 22,
+    "fat": 20
+  },
+  {
+    "name": "Haldiram’s Ready-to-Eat Rajma Masala (1 pouch ~200g)",
+    "cal": 330,
+    "protein": 12,
+    "carbs": 46,
+    "fat": 12
+  },
+  {
+    "name": "Haldiram’s Ready-to-Eat Chole Masala (1 pouch ~200g)",
+    "cal": 340,
+    "protein": 13,
+    "carbs": 48,
+    "fat": 12
+  },
+  {
+    "name": "Priya Ready-to-Eat Vegetable Biryani (1 pouch ~250g)",
+    "cal": 420,
+    "protein": 10,
+    "carbs": 65,
+    "fat": 14
+  },
+  {
+    "name": "Priya Ready-to-Eat Chicken Biryani (1 pouch ~250g)",
+    "cal": 480,
+    "protein": 20,
+    "carbs": 60,
+    "fat": 18
+  },
+  {
+    "name": "Heritage Frozen Idli with Sambar (1 tray ~250g)",
+    "cal": 350,
+    "protein": 12,
+    "carbs": 52,
+    "fat": 10
+  },
+  {
+    "name": "Heritage Frozen Dosa with Chutney (1 tray ~250g)",
+    "cal": 360,
+    "protein": 12,
+    "carbs": 54,
+    "fat": 11
+  },
+  {
+    "name": "Nestlé Maggi Cup Noodles Masala (1 cup ~70g)",
+    "cal": 250,
+    "protein": 6,
+    "carbs": 38,
+    "fat": 8
+  },
+  {
+    "name": "Nestlé Maggi Cup Noodles Chicken (1 cup ~70g)",
+    "cal": 260,
+    "protein": 8,
+    "carbs": 36,
+    "fat": 9
+  },
+  {
+    "name": "Knorr Instant Soup Tomato (1 sachet ~20g)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 16,
+    "fat": 1
+  },
+  {
+    "name": "Knorr Instant Soup Sweet Corn (1 sachet ~20g)",
+    "cal": 85,
+    "protein": 2,
+    "carbs": 17,
+    "fat": 1
+  },
+  {
+    "name": "Campbell’s Cream of Mushroom Soup (1 can ~250g)",
+    "cal": 180,
+    "protein": 6,
+    "carbs": 20,
+    "fat": 8
+  },
+  {
+    "name": "Campbell’s Chicken Noodle Soup (1 can ~250g)",
+    "cal": 170,
+    "protein": 10,
+    "carbs": 18,
+    "fat": 6
+  },
+  {
+    "name": "Barilla Ready-to-Eat Penne Arrabbiata (1 pouch ~250g)",
+    "cal": 360,
+    "protein": 12,
+    "carbs": 54,
+    "fat": 10
+  },
+  {
+    "name": "Barilla Ready-to-Eat Spaghetti Alfredo (1 pouch ~250g)",
+    "cal": 380,
+    "protein": 14,
+    "carbs": 52,
+    "fat": 12
+  },
+  {
+    "name": "Unibic Frozen Pizza Veggie (1 slice ~120g)",
+    "cal": 290,
+    "protein": 10,
+    "carbs": 36,
+    "fat": 11
+  },
+  {
+    "name": "Unibic Frozen Pizza Chicken (1 slice ~120g)",
+    "cal": 320,
+    "protein": 14,
+    "carbs": 34,
+    "fat": 12
+  },
+  {
+    "name": "Del Monte Pasta Pack Macaroni & Cheese (1 bowl ~200g)",
+    "cal": 370,
+    "protein": 14,
+    "carbs": 48,
+    "fat": 14
+  },
+  {
+    "name": "Del Monte Pasta Pack Penne Tomato Basil (1 bowl ~200g)",
+    "cal": 350,
+    "protein": 12,
+    "carbs": 50,
+    "fat": 12
+  },
+  {
+    "name": "Saffola Oodles Instant Ring Noodles (1 pack ~75g)",
+    "cal": 260,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 8
+  },
+  {
+    "name": "Saffola Masala Oats Ready Meal (1 bowl ~40g)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 4
+  },
+  {
+    "name": "Yoga Bar Protein Bar (1 bar ~50g)",
+    "cal": 190,
+    "protein": 10,
+    "carbs": 20,
+    "fat": 7
+  },
+  {
+    "name": "Yoga Bar Muesli (1 bowl ~40g)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 4
+  },
+  {
+    "name": "Saffola Active Granola (1 bowl ~40g)",
+    "cal": 170,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 5
+  },
+  {
+    "name": "Saffola Masala Oats (1 serving ~40g)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 4
+  },
+  {
+    "name": "Bagrry’s Crunchy Muesli (1 bowl ~40g)",
+    "cal": 165,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 4
+  },
+  {
+    "name": "Bagrry’s Oat Bran (1 bowl ~40g)",
+    "cal": 150,
+    "protein": 6,
+    "carbs": 27,
+    "fat": 3
+  },
+  {
+    "name": "MyFitness Peanut Butter (2 tbsp ~32g)",
+    "cal": 190,
+    "protein": 9,
+    "carbs": 6,
+    "fat": 16
+  },
+  {
+    "name": "Alpino Peanut Butter (2 tbsp ~32g)",
+    "cal": 185,
+    "protein": 8,
+    "carbs": 7,
+    "fat": 15
+  },
+  {
+    "name": "Optimum Nutrition Whey Protein (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "MuscleBlaze Whey Protein (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 24,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Herbalife Formula 1 Shake (1 scoop ~25g)",
+    "cal": 90,
+    "protein": 9,
+    "carbs": 12,
+    "fat": 1
+  },
+  {
+    "name": "Ensure Nutrition Drink Powder (1 serving ~30g)",
+    "cal": 110,
+    "protein": 9,
+    "carbs": 15,
+    "fat": 2
+  },
+  {
+    "name": "Horlicks Protein Plus (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 10,
+    "carbs": 14,
+    "fat": 2
+  },
+  {
+    "name": "Boost Protein Drink Powder (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 9,
+    "carbs": 15,
+    "fat": 2
+  },
+  {
+    "name": "Granola Bar Kellogg’s (1 bar ~40g)",
+    "cal": 160,
+    "protein": 4,
+    "carbs": 28,
+    "fat": 5
+  },
+  {
+    "name": "Granola Bar Nature Valley (1 bar ~42g)",
+    "cal": 190,
+    "protein": 4,
+    "carbs": 29,
+    "fat": 7
+  },
+  {
+    "name": "Granola Bar Gaia (1 bar ~40g)",
+    "cal": 170,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 6
+  },
+  {
+    "name": "Gaia Green Tea (1 cup ~200ml)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Tetley Green Tea (1 cup ~200ml)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Lipton Green Tea (1 cup ~200ml)",
+    "cal": 2,
+    "protein": 0,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Protinex Powder (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 11,
+    "carbs": 12,
+    "fat": 2
+  },
+  {
+    "name": "Amul Pro Whey Drink (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 15,
+    "carbs": 10,
+    "fat": 4
+  },
+  {
+    "name": "Soy Milk Silk Unsweetened (1 glass ~200ml)",
+    "cal": 80,
+    "protein": 7,
+    "carbs": 4,
+    "fat": 4
+  },
+  {
+    "name": "Almond Milk Raw Pressery (1 glass ~200ml)",
+    "cal": 90,
+    "protein": 3,
+    "carbs": 8,
+    "fat": 5
+  },
+  {
+    "name": "Coconut Water Raw Pressery (1 bottle ~200ml)",
+    "cal": 40,
+    "protein": 0,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Optimum Nutrition Gold Standard Whey RTD (1 bottle ~330ml)",
+    "cal": 160,
+    "protein": 30,
+    "carbs": 6,
+    "fat": 2
+  },
+  {
+    "name": "MuscleBlaze Raw Whey Isolate (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 26,
+    "carbs": 1,
+    "fat": 0.5
+  },
+  {
+    "name": "Herbalife Protein Drink Mix (1 scoop ~25g)",
+    "cal": 95,
+    "protein": 10,
+    "carbs": 11,
+    "fat": 1
+  },
+  {
+    "name": "Protinex Lite (1 scoop ~30g)",
+    "cal": 105,
+    "protein": 10,
+    "carbs": 11,
+    "fat": 2
+  },
+  {
+    "name": "Ensure Nutrition Powder (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 9,
+    "carbs": 15,
+    "fat": 2
+  },
+  {
+    "name": "Ensure High Protein RTD (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 16,
+    "carbs": 19,
+    "fat": 3
+  },
+  {
+    "name": "Amul High Protein Milk (1 bottle ~200ml)",
+    "cal": 150,
+    "protein": 14,
+    "carbs": 12,
+    "fat": 3
+  },
+  {
+    "name": "Nature Valley Protein Bar (1 bar ~42g)",
+    "cal": 190,
+    "protein": 10,
+    "carbs": 20,
+    "fat": 7
+  },
+  {
+    "name": "Gaia Protein Bar (1 bar ~40g)",
+    "cal": 170,
+    "protein": 9,
+    "carbs": 18,
+    "fat": 6
+  },
+  {
+    "name": "Soy Protein Isolate (Generic, 1 scoop ~30g)",
+    "cal": 110,
+    "protein": 25,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Pea Protein Powder (Generic, 1 scoop ~30g)",
+    "cal": 115,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Almond Protein Shake Raw Pressery (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 12,
+    "carbs": 14,
+    "fat": 6
+  },
+  {
+    "name": "Soy Milk Silk Protein+ (1 glass ~200ml)",
+    "cal": 90,
+    "protein": 7,
+    "carbs": 6,
+    "fat": 4
+  },
+  {
+    "name": "Yakult Probiotic + Protein Drink (1 bottle ~65ml)",
+    "cal": 60,
+    "protein": 3,
+    "carbs": 12,
+    "fat": 0
+  },
+  {
+    "name": "MyProtein Impact Whey (1 scoop ~25g)",
+    "cal": 100,
+    "protein": 21,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "MyProtein Isolate (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 25,
+    "carbs": 1,
+    "fat": 0.5
+  },
+  {
+    "name": "MyProtein Vegan Blend (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 22,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Dymatize Elite Whey (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 25,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Dymatize ISO100 Hydrolyzed (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 26,
+    "carbs": 1,
+    "fat": 0.5
+  },
+  {
+    "name": "Isopure Zero Carb Whey (1 scoop ~30g)",
+    "cal": 100,
+    "protein": 25,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Isopure Low Carb Whey (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 25,
+    "carbs": 1,
+    "fat": 0.5
+  },
+  {
+    "name": "GNC Pro Performance Whey (1 scoop ~33g)",
+    "cal": 130,
+    "protein": 24,
+    "carbs": 4,
+    "fat": 2
+  },
+  {
+    "name": "GNC AMP Gold Whey (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 25,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "BigMuscles Nutrition Premium Whey (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 24,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "BigMuscles Raw Whey Isolate (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 26,
+    "carbs": 1,
+    "fat": 0.5
+  },
+  {
+    "name": "Fast&Up Whey Protein (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Fast&Up Plant Protein (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 22,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "HealthKart Whey Protein (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "HealthKart Soy Protein (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 25,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "MuscleTech NitroTech Whey Gold (1 scoop ~33g)",
+    "cal": 130,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 2
+  },
+  {
+    "name": "MuscleTech Mass Gainer (1 serving ~100g)",
+    "cal": 380,
+    "protein": 20,
+    "carbs": 60,
+    "fat": 5
+  },
+  {
+    "name": "Ultimate Nutrition Prostar Whey (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 25,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Ultimate Nutrition ISO Sensation (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 26,
+    "carbs": 1,
+    "fat": 0.5
+  },
+  {
+    "name": "ON Serious Mass Gainer (1 serving ~100g)",
+    "cal": 380,
+    "protein": 20,
+    "carbs": 60,
+    "fat": 5
+  },
+  {
+    "name": "ON Casein Protein (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Amway Nutrilite Protein Powder (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 22,
+    "carbs": 4,
+    "fat": 2
+  },
+  {
+    "name": "Amway Nutrilite All Plant Protein (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 23,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "RiteBite Max Protein Bar (1 bar ~60g)",
+    "cal": 220,
+    "protein": 20,
+    "carbs": 18,
+    "fat": 7
+  },
+  {
+    "name": "Yoga Bar High Protein Bar (1 bar ~50g)",
+    "cal": 200,
+    "protein": 20,
+    "carbs": 16,
+    "fat": 8
+  },
+  {
+    "name": "Gaia Whey Protein Shake RTD (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 15,
+    "carbs": 10,
+    "fat": 4
+  },
+  {
+    "name": "Raw Pressery Almond Protein Shake (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 12,
+    "carbs": 14,
+    "fat": 6
+  },
+  {
+    "name": "Soy Protein Isolate Generic (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 25,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Pea Protein Powder Generic (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Collagen Peptides Powder (1 scoop ~10g)",
+    "cal": 35,
+    "protein": 9,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Vital Proteins Collagen (1 scoop ~10g)",
+    "cal": 40,
+    "protein": 9,
+    "carbs": 0,
+    "fat": 0
+  },
+  {
+    "name": "Hemp Protein Powder (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 15,
+    "carbs": 8,
+    "fat": 4
+  },
+  {
+    "name": "Hemp Hearts Raw (2 tbsp ~30g)",
+    "cal": 170,
+    "protein": 10,
+    "carbs": 3,
+    "fat": 13
+  },
+  {
+    "name": "Egg White Protein Powder (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 24,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Whole Egg Protein Powder (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 23,
+    "carbs": 2,
+    "fat": 2
+  },
+  {
+    "name": "Keto Protein Blend Chocolate (1 scoop ~30g)",
+    "cal": 140,
+    "protein": 20,
+    "carbs": 3,
+    "fat": 5
+  },
+  {
+    "name": "Keto Collagen Protein (1 scoop ~30g)",
+    "cal": 130,
+    "protein": 18,
+    "carbs": 2,
+    "fat": 6
+  },
+  {
+    "name": "Bone Broth Protein Powder (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 20,
+    "carbs": 2,
+    "fat": 3
+  },
+  {
+    "name": "Plant-Based Protein Blend (Pea + Rice, 1 scoop ~30g)",
+    "cal": 115,
+    "protein": 22,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Soy Isolate Protein Drink (1 bottle ~200ml)",
+    "cal": 90,
+    "protein": 10,
+    "carbs": 6,
+    "fat": 2
+  },
+  {
+    "name": "Almond Protein Shake (1 bottle ~200ml)",
+    "cal": 160,
+    "protein": 12,
+    "carbs": 14,
+    "fat": 6
+  },
+  {
+    "name": "Pumpkin Seed Protein Powder (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 19,
+    "carbs": 4,
+    "fat": 3
+  },
+  {
+    "name": "Sunflower Seed Protein Powder (1 scoop ~30g)",
+    "cal": 115,
+    "protein": 18,
+    "carbs": 3,
+    "fat": 2
+  },
+  {
+    "name": "Brown Rice Protein Powder (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 22,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Casein Protein Powder (Slow Digesting, 1 scoop ~30g)",
+    "cal": 120,
+    "protein": 24,
+    "carbs": 3,
+    "fat": 1
+  },
+  {
+    "name": "Mixed Plant Protein (Soy + Hemp + Pea, 1 scoop ~30g)",
+    "cal": 120,
+    "protein": 23,
+    "carbs": 3,
+    "fat": 2
+  },
+  {
+    "name": "Collagen Coffee Mix (1 sachet ~15g)",
+    "cal": 60,
+    "protein": 8,
+    "carbs": 2,
+    "fat": 1
+  },
+  {
+    "name": "Egg Protein RTD Shake (1 bottle ~250ml)",
+    "cal": 150,
+    "protein": 20,
+    "carbs": 6,
+    "fat": 3
+  },
+  {
+    "name": "Hemp Protein RTD Shake (1 bottle ~250ml)",
+    "cal": 160,
+    "protein": 18,
+    "carbs": 8,
+    "fat": 5
+  },
+  {
+    "name": "ON Amino Energy + Electrolytes (1 scoop ~9g)",
+    "cal": 35,
+    "protein": 5,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "ON BCAA Powder (1 scoop ~8g)",
+    "cal": 30,
+    "protein": 6,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "MuscleBlaze BCAA Pro (1 scoop ~15g)",
+    "cal": 60,
+    "protein": 7,
+    "carbs": 4,
+    "fat": 0
+  },
+  {
+    "name": "MuscleBlaze Recovery Protein (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 20,
+    "carbs": 6,
+    "fat": 2
+  },
+  {
+    "name": "Fast&Up Recover BCAA + Glutamine (1 scoop ~15g)",
+    "cal": 55,
+    "protein": 6,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Fast&Up Reload Electrolyte + Protein (1 sachet ~20g)",
+    "cal": 70,
+    "protein": 5,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "GNC Pro Performance BCAA (1 scoop ~10g)",
+    "cal": 40,
+    "protein": 7,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "GNC AMP Recovery Protein (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 22,
+    "carbs": 5,
+    "fat": 2
+  },
+  {
+    "name": "MyProtein Recovery Blend (1 scoop ~30g)",
+    "cal": 125,
+    "protein": 21,
+    "carbs": 6,
+    "fat": 2
+  },
+  {
+    "name": "MyProtein BCAA 2:1:1 (1 scoop ~8g)",
+    "cal": 30,
+    "protein": 6,
+    "carbs": 1,
+    "fat": 0
+  },
+  {
+    "name": "Dymatize BCAA Complex (1 scoop ~10g)",
+    "cal": 40,
+    "protein": 7,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Isopure Aminos + Electrolytes (1 scoop ~10g)",
+    "cal": 35,
+    "protein": 6,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "Ultimate Nutrition BCAA Powder (1 scoop ~10g)",
+    "cal": 40,
+    "protein": 7,
+    "carbs": 2,
+    "fat": 0
+  },
+  {
+    "name": "MuscleTech Cell-Tech Recovery (1 scoop ~50g)",
+    "cal": 180,
+    "protein": 10,
+    "carbs": 35,
+    "fat": 1
+  },
+  {
+    "name": "MuscleTech Amino Build Next Gen (1 scoop ~14g)",
+    "cal": 60,
+    "protein": 8,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "BigMuscles BCAA Energy (1 scoop ~12g)",
+    "cal": 50,
+    "protein": 7,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "HealthKart BCAA + Glutamine (1 scoop ~12g)",
+    "cal": 50,
+    "protein": 7,
+    "carbs": 3,
+    "fat": 0
+  },
+  {
+    "name": "Raw Pressery Protein + Electrolyte RTD (1 bottle ~250ml)",
+    "cal": 150,
+    "protein": 15,
+    "carbs": 12,
+    "fat": 2
+  },
+  {
+    "name": "Gaia Recovery Shake (1 bottle ~250ml)",
+    "cal": 160,
+    "protein": 16,
+    "carbs": 14,
+    "fat": 2
+  },
+  {
+    "name": "Endura Mass Recovery Shake (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 18,
+    "carbs": 8,
+    "fat": 2
+  },
+  {
+    "name": "GU Energy Gel (1 sachet ~32g)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 25,
+    "fat": 0
+  },
+  {
+    "name": "GU Roctane Ultra Endurance Gel (1 sachet ~32g)",
+    "cal": 110,
+    "protein": 0,
+    "carbs": 26,
+    "fat": 0
+  },
+  {
+    "name": "Fast&Up Energy Gel (1 sachet ~30g)",
+    "cal": 90,
+    "protein": 0,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Fast&Up Reload Electrolyte Drink (1 sachet ~20g)",
+    "cal": 70,
+    "protein": 0,
+    "carbs": 17,
+    "fat": 0
+  },
+  {
+    "name": "Gatorade Endurance Formula (1 bottle ~500ml)",
+    "cal": 120,
+    "protein": 0,
+    "carbs": 30,
+    "fat": 0
+  },
+  {
+    "name": "Powerade Endurance Drink (1 bottle ~500ml)",
+    "cal": 130,
+    "protein": 0,
+    "carbs": 32,
+    "fat": 0
+  },
+  {
+    "name": "SIS GO Isotonic Gel (1 sachet ~30g)",
+    "cal": 90,
+    "protein": 0,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "SIS GO Electrolyte Powder (1 scoop ~20g)",
+    "cal": 75,
+    "protein": 0,
+    "carbs": 18,
+    "fat": 0
+  },
+  {
+    "name": "High5 Energy Gel (1 sachet ~40g)",
+    "cal": 95,
+    "protein": 0,
+    "carbs": 23,
+    "fat": 0
+  },
+  {
+    "name": "High5 Energy Drink Powder (1 scoop ~20g)",
+    "cal": 80,
+    "protein": 0,
+    "carbs": 19,
+    "fat": 0
+  },
+  {
+    "name": "Endura Sports Energy Gel (1 sachet ~30g)",
+    "cal": 85,
+    "protein": 0,
+    "carbs": 21,
+    "fat": 0
+  },
+  {
+    "name": "Endura Sports Recovery Drink (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 5,
+    "carbs": 20,
+    "fat": 1
+  },
+  {
+    "name": "Hammer Nutrition HEED Endurance Drink (1 scoop ~30g)",
+    "cal": 110,
+    "protein": 0,
+    "carbs": 27,
+    "fat": 0
+  },
+  {
+    "name": "Hammer Nutrition Perpetuem Endurance Fuel (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 3,
+    "carbs": 25,
+    "fat": 2
+  },
+  {
+    "name": "Tailwind Endurance Fuel (1 scoop ~27g)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 25,
+    "fat": 0
+  },
+  {
+    "name": "Tailwind Recovery Mix (1 scoop ~30g)",
+    "cal": 120,
+    "protein": 10,
+    "carbs": 15,
+    "fat": 2
+  },
+  {
+    "name": "Maurten Gel 100 (1 sachet ~40g)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 25,
+    "fat": 0
+  },
+  {
+    "name": "Maurten Drink Mix 320 (1 sachet ~80g)",
+    "cal": 320,
+    "protein": 0,
+    "carbs": 80,
+    "fat": 0
+  },
+  {
+    "name": "Clif Shot Energy Gel (1 sachet ~34g)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 24,
+    "fat": 0
+  },
+  {
+    "name": "Clif Bloks Energy Chews (3 pieces ~30g)",
+    "cal": 100,
+    "protein": 0,
+    "carbs": 25,
+    "fat": 0
+  },
+  {
+    "name": "Sarson Ka Saag (1 bowl ~200g)",
+    "cal": 220,
+    "protein": 8,
+    "carbs": 20,
+    "fat": 12
+  },
+  {
+    "name": "Makki Ki Roti (2 pieces ~100g)",
+    "cal": 240,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 6
+  },
+  {
+    "name": "Gajar Ka Halwa (1 bowl ~150g)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 40,
+    "fat": 12
+  },
+  {
+    "name": "Til Ladoo (2 pieces ~40g)",
+    "cal": 180,
+    "protein": 5,
+    "carbs": 22,
+    "fat": 8
+  },
+  {
+    "name": "Panjiri (1 bowl ~100g)",
+    "cal": 300,
+    "protein": 7,
+    "carbs": 40,
+    "fat": 14
+  },
+  {
+    "name": "Aam Panna (1 glass ~200ml)",
+    "cal": 90,
+    "protein": 0,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Buttermilk / Chaas (1 glass ~200ml)",
+    "cal": 70,
+    "protein": 3,
+    "carbs": 8,
+    "fat": 3
+  },
+  {
+    "name": "Nimbu Pani (1 glass ~200ml)",
+    "cal": 60,
+    "protein": 0,
+    "carbs": 15,
+    "fat": 0
+  },
+  {
+    "name": "Kokum Sherbet (1 glass ~200ml)",
+    "cal": 80,
+    "protein": 0,
+    "carbs": 18,
+    "fat": 0
+  },
+  {
+    "name": "Watermelon Juice (1 glass ~200ml)",
+    "cal": 70,
+    "protein": 1,
+    "carbs": 16,
+    "fat": 0
+  },
+  {
+    "name": "Cucumber Raita (1 bowl ~150g)",
+    "cal": 120,
+    "protein": 4,
+    "carbs": 10,
+    "fat": 6
+  },
+  {
+    "name": "Pakora (Mixed Veg, 4 pieces ~100g)",
+    "cal": 280,
+    "protein": 6,
+    "carbs": 30,
+    "fat": 14
+  },
+  {
+    "name": "Bhutta (Roasted Corn, 1 cob ~150g)",
+    "cal": 160,
+    "protein": 5,
+    "carbs": 32,
+    "fat": 3
+  },
+  {
+    "name": "Masala Chai (1 cup ~150ml)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 12,
+    "fat": 3
+  },
+  {
+    "name": "Batata Vada (2 pieces ~100g)",
+    "cal": 260,
+    "protein": 6,
+    "carbs": 32,
+    "fat": 12
+  },
+  {
+    "name": "Onion Bhajiya (4 pieces ~100g)",
+    "cal": 270,
+    "protein": 5,
+    "carbs": 28,
+    "fat": 13
+  },
+  {
+    "name": "Jamun Fruit Bowl (1 bowl ~150g)",
+    "cal": 70,
+    "protein": 1,
+    "carbs": 16,
+    "fat": 0
+  },
+  {
+    "name": "Lychee Fruit Bowl (1 bowl ~150g)",
+    "cal": 90,
+    "protein": 1,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Guava Fruit Bowl (1 bowl ~150g)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 1
+  },
+  {
+    "name": "Pineapple Fruit Bowl (1 bowl ~150g)",
+    "cal": 85,
+    "protein": 1,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Custard Apple Fruit Bowl (1 bowl ~150g)",
+    "cal": 100,
+    "protein": 2,
+    "carbs": 24,
+    "fat": 1
+  },
+  {
+    "name": "Fresh Orange Juice (1 glass ~200ml)",
+    "cal": 90,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Apple Juice (1 glass ~200ml)",
+    "cal": 95,
+    "protein": 0,
+    "carbs": 23,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Pomegranate Juice (1 glass ~200ml)",
+    "cal": 100,
+    "protein": 1,
+    "carbs": 24,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Mango Juice (1 glass ~200ml)",
+    "cal": 120,
+    "protein": 1,
+    "carbs": 28,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Pineapple Juice (1 glass ~200ml)",
+    "cal": 85,
+    "protein": 1,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Watermelon Juice (1 glass ~200ml)",
+    "cal": 70,
+    "protein": 1,
+    "carbs": 16,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Guava Juice (1 glass ~200ml)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 1
+  },
+  {
+    "name": "Fresh Papaya Juice (1 glass ~200ml)",
+    "cal": 85,
+    "protein": 1,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Lychee Juice (1 glass ~200ml)",
+    "cal": 90,
+    "protein": 1,
+    "carbs": 22,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Custard Apple Juice (1 glass ~200ml)",
+    "cal": 100,
+    "protein": 2,
+    "carbs": 24,
+    "fat": 1
+  },
+  {
+    "name": "Fresh Carrot Juice (1 glass ~200ml)",
+    "cal": 80,
+    "protein": 2,
+    "carbs": 18,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Beetroot Juice (1 glass ~200ml)",
+    "cal": 90,
+    "protein": 2,
+    "carbs": 20,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Tomato Juice (1 glass ~200ml)",
+    "cal": 40,
+    "protein": 2,
+    "carbs": 9,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Cucumber Juice (1 glass ~200ml)",
+    "cal": 30,
+    "protein": 1,
+    "carbs": 7,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Spinach Juice (1 glass ~200ml)",
+    "cal": 50,
+    "protein": 3,
+    "carbs": 8,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Bottle Gourd Juice (1 glass ~200ml)",
+    "cal": 25,
+    "protein": 1,
+    "carbs": 6,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Amla Juice (1 glass ~200ml)",
+    "cal": 40,
+    "protein": 1,
+    "carbs": 10,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Ginger-Lemon Shot (1 shot ~50ml)",
+    "cal": 20,
+    "protein": 0,
+    "carbs": 5,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Mixed Veg Juice (Carrot + Beet + Tomato, 1 glass ~200ml)",
+    "cal": 85,
+    "protein": 3,
+    "carbs": 18,
+    "fat": 0
+  },
+  {
+    "name": "Fresh Celery Juice (1 glass ~200ml)",
+    "cal": 35,
+    "protein": 1,
+    "carbs": 8,
+    "fat": 0
+  }
 ]
