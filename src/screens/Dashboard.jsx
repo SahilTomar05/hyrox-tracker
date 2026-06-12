@@ -126,7 +126,7 @@ function SleepCard({ userId }) {
 
   async function fetchSleep() {
     const { data } = await supabase.from('sleep_logs').select('*')
-      .eq('user_id', userId).eq('date', todayDate()).single()
+      .eq('user_id', userId).eq('date', todayDate()).maybeSingle()
     if (data) setSleepLog(data)
   }
 
@@ -135,7 +135,7 @@ function SleepCard({ userId }) {
     setSaving(true)
     const { data } = await supabase.from('sleep_logs')
       .upsert({ user_id: userId, date: todayDate(), hours: Number(hours), quality }, { onConflict: 'user_id,date' })
-      .select().single()
+      .select().maybeSingle()
     if (data) setSleepLog(data)
     setSaving(false); setShowForm(false); setHours('')
   }
@@ -229,10 +229,10 @@ export default function Dashboard({ profile, session }) {
   const burnGoal = calorieGoal * 1.2 // burn target slightly above intake goal
   const burnPct = Math.min((caloriesBurned / burnGoal) * 100, 100)
   const waterPct = Math.min((nutrition.water / waterGoal) * 100, 100)
-  const stepPct = Math.min(Math.round((steps / stepGoal) * 100), 100)
+  const stepPct = Math.min((steps / stepGoal) * 100, 100)
   const sessionToday = sessions.filter(s => new Date(s.date).toDateString() === new Date().toDateString()).length
   const workoutPct = Math.min(sessionToday * 50, 100)
-  const overallPct = Math.round((burnPct + waterPct + workoutPct) / 3)
+  const overallPct = Math.round((burnPct * 0.35 + waterPct * 0.2 + workoutPct * 0.3 + stepPct * 0.15))
 
   const dailyRating = calcDailyRating({
     calories: nutrition.calories, calorieGoal,
@@ -258,7 +258,7 @@ export default function Dashboard({ profile, session }) {
 
   async function fetchNutrition() {
     const { data } = await supabase.from('nutrition_logs').select('*')
-      .eq('user_id', session.user.id).eq('date', todayDate()).single()
+      .eq('user_id', session.user.id).eq('date', todayDate()).maybeSingle()
     if (data) {
       const meals = data.meals || []
       setNutrition({
@@ -277,7 +277,7 @@ export default function Dashboard({ profile, session }) {
 
   async function fetchSleep() {
     const { data } = await supabase.from('sleep_logs').select('hours')
-      .eq('user_id', session.user.id).eq('date', todayDate()).single()
+      .eq('user_id', session.user.id).eq('date', todayDate()).maybeSingle()
     if (data) setSleepHours(data.hours || 0)
   }
 

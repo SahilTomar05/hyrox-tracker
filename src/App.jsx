@@ -20,7 +20,17 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('dashboard')
   const [showQuickLog, setShowQuickLog] = useState(false)
-  const [coachMode, setCoachMode] = useState(false)
+  const [coachMode, setCoachMode] = useState(() => {
+  return localStorage.getItem('pace4_mode') === 'coach'
+  })
+
+  function toggleMode() {
+    const next = !coachMode
+    setCoachMode(next)
+    localStorage.setItem('pace4_mode', next ? 'coach' : 'athlete')
+    setActiveTab('dashboard')
+    setSelectedClient(null)
+  }
   const [selectedClient, setSelectedClient] = useState(null)
 
   useEffect(() => {
@@ -44,24 +54,25 @@ export default function App() {
   }, [])
 
   async function fetchProfile(userId) {
-  try {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .maybeSingle()  // won't throw 406 if no row found
-
-    if (!data || !data.name) {
-      setProfile(null)
-    } else {
-      setProfile(data)
-      if (data?.role?.toLowerCase() === 'coach') setCoachMode(true)
-    }
-  } catch {
-    setProfile(null)
+    try {
+      const { data } = await supabase
+        .from('profiles').select('*').eq('id', userId).maybeSingle()
+      if (!data || !data.name) {
+        setProfile(null)
+      } else {
+        setProfile(data)
+        // Only set coach mode if localStorage hasn't saved 'athlete' preference
+        const savedMode = localStorage.getItem('pace4_mode')
+        if (savedMode === null && data?.role?.toLowerCase() === 'coach') {
+          // First time login as coach
+          setCoachMode(true)
+          localStorage.setItem('pace4_mode', 'coach')
+        }
+        // If savedMode exists, respect it — don't override
+      }
+    } catch { setProfile(null) }
+    setLoading(false)
   }
-  setLoading(false)
-}
 
   async function handleOnboardingComplete(profileData) {
   try {
@@ -70,7 +81,7 @@ export default function App() {
       .from('profiles')
       .upsert({ id: user.id, ...profileData })
       .select()
-      .single()
+      .maybeSingle()
     
     if (error) {
       alert('Setup failed: ' + error.message)
@@ -85,7 +96,7 @@ export default function App() {
 
   async function handleProfileUpdate(updated) {
     const { data } = await supabase.from('profiles')
-      .upsert({ id: session.user.id, ...updated }).select().single()
+      .upsert({ id: session.user.id, ...updated }).select().maybeSingle()
     if (data) setProfile(data)
   }
 
@@ -95,7 +106,9 @@ export default function App() {
   }
 
   function toggleMode() {
-    setCoachMode(p => !p)
+    const next = !coachMode
+    setCoachMode(next)
+    localStorage.setItem('pace4_mode', next ? 'coach' : 'athlete')
     setActiveTab('dashboard')
     setSelectedClient(null)
   }

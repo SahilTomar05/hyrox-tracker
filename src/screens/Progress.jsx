@@ -269,7 +269,7 @@ export default function Progress({ session, profile }) {
       supabase.from('sessions').select('*').eq('user_id', session.user.id).order('date', { ascending: true }),
       supabase.from('weight_logs').select('*').eq('user_id', session.user.id).order('date', { ascending: true }),
       supabase.from('nutrition_logs').select('*').eq('user_id', session.user.id).order('date', { ascending: false }).limit(30),
-      supabase.from('nutrition_logs').select('*').eq('user_id', session.user.id).eq('date', todayDate).single(),
+      supabase.from('nutrition_logs').select('*').eq('user_id', session.user.id).eq('date', todayDate).maybeSingle(),
     ])
     setSessions(sRes.data || [])
     setWeightLogs(wRes.data || [])
@@ -289,7 +289,7 @@ export default function Progress({ session, profile }) {
     if (!newWeight) return
     const { data } = await supabase.from('weight_logs')
       .insert({ user_id: session.user.id, weight: Number(newWeight), date: new Date().toISOString() })
-      .select().single()
+      .select().maybeSingle()
     if (data) setWeightLogs(p => [...p, data])
     setNewWeight('')
   }

@@ -74,9 +74,10 @@ export default function Nutrition({ session, profile }) {
   })
 
   // Custom foods
-  const [customFoods, setCustomFoods] = useState([])
-  const [showCustomInput, setShowCustomInput] = useState(false)
+  const [savingCustom, setSavingCustom] = useState(false)
   const [customFood, setCustomFood] = useState({ name: '', cal: '', protein: '', carbs: '', fat: '' })
+  const [showCustomInput, setShowCustomInput] = useState(false)
+  const [customFoods, setCustomFoods] = useState([])
 
   useEffect(() => { fetchLog() }, [selectedDay])
   useEffect(() => { fetchCustomFoods() }, [])
@@ -85,14 +86,16 @@ export default function Nutrition({ session, profile }) {
     setLoading(true)
     const { data } = await supabase.from('nutrition_logs')
       .select('*').eq('user_id', session.user.id)
-      .eq('date', formatDate(selectedDay)).single()
+      .eq('date', formatDate(selectedDay)).maybeSingle()
     setLog(data || { meals: [], water: 0 })
     setLoading(false)
   }
 
   async function fetchCustomFoods() {
-    const { data } = await supabase.from('custom_foods')
-      .select('*').eq('user_id', session.user.id)
+    const { data } = await supabase
+      .from('custom_foods')
+      .select('*')
+      .eq('user_id', session.user.id)
     if (data) setCustomFoods(data)
   }
 
@@ -100,12 +103,13 @@ export default function Nutrition({ session, profile }) {
     setSaving(true)
     const { data } = await supabase.from('nutrition_logs')
       .upsert({ user_id: session.user.id, date: formatDate(selectedDay), ...newLog }, { onConflict: 'user_id,date' })
-      .select().single()
+      .select().maybeSingle()
     if (data) setLog(data)
     setSaving(false)
   }
 
   async function addFood(food, servings) {
+    console.log('Adding food:', food)
     const newMeal = {
       id: Date.now(),
       name: food.name,
@@ -134,21 +138,49 @@ export default function Nutrition({ session, profile }) {
   }
 
   async function saveCustomFood() {
-    if (!customFood.name || !customFood.cal) return
-    const { data } = await supabase.from('custom_foods').insert({
-      user_id: session.user.id,
-      name: customFood.name,
-      cal: Number(customFood.cal),
-      protein: Number(customFood.protein) || 0,
-      carbs: Number(customFood.carbs) || 0,
-      fat: Number(customFood.fat) || 0,
-    }).select().single()
-    if (data) {
-      setCustomFoods(p => [...p, data])
-      setServingPicker({ name: data.name, cal: data.cal, protein: data.protein, carbs: data.carbs, fat: data.fat })
+    if (!customFood.name.trim()) return
+    setSavingCustom(true)
+    
+  const { data, error } = await supabase
+  .from('custom_foods')
+  .insert({
+    user_id: session.user.id,
+    name: customFood.name.trim(),
+    cal: Number(customFood.cal) || 0,
+    p: Number(customFood.protein) || 0,
+    c: Number(customFood.carbs) || 0,
+    f: Number(customFood.fat) || 0,
+  })
+  .select().maybeSingle()
+
+    if (error) {
+      console.error('Custom food error:', error)
+      alert('Failed to save: ' + error.message)
+      setSavingCustom(false)
+      return
     }
+
+    // Add to local list immediately
+    setCustomFoods(prev => [...prev, data])
+    
+    // Show confirmation
+    alert(`✅ "${customFood.name}" added to your food library!`)
+    
+    // Reset form
     setCustomFood({ name: '', cal: '', protein: '', carbs: '', fat: '' })
     setShowCustomInput(false)
+    setSavingCustom(false)
+    
+    // Auto-add to current meal
+    if (data) {
+      addFood({
+        name: data.name,
+        cal: data.cal || 0,
+        protein: data.p || 0,
+        carbs: data.c || 0,
+        fat: data.f || 0,
+      },1)
+    }
   }
 
   function toggleFavourite(foodName) {
@@ -185,7 +217,14 @@ export default function Nutrition({ session, profile }) {
   // Search results
   const allFoods = [
     ...FOOD_DB,
-    ...customFoods.map(f => ({ name: f.name, cal: f.cal, protein: f.protein, carbs: f.carbs, fat: f.fat, isCustom: true }))
+    ...(customFoods || []).map(f => ({
+  name: f.name,
+  cal: f.cal || 0,
+  protein: f.p || 0,
+  carbs: f.c || 0,
+  fat: f.f || 0,
+  isCustom: true,
+    }))
   ]
 
   const searchResults = (() => {
