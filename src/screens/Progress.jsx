@@ -3,6 +3,7 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContai
 import { Share2, TrendingUp, TrendingDown, Minus } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import html2canvas from 'html2canvas'
+import { useTheme } from '../context/ThemeContext'
 
 // ── HELPERS ──────────────────────────────────────────────────────
 function getLast7Days() {
@@ -66,79 +67,60 @@ const CustomTooltip = ({ active, payload, label, unit = '' }) => {
 }
 
 // ── SHARE MODAL ──────────────────────────────────────────────────
+
 function ShareModal({ profile, stats, sessions, onClose }) {
+  const { isDark } = useTheme()
   const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   const daysLeft = profile?.race_date
     ? Math.ceil((new Date(profile.race_date) - new Date()) / (1000 * 60 * 60 * 24))
     : null
 
   const todaySession = sessions.find(s =>
-    new Date(s.date).toDateString() === new Date().toDateString()
+    new Date(s.date).toDateString() === new Date().toDateString() && s.rpe > 0
   )
 
   const ratingEmoji = stats.dailyRating >= 5 ? '🔥' : stats.dailyRating >= 4 ? '💪' : stats.dailyRating >= 3 ? '😐' : '😬'
-  const ratingLabel = stats.dailyRating >= 5 ? 'Perfect day' : stats.dailyRating >= 4 ? 'Great effort' : stats.dailyRating >= 3 ? 'On track' : 'Keep pushing'
+  const ratingColor = stats.dailyRating >= 4 ? '#22C55E' : stats.dailyRating >= 3 ? '#FF5A1F' : '#EF4444'
+  const scoreColor = stats.consistencyScore >= 80 ? '#22C55E' : stats.consistencyScore >= 60 ? '#FF5A1F' : '#EF4444'
 
-  async function saveImage() {
-  const card = document.getElementById('pace4-share-card')
-  if (!card) return
-
-  try {
-    // Try html2canvas first
-    const html2canvas = (await import('html2canvas')).default
-    const canvas = await html2canvas(card, {
-      backgroundColor: '#0a0a0a',
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      foreignObjectRendering: false,
-      logging: false,
-      imageTimeout: 0,
-      removeContainer: true,
-    })
-
-    // Try native share with image first (works on PWA)
-    canvas.toBlob(async blob => {
-      const file = new File([blob], 'pace4-progress.png', { type: 'image/png' })
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({ files: [file], title: 'My Pace4 Progress' })
-          return
-        } catch (e) {
-          // Fall through to download
-        }
-      }
-      // Fallback — download
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `pace4-${new Date().toISOString().split('T')[0]}.png`
-      document.body.appendChild(a)
-      a.click()
-      document.body.removeChild(a)
-      URL.revokeObjectURL(url)
-    }, 'image/png')
-
-  } catch (e) {
-    // html2canvas failed — show instructions
-    alert('📸 To save: Take a screenshot of this card!\n\niOS: Side button + Volume Up\nAndroid: Power + Volume Down')
-  }
-}
-
-async function handleShare() {
-  // On PWA just use text share — more reliable
-  if (navigator.share) {
+  async function saveAndShare(mode) {
+    const card = document.getElementById('pace4-share-card')
+    if (!card) return
     try {
-      await navigator.share({
-        title: 'My Pace4 Progress',
-        text: `Daily Rating ${stats.dailyRating}/5 ⭐ | ${stats.caloriesBurned || 0} kcal burned | ${stats.todaySteps || 0} steps | ${stats.todayWater || 0}L water\n#P4Athlete #Pace4`,
-        url: 'https://www.pace4.in',
+      const html2canvas = (await import('html2canvas')).default
+      const canvas = await html2canvas(card, {
+        backgroundColor: '#0a0a0a',
+        scale: 2, useCORS: true, allowTaint: true, logging: false,
       })
-      return
-    } catch (e) { /* fall through */ }
+      canvas.toBlob(async blob => {
+        const file = new File([blob], 'pace4-progress.png', { type: 'image/png' })
+        if (mode === 'share') {
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({ files: [file], title: 'My Pace4 Progress' })
+            return
+          } else if (navigator.share) {
+            await navigator.share({
+              title: 'My Pace4 Progress',
+              text: `Daily Rating ${stats.dailyRating}/5 ⭐ · ${stats.caloriesBurned || 0} kcal burned · ${stats.todaySteps || 0} steps #Pace4`,
+              url: 'https://www.pace4.in',
+            })
+            return
+          }
+        }
+        // Fallback — download
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `pace4-${new Date().toISOString().split('T')[0]}.png`
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
+        URL.revokeObjectURL(url)
+      }, 'image/png')
+    } catch (e) {
+      alert('📸 Screenshot this card to save it!\n\niOS: Side button + Volume Up\nAndroid: Power + Volume Down')
+    }
   }
-  saveImage()
-}
 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}
@@ -146,35 +128,40 @@ async function handleShare() {
       <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 12 }}
         onClick={e => e.stopPropagation()}>
 
-        {/* Share card */}
+        {/* Share card — always dark background so it looks good when saved */}
         <div id="pace4-share-card"
-          style={{ background: 'linear-gradient(160deg,#080808,#121212)', border: '1px solid #FF5A1F20', borderRadius: 24, padding: 20, position: 'relative', overflow: 'hidden' }}>
+          style={{ background: 'linear-gradient(160deg,#0a0a0a,#141414)', border: '1px solid #FF5A1F20', borderRadius: 24, padding: 20, position: 'relative', overflow: 'hidden' }}>
 
           {/* Glow */}
           <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: '#FF5A1F08', filter: 'blur(40px)', pointerEvents: 'none' }} />
 
           {/* Header */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img 
-              src="/icon-512.png" 
-              alt="P4"
-              style={{ width: 40, height: 40, borderRadius: 11, boxShadow: '0 2px 12px rgba(255,90,31,.4)' }}
-            />
-            <div>
-              <p style={{ fontSize: 15, fontWeight: 700, color: '#fff' }}>Pace4</p>
-              <p style={{ fontSize: 10, color: '#FF5A1F', letterSpacing: '.04em' }}>#P4Athlete · pace4.in</p>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <img src="/icon-512.png" alt="P4"
+                style={{ width: 36, height: 36, borderRadius: 10, boxShadow: '0 2px 12px rgba(255,90,31,.4)' }} />
+              <div>
+                <p style={{ fontSize: 14, fontWeight: 700, color: '#fff' }}>Pace4</p>
+                <p style={{ fontSize: 9, color: '#FF5A1F', letterSpacing: '.06em', textTransform: 'uppercase' }}>pace4.in</p>
+              </div>
+            </div>
+            <div style={{ textAlign: 'right' }}>
+              <p style={{ fontSize: 11, color: '#555' }}>{today}</p>
+              {daysLeft && daysLeft > 0 && (
+                <p style={{ fontSize: 11, color: '#FF5A1F', fontWeight: 600, marginTop: 2 }}>🏁 {daysLeft}d to race</p>
+              )}
             </div>
           </div>
 
-          {/* Athlete name */}
+          {/* Athlete */}
           <p style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{profile?.name}</p>
           <p style={{ fontSize: 11, color: '#FF5A1F', marginBottom: 16 }}>{profile?.event_name || 'Athlete'}</p>
 
-          {/* Daily rating — hero */}
+          {/* Daily rating hero */}
           <div style={{ background: '#ffffff08', borderRadius: 16, padding: '14px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ textAlign: 'center', flexShrink: 0 }}>
-              <div style={{ fontSize: 36, lineHeight: 1 }}>{ratingEmoji}</div>
-              <p style={{ fontSize: 26, fontWeight: 700, color: stats.dailyRating >= 4 ? '#22C55E' : stats.dailyRating >= 3 ? '#FF5A1F' : '#EF4444', lineHeight: 1, marginTop: 4 }}>
+              <div style={{ fontSize: 36, lineHeight: 1, marginBottom: 4 }}>{ratingEmoji}</div>
+              <p style={{ fontSize: 26, fontWeight: 700, color: ratingColor, lineHeight: 1 }}>
                 {stats.dailyRating}<span style={{ fontSize: 13, color: '#444', fontWeight: 400 }}>/5</span>
               </p>
               <div style={{ display: 'flex', gap: 1, justifyContent: 'center', marginTop: 4 }}>
@@ -182,55 +169,48 @@ async function handleShare() {
               </div>
               <p style={{ fontSize: 9, color: '#555', marginTop: 3, textTransform: 'uppercase', letterSpacing: '.05em' }}>Daily rating</p>
             </div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4 }}>{ratingLabel}</p>
-              {todaySession && (
-                <div style={{ background: '#ffffff06', borderRadius: 10, padding: '8px 10px' }}>
-                  <p style={{ fontSize: 12, fontWeight: 600, color: '#fff' }}>{todaySession.type}</p>
-                  <p style={{ fontSize: 10, color: '#555' }}>
-                    {todaySession.duration ? `${todaySession.duration}min` : ''}
-                    {todaySession.rpe ? ` · RPE ${todaySession.rpe}/10` : ''}
-                  </p>
-                </div>
-              )}
-            </div>
+            {todaySession && (
+              <div style={{ flex: 1, background: '#ffffff06', borderRadius: 10, padding: '8px 10px' }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{todaySession.type}</p>
+                <p style={{ fontSize: 10, color: '#666' }}>
+                  {todaySession.duration ? `${todaySession.duration}min` : ''}
+                  {todaySession.rpe ? ` · RPE ${todaySession.rpe}/10` : ''}
+                  {` · ${(todaySession.exercises||[]).length} exercises`}
+                </p>
+              </div>
+            )}
           </div>
 
-          {/* 4 stats — calories burned, water, steps, protein */}
+          {/* 3 stats — calories burned, water, steps */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
             {[
-              { icon: '🔥', label: 'Calories Burned', val: stats.caloriesBurned || 0, unit: 'kcal', color: '#FF5A1F' },
+              { icon: '🔥', label: 'Cal Burned', val: stats.caloriesBurned || 0, unit: 'kcal', color: '#FF5A1F' },
               { icon: '💧', label: 'Water', val: `${stats.todayWater || 0}`, unit: 'L', color: '#3B82F6' },
               { icon: '👟', label: 'Steps', val: (stats.todaySteps || 0).toLocaleString(), unit: '', color: '#22C55E' },
             ].map(({ icon, label, val, unit, color }) => (
-              <div key={label} style={{ background: '#ffffff06', borderRadius: 12, padding: '10px 12px' }}>
-                <p style={{ fontSize: 16, fontWeight: 700, color, lineHeight: 1 }}>
-                  {val}<span style={{ fontSize: 10, fontWeight: 400, color: '#444' }}>{unit}</span>
+              <div key={label} style={{ background: '#ffffff06', borderRadius: 12, padding: '10px 10px' }}>
+                <p style={{ fontSize: 15, fontWeight: 700, color, lineHeight: 1 }}>
+                  {val}<span style={{ fontSize: 9, fontWeight: 400, color: '#444' }}>{unit}</span>
                 </p>
-                <p style={{ fontSize: 10, color: '#444', marginTop: 3 }}>{icon} {label}</p>
+                <p style={{ fontSize: 9, color: '#444', marginTop: 3 }}>{icon} {label}</p>
               </div>
             ))}
           </div>
 
           {/* Footer */}
           <div style={{ borderTop: '1px solid #ffffff08', paddingTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <div style={{ width: 16, height: 16, borderRadius: 4, background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <span style={{ color: '#fff', fontWeight: 900, fontSize: 8 }}>P4</span>
-              </div>
-              <p style={{ fontSize: 9, color: '#333' }}>pace4.in</p>
-            </div>
+            <p style={{ fontSize: 9, color: '#333' }}>pace4.in</p>
             <p style={{ fontSize: 9, color: '#333' }}>#P4Athlete #Pace4 #IndianAthlete</p>
           </div>
         </div>
 
         {/* Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <button onClick={saveImage}
+          <button onClick={() => saveAndShare('save')}
             style={{ background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 14, padding: 14, color: 'var(--text)', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             💾 Save
           </button>
-          <button onClick={handleShare}
+          <button onClick={() => saveAndShare('share')}
             style={{ background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 14, color: '#fff', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
             📤 Share
           </button>
@@ -240,7 +220,7 @@ async function handleShare() {
           Close
         </button>
         <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--subtle)' }}>
-          Tip: Screenshot this card directly to share on Instagram Stories
+          Save → share on Instagram Stories or WhatsApp
         </p>
       </div>
     </div>
@@ -401,6 +381,19 @@ export default function Progress({ session, profile }) {
   const scoreColor = consistencyScore >= 80 ? '#22C55E' : consistencyScore >= 60 ? '#FF5A1F' : '#EF4444'
   const scoreLabel = consistencyScore >= 80 ? 'Crushing it 🔥' : consistencyScore >= 60 ? 'On track 💪' : consistencyScore >= 40 ? 'Building' : 'Level up'
 
+  const caloriesBurned = (() => {
+  const weight = Number(profile?.weight) || 70
+  let burned = 0
+  sessions.filter(s => new Date(s.date).toDateString() === new Date().toDateString() && s.rpe > 0)
+    .forEach(s => {
+      const dur = Number(s.duration) || 45
+      const rpe = Number(s.rpe) || 6
+      const met = s.type === 'Strength' ? 3.5 + rpe*0.3 : s.type === 'Conditioning' ? 6 + rpe*0.5 : 4 + rpe*0.3
+      burned += Math.round(met * weight * (dur / 60))
+    })
+  return burned
+})()
+
   const shareStats = {
   consistencyScore,
   avgCalories,
@@ -412,7 +405,7 @@ export default function Progress({ session, profile }) {
   todayProtein: todayLog.protein,
   todaySteps,
   todayWater: todayLog.water,
-  caloriesBurned: todayLog.caloriesBurned || 0,
+  caloriesBurned: caloriesBurned || 0,
   dailyRating: (() => {
     const stepsHistory = (() => { try { return JSON.parse(localStorage.getItem('stepsHistory') || '{}') } catch { return {} } })()
     const todayStepsVal = stepsHistory[new Date().toDateString()] || 0
