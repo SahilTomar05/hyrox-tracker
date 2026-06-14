@@ -222,7 +222,7 @@ export default function Training({ session, profile }) {
     const cat = activeCat || 'Custom'
     const { data } = await supabase.from('custom_exercises').insert({
       user_id: session.user.id, name: customName.trim(), category: cat,
-    }).select().maybeSingle()
+    }).select().single()
     if (data) {
       setCustomExercises(p => [...p, data])
       tapExercise({ name: customName.trim(), cat, sub: 'Custom', isCustom: true })
@@ -246,7 +246,7 @@ export default function Training({ session, profile }) {
       user_id: session.user.id, date: selectedDay, type, notes, rpe, duration,
       exercises: exercises.map(({ id, completed, ...ex }) => ex),
       muscle_groups: cats, hyrox_stations: [],
-    }).select().maybeSingle()
+    }).select().single()
     if (!error && data) { setSessions(p => [data, ...p]); setScoreModal(result) }
     setSaving(false); setShowForm(false)
     setExercises([]); setNotes(''); setRpe(7); setDuration('')
@@ -566,10 +566,10 @@ export default function Training({ session, profile }) {
               ))}
             </div>
 
-            {/* STEP 1 — View exercises */}
+            {/* STEP 1 — Editable exercises */}
             {completingStep === 'exercises' && (
               <>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
                   <div style={{ width: 48, height: 48, borderRadius: 14, background: '#FF5A1F15', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, flexShrink: 0 }}>
                     {CAT_META[completingSession.type]?.icon || '💪'}
                   </div>
@@ -581,40 +581,102 @@ export default function Training({ session, profile }) {
 
                 {/* Coach note */}
                 {completingSession.notes && (
-                  <div style={{ background: '#FF5A1F10', border: '1px solid #FF5A1F25', borderRadius: 12, padding: '10px 14px', marginBottom: 14 }}>
+                  <div style={{ background: '#FF5A1F10', border: '1px solid #FF5A1F25', borderRadius: 12, padding: '10px 14px', marginBottom: 12 }}>
                     <p style={{ fontSize: 11, color: '#FF5A1F', fontWeight: 600, marginBottom: 3 }}>Coach says:</p>
                     <p style={{ fontSize: 13, color: 'var(--text)', fontStyle: 'italic' }}>"{completingSession.notes}"</p>
                   </div>
                 )}
 
-                {/* Full exercise list with sets */}
+                {/* Editable hint */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 12, padding: '8px 12px', background: '#22C55E10', border: '1px solid #22C55E25', borderRadius: 10 }}>
+                  <span style={{ fontSize: 14 }}>✏️</span>
+                  <p style={{ fontSize: 12, color: '#22C55E', fontWeight: 500 }}>Edit weights & reps to match what you actually did</p>
+                </div>
+
+                {/* EDITABLE exercise list */}
                 <p style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 10 }}>
                   Your workout · {(completingSession.exercises||[]).length} exercises
                 </p>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 20 }}>
-                  {(completingSession.exercises || []).map((ex, i) => {
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 20 }}>
+                  {(completingSession.exercises || []).map((ex, ei) => {
                     const m = CAT_META[ex.cat] || CAT_META['Custom']
                     return (
-                      <div key={i} style={{ background: 'var(--card2)', border: `1px solid ${m.color}20`, borderRadius: 14, padding: '12px 14px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: ex.sets?.length > 0 || ex.target ? 8 : 0 }}>
+                      <div key={ei} style={{ background: 'var(--card2)', border: `1px solid ${m.color}20`, borderRadius: 14, padding: '12px 14px' }}>
+                        {/* Exercise header */}
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
                           <span style={{ fontSize: 18 }}>{m.icon}</span>
-                          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)' }}>{ex.name}</p>
-                          <span style={{ marginLeft: 'auto', fontSize: 10, color: m.color, background: m.color+'15', padding: '2px 8px', borderRadius: 6 }}>{ex.cat}</span>
+                          <p style={{ fontSize: 14, fontWeight: 700, color: 'var(--text)', flex: 1 }}>{ex.name}</p>
+                          <span style={{ fontSize: 10, color: m.color, background: m.color+'15', padding: '2px 8px', borderRadius: 6 }}>{ex.cat}</span>
                         </div>
+
+                        {/* Editable sets */}
                         {ex.sets?.length > 0 && (
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            {/* Column headers */}
+                            <div style={{ display: 'grid', gridTemplateColumns: '32px 1fr 1fr', gap: 8 }}>
+                              <span style={{ fontSize: 9, color: 'var(--muted)', textAlign: 'center', fontWeight: 600, textTransform: 'uppercase' }}>SET</span>
+                              <span style={{ fontSize: 9, color: 'var(--muted)', textAlign: 'center', fontWeight: 600, textTransform: 'uppercase' }}>REPS</span>
+                              <span style={{ fontSize: 9, color: 'var(--muted)', textAlign: 'center', fontWeight: 600, textTransform: 'uppercase' }}>KG</span>
+                            </div>
                             {ex.sets.map((set, si) => (
-                              <div key={si} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                                <span style={{ fontSize: 11, color: 'var(--muted)', minWidth: 40 }}>Set {si+1}</span>
-                                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)' }}>
-                                  {set.reps ? `${set.reps} reps` : '—'}
-                                  {set.weight ? ` @ ${set.weight}kg` : ''}
-                                </span>
+                              <div key={si} style={{ display: 'grid', gridTemplateColumns: '32px 1fr 1fr', gap: 8, alignItems: 'center' }}>
+                                <div style={{ height: 40, background: 'var(--bg2)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--muted)', fontWeight: 700 }}>{si+1}</div>
+                                <input
+                                  type="number" inputMode="numeric"
+                                  placeholder="reps"
+                                  defaultValue={set.reps || ''}
+                                  onChange={e => {
+                                    const updated = JSON.parse(JSON.stringify(completingSession))
+                                    updated.exercises[ei].sets[si].reps = e.target.value
+                                    setCompletingSession(updated)
+                                  }}
+                                  style={{ height: 40, background: 'var(--input-bg)', border: '1px solid var(--border2)', borderRadius: 8, textAlign: 'center', color: 'var(--text)', fontSize: 16, fontWeight: 700, outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' }}
+                                />
+                                <input
+                                  type="number" inputMode="decimal"
+                                  placeholder="kg"
+                                  defaultValue={set.weight || ''}
+                                  onChange={e => {
+                                    const updated = JSON.parse(JSON.stringify(completingSession))
+                                    updated.exercises[ei].sets[si].weight = e.target.value
+                                    setCompletingSession(updated)
+                                  }}
+                                  style={{ height: 40, background: 'var(--input-bg)', border: '1px solid var(--border2)', borderRadius: 8, textAlign: 'center', color: 'var(--text)', fontSize: 16, fontWeight: 700, outline: 'none', fontFamily: 'inherit', width: '100%', boxSizing: 'border-box' }}
+                                />
                               </div>
                             ))}
                           </div>
                         )}
-                        {ex.target && <p style={{ fontSize: 12, color: 'var(--muted)', marginTop: 4 }}>Target: {ex.target}</p>}
+
+                        {/* Cardio / timed fields */}
+                        {!ex.sets?.length && (ex.target || ex.duration || ex.distance) && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                            {ex.target && (
+                              <div>
+                                <p style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4 }}>Target</p>
+                                <input defaultValue={ex.target}
+                                  onChange={e => {
+                                    const updated = JSON.parse(JSON.stringify(completingSession))
+                                    updated.exercises[ei].target = e.target.value
+                                    setCompletingSession(updated)
+                                  }}
+                                  style={{ width: '100%', height: 40, background: 'var(--input-bg)', border: '1px solid var(--border2)', borderRadius: 8, padding: '0 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                              </div>
+                            )}
+                            {ex.duration !== undefined && (
+                              <div>
+                                <p style={{ fontSize: 10, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.06em', marginBottom: 4 }}>Duration</p>
+                                <input defaultValue={ex.duration} placeholder="e.g. 30 min"
+                                  onChange={e => {
+                                    const updated = JSON.parse(JSON.stringify(completingSession))
+                                    updated.exercises[ei].duration = e.target.value
+                                    setCompletingSession(updated)
+                                  }}
+                                  style={{ width: '100%', height: 40, background: 'var(--input-bg)', border: '1px solid var(--border2)', borderRadius: 8, padding: '0 12px', color: 'var(--text)', fontSize: 14, outline: 'none', fontFamily: 'inherit', boxSizing: 'border-box' }} />
+                              </div>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )
                   })}
@@ -622,7 +684,7 @@ export default function Training({ session, profile }) {
 
                 <button onClick={() => setCompletingStep('confirm')}
                   style={{ width: '100%', background: 'linear-gradient(135deg,#FF5A1F,#FF8C42)', border: 'none', borderRadius: 14, padding: 16, color: '#fff', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', marginBottom: 10 }}>
-                  Start workout → 💪
+                  Done — rate my session →
                 </button>
                 <button onClick={() => { setCompletingSession(null); setCompletingStep('exercises') }}
                   style={{ width: '100%', background: 'transparent', border: '1px solid var(--border)', borderRadius: 14, padding: 13, color: 'var(--muted)', fontSize: 14, cursor: 'pointer', fontFamily: 'inherit' }}>

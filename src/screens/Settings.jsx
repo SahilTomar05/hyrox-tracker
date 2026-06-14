@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../lib/supabase'
 import { useTheme } from '../context/ThemeContext'
 import { Moon, Sun, LogOut, Trash2, Bell, Shield, Info } from 'lucide-react'
@@ -8,11 +8,91 @@ export default function Settings({ profile, onReset, onToggleCoach }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [notifications, setNotifications] = useState(() => {
-  try {
-    const saved = localStorage.getItem('pace4_notifications')
-    return saved ? JSON.parse(saved) : { meals: false, water: false, workout: false, steps: false }
-  } catch { return { meals: false, water: false, workout: false, steps: false } }
-})
+    try { return JSON.parse(localStorage.getItem('pace4_notifications') || '{}') } catch { return {} }
+  })
+
+  // Re-schedule notifications on app open
+  useEffect(() => {
+    Object.entries(notifications).forEach(([type, enabled]) => {
+      if (enabled && Notification.permission === 'granted') scheduleNotification(type)
+    })
+  }, [])
+
+  function scheduleNotification(type) {
+    const now = new Date()
+    const schedules = {
+      meals: [
+        { h: 9,  m: 0, msg: '🌅 Log your breakfast! Fuel up for the day.' },
+        { h: 13, m: 0, msg: '☀️ Time to log lunch. Keep your nutrition on track.' },
+        { h: 19, m: 0, msg: '🌙 Log your dinner! Stay on track with Pace4.' },
+      ],
+      water: [
+        { h: now.getHours() + 2, m: 0, msg: '💧 Drink some water! Stay hydrated.' },
+        { h: now.getHours() + 4, m: 0, msg: '💧 Water check! Have you hit your water goal?' },
+      ],
+      workout: [
+        { h: 8, m: 0, msg: '💪 Have you logged your workout today?' },
+      ],
+      steps: [
+        { h: 19, m: 0, msg: '👟 7PM check — did you hit your step goal today?' },
+      ],
+    }
+
+    const times = schedules[type] || []
+    times.forEach(({ h, m, msg }) => {
+      const target = new Date()
+      target.setHours(h, m, 0, 0)
+      if (target <= now) target.setDate(target.getDate() + 1)
+      const delay = target - now
+      setTimeout(() => {
+        if (Notification.permission === 'granted') {
+          new Notification('Pace4', {
+            body: msg,
+            icon: '/icon-192.png',
+            badge: '/icon-192.png',
+            vibrate: [200, 100, 200],
+          })
+          // Reschedule for next day
+          setTimeout(() => scheduleNotification(type), 2000)
+        }
+      }, delay)
+    })
+  }
+
+  async function toggleNotification(key) {
+    const isEnabling = !notifications[key]
+
+    if (isEnabling) {
+      // Check if browser supports notifications
+      if (!('Notification' in window)) {
+        alert('Your browser does not support notifications.')
+        return
+      }
+
+      // Request permission
+      const permission = await Notification.requestPermission()
+      if (permission === 'denied') {
+        alert('Notifications are blocked. Please go to your browser settings and allow notifications for pace4.in, then try again.')
+        return
+      }
+      if (permission !== 'granted') {
+        return
+      }
+
+      // Schedule immediately
+      scheduleNotification(key)
+
+      // Send a test notification so user knows it worked
+      new Notification('Pace4 ✅', {
+        body: `${key.charAt(0).toUpperCase() + key.slice(1)} reminders are now ON!`,
+        icon: '/icon-192.png',
+      })
+    }
+
+    const updated = { ...notifications, [key]: isEnabling }
+    setNotifications(updated)
+    localStorage.setItem('pace4_notifications', JSON.stringify(updated))
+  }
 
   async function deleteAccount() {
     setDeleting(true)
@@ -105,27 +185,36 @@ export default function Settings({ profile, onReset, onToggleCoach }) {
       <div style={{ padding: '0 16px 6px' }}>
         <p style={{ fontSize: 11, color: 'var(--muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '.08em', marginBottom: 8 }}>Notifications</p>
       </div>
-      <div style={c.card}>
-        {[
-          { key: 'meals', icon: '🍽️', label: 'Meal reminders', sub: '9am, 1pm, 7pm' },
-          { key: 'water', icon: '💧', label: 'Water reminders', sub: 'Every 2 hours' },
-          { key: 'workout', icon: '💪', label: 'Workout reminder', sub: 'Daily nudge' },
-          { key: 'steps', icon: '👟', label: 'Steps reminder', sub: '7pm if goal not hit' },
-        ].map(({ key, icon, label, sub }, i, arr) => (
-          <div key={key} style={i < arr.length - 1 ? c.row : c.rowLast}>
-            <div style={c.icon}><span style={{ fontSize: 18 }}>{icon}</span></div>
-            <div style={{ flex: 1 }}>
-              <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{label}</p>
-              <p style={c.sub}>{sub}</p>
+      {!('Notification' in window) ? (
+        <div style={{ margin: '0 16px 12px', background: 'var(--card)', border: '1px solid var(--border)', borderRadius: 18, padding: 16 }}>
+          <p style={{ fontSize: 13, color: 'var(--muted)' }}>Notifications not supported in this browser.</p>
+        </div>
+      ) : Notification.permission === 'denied' ? (
+        <div style={{ margin: '0 16px 12px', background: '#EF444410', border: '1px solid #EF444430', borderRadius: 18, padding: 16 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: '#EF4444', marginBottom: 4 }}>Notifications blocked</p>
+          <p style={{ fontSize: 12, color: 'var(--muted)', lineHeight: 1.6 }}>
+            Go to your browser settings → Site settings → Notifications → Allow for pace4.in
+          </p>
+        </div>
+      ) : (
+        <div style={c.card}>
+          {[
+            { key: 'meals',   icon: '🍽️', label: 'Meal reminders',   sub: '9am, 1pm, 7pm' },
+            { key: 'water',   icon: '💧', label: 'Water reminders',   sub: 'Every 2 hours' },
+            { key: 'workout', icon: '💪', label: 'Workout reminder',  sub: '8am daily nudge' },
+            { key: 'steps',   icon: '👟', label: 'Steps reminder',    sub: '7pm if goal not hit' },
+          ].map(({ key, icon, label, sub }, i, arr) => (
+            <div key={key} style={i < arr.length - 1 ? c.row : c.rowLast}>
+              <div style={c.icon}><span style={{ fontSize: 18 }}>{icon}</span></div>
+              <div style={{ flex: 1 }}>
+                <p style={{ fontSize: 14, fontWeight: 500, color: 'var(--text)' }}>{label}</p>
+                <p style={c.sub}>{sub}</p>
+              </div>
+              <Toggle on={!!notifications[key]} onToggle={() => toggleNotification(key)} />
             </div>
-            <Toggle on={notifications[key]} onToggle={() => {
-              const updated = { ...notifications, [key]: !notifications[key] }
-              setNotifications(updated)
-              localStorage.setItem('pace4_notifications', JSON.stringify(updated))
-            }} />
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Account */}
       <div style={{ padding: '0 16px 6px' }}>
@@ -146,7 +235,6 @@ export default function Settings({ profile, onReset, onToggleCoach }) {
             <p style={c.sub}>v1.0.0 · pace4.in</p>
           </div>
         </div>
-        {/* Switch to coach mode */}
         {onToggleCoach && (
           <div style={c.row}>
             <div style={{ ...c.icon, background: '#FF5A1F15' }}>
