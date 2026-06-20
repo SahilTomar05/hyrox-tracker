@@ -70,19 +70,37 @@ const CustomTooltip = ({ active, payload, label, unit = '' }) => {
 
 function ShareModal({ profile, stats, sessions, onClose }) {
   const { isDark } = useTheme()
-  const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+ 
+  // Bug fix: if it's past midnight, use the date of the last logged entry
+  // so the share card shows the day user was actually training, not "tomorrow"
+  const getLogDate = () => {
+    const now = new Date()
+    const hour = now.getHours()
+    // Between midnight and 4am, look back 1 day for entries
+    if (hour < 4) {
+      const yesterday = new Date(now)
+      yesterday.setDate(yesterday.getDate() - 1)
+      const yesterdayStr = yesterday.toDateString()
+      const hasYesterdayEntry = sessions.some(s => new Date(s.date).toDateString() === yesterdayStr && s.rpe > 0)
+      if (hasYesterdayEntry) return yesterday
+    }
+    return now
+  }
+  const logDate = getLogDate()
+  const today = logDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+ 
   const daysLeft = profile?.race_date
     ? Math.ceil((new Date(profile.race_date) - new Date()) / (1000 * 60 * 60 * 24))
     : null
-
+ 
   const todaySession = sessions.find(s =>
-    new Date(s.date).toDateString() === new Date().toDateString() && s.rpe > 0
+    new Date(s.date).toDateString() === logDate.toDateString() && s.rpe > 0
   )
-
+ 
   const ratingEmoji = stats.dailyRating >= 5 ? '🔥' : stats.dailyRating >= 4 ? '💪' : stats.dailyRating >= 3 ? '😐' : '😬'
   const ratingColor = stats.dailyRating >= 4 ? '#22C55E' : stats.dailyRating >= 3 ? '#FF5A1F' : '#EF4444'
   const scoreColor = stats.consistencyScore >= 80 ? '#22C55E' : stats.consistencyScore >= 60 ? '#FF5A1F' : '#EF4444'
-
+ 
   async function saveAndShare(mode) {
     const card = document.getElementById('pace4-share-card')
     if (!card) return
@@ -121,20 +139,20 @@ function ShareModal({ profile, stats, sessions, onClose }) {
       alert('📸 Screenshot this card to save it!\n\niOS: Side button + Volume Up\nAndroid: Power + Volume Down')
     }
   }
-
+ 
   return (
     <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.92)', zIndex: 300, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20, overflowY: 'auto' }}
       onClick={onClose}>
       <div style={{ width: '100%', maxWidth: 360, display: 'flex', flexDirection: 'column', gap: 12 }}
         onClick={e => e.stopPropagation()}>
-
+ 
         {/* Share card — always dark background so it looks good when saved */}
         <div id="pace4-share-card"
           style={{ background: 'linear-gradient(160deg,#0a0a0a,#141414)', border: '1px solid #FF5A1F20', borderRadius: 24, padding: 20, position: 'relative', overflow: 'hidden' }}>
-
+ 
           {/* Glow */}
           <div style={{ position: 'absolute', top: -60, right: -60, width: 200, height: 200, borderRadius: '50%', background: '#FF5A1F08', filter: 'blur(40px)', pointerEvents: 'none' }} />
-
+ 
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
@@ -152,11 +170,11 @@ function ShareModal({ profile, stats, sessions, onClose }) {
               )}
             </div>
           </div>
-
+ 
           {/* Athlete */}
           <p style={{ fontSize: 20, fontWeight: 700, color: '#fff', marginBottom: 2 }}>{profile?.name}</p>
           <p style={{ fontSize: 11, color: '#FF5A1F', marginBottom: 16 }}>{profile?.event_name || 'Athlete'}</p>
-
+ 
           {/* Daily rating hero */}
           <div style={{ background: '#ffffff08', borderRadius: 16, padding: '14px 16px', marginBottom: 12, display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ textAlign: 'center', flexShrink: 0 }}>
@@ -180,7 +198,7 @@ function ShareModal({ profile, stats, sessions, onClose }) {
               </div>
             )}
           </div>
-
+ 
           {/* 3 stats — calories burned, water, steps */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, marginBottom: 12 }}>
             {[
@@ -196,14 +214,14 @@ function ShareModal({ profile, stats, sessions, onClose }) {
               </div>
             ))}
           </div>
-
+ 
           {/* Footer */}
           <div style={{ borderTop: '1px solid #ffffff08', paddingTop: 10, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <p style={{ fontSize: 9, color: '#333' }}>pace4.in</p>
             <p style={{ fontSize: 9, color: '#333' }}>#P4Athlete #Pace4 #IndianAthlete</p>
           </div>
         </div>
-
+ 
         {/* Buttons */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
           <button onClick={() => saveAndShare('save')}

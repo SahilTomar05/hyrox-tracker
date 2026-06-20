@@ -42,9 +42,9 @@ function getFieldType(ex) {
   return 'strength'
 }
 
-function getSarcasticScore(exercises, rpe, duration) {
+function getSessionScore(exercises, rpe, duration) {
   const mobOnly = exercises.every(e => e.cat === 'Mobility')
-  if (mobOnly) return { isRecovery: true, emoji: '🧘', color: '#A855F7', msg: 'Smart move. Recovery sessions are what separate serious athletes from the injured ones.' }
+  if (mobOnly) return { isRecovery: true, emoji: '🧘', color: '#A855F7', msg: 'Recovery is training too. You re building the foundation for your next big session. Keep it up!' }
   let s = 0
   const sets = exercises.reduce((a, e) => a + (e.sets?.length || 1), 0)
   if (sets >= 20) s += 30; else if (sets >= 12) s += 20; else if (sets >= 6) s += 10
@@ -53,11 +53,11 @@ function getSarcasticScore(exercises, rpe, duration) {
   if (d >= 60) s += 25; else if (d >= 40) s += 15; else if (d >= 20) s += 8
   if (exercises.length >= 6) s += 15; else if (exercises.length >= 3) s += 8
   s = Math.min(s, 100)
-  if (s >= 85) return { isRecovery: false, score: s, emoji: '🔥', color: '#22C55E', msg: `${s}/100 — That was genuinely solid. Don't stop now.` }
-  if (s >= 70) return { isRecovery: false, score: s, emoji: '💪', color: '#3B82F6', msg: `${s}/100 — Solid effort. Consistent beats perfect.` }
-  if (s >= 50) return { isRecovery: false, score: s, emoji: '😐', color: '#FF8C42', msg: `${s}/100 — You showed up. Push harder next time.` }
-  if (s >= 30) return { isRecovery: false, score: s, emoji: '😬', color: '#FF5A1F', msg: `${s}/100 — Your warm-up had more energy. What happened?` }
-  return { isRecovery: false, score: s, emoji: '💀', color: '#EF4444', msg: `${s}/100 — Respectfully, what was that? Add weight, add sets, add effort.` }
+  if (s >= 85) return { isRecovery: false, score: s, emoji: '🔥', color: '#22C55E', msg: `${s}/100 — Outstanding session! You're building something special. This is what champions are made of!` }
+  if (s >= 70) return { isRecovery: false, score: s, emoji: '💪', color: '#3B82F6', msg: `${s}/100 — Strong work today! Every session like this brings you closer to your goal. Keep the momentum going!` }
+  if (s >= 50) return { isRecovery: false, score: s, emoji: '✅', color: '#FF8C42', msg: `${s}/100 — You showed up and that matters most. Progress is progress — build on this tomorrow!` }
+  if (s >= 30) return { isRecovery: false, score: s, emoji: '🌱', color: '#FF5A1F', msg: `${s}/100 — Every champion started exactly where you are. Small steps every day lead to big results. Keep going!` }
+  return { isRecovery: false, score: s, emoji: '⭐', color: '#FF5A1F', msg: `${s}/100 — The hardest part is showing up — and you did! Increase the intensity next time and watch yourself grow!` }
 }
 
 export default function Training({ session, profile }) {
@@ -138,7 +138,7 @@ export default function Training({ session, profile }) {
       // Move from assigned → completed
       setAssignedSessions(p => p.filter(s => s.id !== completingSession.id))
       setSessions(p => [{ ...completingSession, rpe: completeRpe, notes: completeNotes }, ...p])
-      const score = getSarcasticScore(completingSession.exercises || [], completeRpe, completingSession.duration)
+      const score = getSessionScore(completingSession.exercises || [], completeRpe, completingSession.duration)
       setScoreModal(score)
     }
     setCompletingSession(null)
@@ -241,7 +241,7 @@ export default function Training({ session, profile }) {
     setSaving(true)
     const cats = [...new Set(exercises.map(e => e.cat))]
     const type = cats.length === 1 ? cats[0] : 'Mixed'
-    const result = getSarcasticScore(exercises, rpe, duration)
+    const result = getSessionScore(exercises, rpe, duration)
     const { data, error } = await supabase.from('sessions').insert({
       user_id: session.user.id, date: selectedDay, type, notes, rpe, duration,
       exercises: exercises.map(({ id, completed, ...ex }) => ex),
