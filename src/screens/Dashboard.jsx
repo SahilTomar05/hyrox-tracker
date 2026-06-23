@@ -227,12 +227,17 @@ export default function Dashboard({ profile, session }) {
 
   const caloriesBurned = calcCaloriesBurned(sessions, profile)
   const burnGoal = calorieGoal * 1.2 // burn target slightly above intake goal
-  const burnPct = Math.min((caloriesBurned / burnGoal) * 100, 100)
-  const waterPct = Math.min((nutrition.water / waterGoal) * 100, 100)
-  const stepPct = Math.min((steps / stepGoal) * 100, 100)
+  const burnPct = Math.min(caloriesBurned > 0 ? 100 : 0, 100)
+  const waterPct = Math.min(Math.round((nutrition.water / waterGoal) * 100), 100)
+  const stepPct = Math.min(Math.round((steps / stepGoal) * 100), 100)
   const sessionToday = sessions.filter(s => new Date(s.date).toDateString() === new Date().toDateString()).length
-  const workoutPct = Math.min(sessionToday * 50, 100)
-  const overallPct = Math.round((burnPct * 0.35 + waterPct * 0.2 + workoutPct * 0.3 + stepPct * 0.15))
+  const workoutPct = sessionToday ? 100 : 0
+  const overallPct = Math.round(
+  burnPct * 0.35 +
+  workoutPct * 0.30 +
+  waterPct * 0.20 +
+  stepPct * 0.15
+  )
 
   const dailyRating = calcDailyRating({
     calories: nutrition.calories, calorieGoal,
