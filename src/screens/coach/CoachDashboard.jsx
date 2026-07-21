@@ -25,7 +25,7 @@ export default function CoachDashboard({ profile, session, onSelectClient }) {
       const [{ data: profiles }, { data: sessions }] = await Promise.all([
         supabase.from('profiles').select('*').in('id', clientIds),
         supabase.from('sessions').select('*').in('user_id', clientIds)
-          .gte('date', new Date().toISOString().split('T')[0]),
+          .gte('date', new Date(new Date().getTime()+(5.5*60*60*1000)).toISOString().split('T')[0]),
       ])
 
       setClientProfiles(profiles || [])

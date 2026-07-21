@@ -14,7 +14,7 @@ const MEAL_ICONS = {
   Snacks: '🍎',
 }
 
-function todayDate() { return new Date().toISOString().split('T')[0] }
+function todayDate() { return new Date(new Date().getTime()+(5.5*60*60*1000)).toISOString().split('T')[0] }
 function todayKey() { return new Date().toDateString() }
 
 function getWeekDates() {
@@ -31,7 +31,9 @@ function isSameDay(a, b) {
 }
 
 function formatDate(date) {
-  return new Date(date).toISOString().split('T')[0]
+  const d = date ? new Date(date) : new Date()
+  const ist = new Date(d.getTime() + (5.5 * 60 * 60 * 1000))
+  return ist.toISOString().split('T')[0]
 }
 
 function Ring({ pct, size = 80, stroke = 8, color = '#FF5A1F', children }) {

@@ -314,7 +314,7 @@ export default function Progress({ session, profile }) {
 
   async function fetchAll() {
     setLoading(true)
-    const todayDate = new Date().toISOString().split('T')[0]
+    const todayDate = new Date(new Date().getTime()+(5.5*60*60*1000)).toISOString().split('T')[0]
     const [sRes, wRes, nRes, todayRes] = await Promise.all([
       supabase.from('sessions').select('*').eq('user_id', session.user.id).order('date', { ascending:true }),
       supabase.from('weight_logs').select('*').eq('user_id', session.user.id).order('date', { ascending:true }),

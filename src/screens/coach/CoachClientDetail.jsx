@@ -44,7 +44,7 @@ export default function CoachClientDetail({ profile, session, client, onBack }) 
 
   // Assign session state
   const [showAssign, setShowAssign] = useState(false)
-  const [assignDate, setAssignDate] = useState(new Date().toISOString().split('T')[0])
+  const [assignDate, setAssignDate] = useState(new Date(new Date().getTime()+(5.5*60*60*1000)).toISOString().split('T')[0])
   const [assignStep, setAssignStep] = useState('search') // 'search' | 'log'
   const [sessionType, setSessionType] = useState('Strength')
   const [exercises, setExercises] = useState([])
@@ -64,7 +64,7 @@ export default function CoachClientDetail({ profile, session, client, onBack }) 
 
   async function fetchClientData() {
     setLoading(true)
-    const today = new Date().toISOString().split('T')[0]
+    const today = new Date(new Date().getTime()+(5.5*60*60*1000)).toISOString().split('T')[0]
     try {
       const [sRes, nRes, todayRes, sleepRes] = await Promise.all([
         supabase.from('sessions').select('*').eq('user_id', client.id).order('date', { ascending: false }),
